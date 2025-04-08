@@ -43,28 +43,28 @@ const Register = () => {
     let isValid = true;
     
     if (!name) {
-      newErrors.name = "Name is required";
+      newErrors.name = "الاسم مطلوب";
       isValid = false;
     }
     
     if (!email) {
-      newErrors.email = "Email is required";
+      newErrors.email = "البريد الإلكتروني مطلوب";
       isValid = false;
     } else if (!/\S+@\S+\.\S+/.test(email)) {
-      newErrors.email = "Email is not valid";
+      newErrors.email = "البريد الإلكتروني غير صالح";
       isValid = false;
     }
     
     if (!password) {
-      newErrors.password = "Password is required";
+      newErrors.password = "كلمة المرور مطلوبة";
       isValid = false;
     } else if (password.length < 6) {
-      newErrors.password = "Password must be at least 6 characters";
+      newErrors.password = "يجب أن تكون كلمة المرور 6 أحرف على الأقل";
       isValid = false;
     }
     
     if (password !== confirmPassword) {
-      newErrors.confirmPassword = "Passwords do not match";
+      newErrors.confirmPassword = "كلمات المرور غير متطابقة";
       isValid = false;
     }
     
@@ -82,7 +82,7 @@ const Register = () => {
       if (role === "driver") {
         navigate("/truck-details");
       } else {
-        navigate("/find-trucks");
+        navigate("/customer-dashboard");
       }
     } catch (error) {
       console.error("Registration failed:", error);
@@ -94,18 +94,18 @@ const Register = () => {
     <div className="min-h-screen flex items-center justify-center bg-gray-50 p-4">
       <Card className="w-full max-w-md">
         <CardHeader className="text-center">
-          <CardTitle className="text-2xl">Create an Account</CardTitle>
+          <CardTitle className="text-2xl">إنشاء حساب جديد</CardTitle>
           <CardDescription>
-            Join MOPRD to {role === "customer" ? "find refrigerated trucks" : "offer your truck services"}
+            انضم إلى زكرت {role === "customer" ? "للعثور على شاحنات مبردة" : "لتقديم خدمات الشاحنات الخاصة بك"}
           </CardDescription>
         </CardHeader>
         <form onSubmit={handleSubmit}>
           <CardContent className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="name">Full Name</Label>
+              <Label htmlFor="name">الاسم الكامل</Label>
               <Input
                 id="name"
-                placeholder="John Smith"
+                placeholder="محمد علي"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
               />
@@ -114,11 +114,11 @@ const Register = () => {
               )}
             </div>
             <div className="space-y-2">
-              <Label htmlFor="email">Email</Label>
+              <Label htmlFor="email">البريد الإلكتروني</Label>
               <Input
                 id="email"
                 type="email"
-                placeholder="your@email.com"
+                placeholder="email@example.com"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
               />
@@ -127,7 +127,7 @@ const Register = () => {
               )}
             </div>
             <div className="space-y-2">
-              <Label htmlFor="password">Password</Label>
+              <Label htmlFor="password">كلمة المرور</Label>
               <Input
                 id="password"
                 type="password"
@@ -140,7 +140,7 @@ const Register = () => {
               )}
             </div>
             <div className="space-y-2">
-              <Label htmlFor="confirmPassword">Confirm Password</Label>
+              <Label htmlFor="confirmPassword">تأكيد كلمة المرور</Label>
               <Input
                 id="confirmPassword"
                 type="password"
@@ -153,21 +153,21 @@ const Register = () => {
               )}
             </div>
             <div className="space-y-2">
-              <Label>I am registering as a:</Label>
+              <Label>أقوم بالتسجيل كـ:</Label>
               <RadioGroup value={role} onValueChange={(value) => setRole(value as UserRole)}>
                 <div className="flex flex-col space-y-2">
                   <div className="flex items-center space-x-2">
                     <RadioGroupItem value="customer" id="customer" />
-                    <Label htmlFor="customer" className="flex items-center cursor-pointer">
-                      <User className="h-4 w-4 mr-2" />
-                      Customer (looking for refrigerated transport)
+                    <Label htmlFor="customer" className="flex items-center cursor-pointer mr-2">
+                      <User className="h-4 w-4 ml-2" />
+                      عميل (أبحث عن شاحنات مبردة)
                     </Label>
                   </div>
                   <div className="flex items-center space-x-2">
                     <RadioGroupItem value="driver" id="driver" />
-                    <Label htmlFor="driver" className="flex items-center cursor-pointer">
-                      <Truck className="h-4 w-4 mr-2" />
-                      Truck Driver (offering refrigerated transport)
+                    <Label htmlFor="driver" className="flex items-center cursor-pointer mr-2">
+                      <Truck className="h-4 w-4 ml-2" />
+                      سائق شاحنة (أقدم خدمات نقل مبردة)
                     </Label>
                   </div>
                 </div>
@@ -180,13 +180,13 @@ const Register = () => {
               className="w-full bg-moprd-teal hover:bg-moprd-blue"
               disabled={isLoading}
             >
-              {isLoading ? "Creating Account..." : "Register"}
+              {isLoading ? "جاري إنشاء الحساب..." : "تسجيل"}
             </Button>
             <div className="mt-4 text-center">
               <p className="text-sm text-muted-foreground">
-                Already have an account?{" "}
+                لديك حساب بالفعل؟{" "}
                 <Link to="/login" className="text-moprd-teal hover:underline font-medium">
-                  Login
+                  تسجيل الدخول
                 </Link>
               </p>
             </div>

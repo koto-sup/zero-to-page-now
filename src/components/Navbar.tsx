@@ -44,18 +44,26 @@ const Navbar = () => {
           {user ? (
             <div className="flex items-center gap-4">
               {user.role === "customer" && (
-                <Link to="/find-trucks">
-                  <Button variant="ghost" className="flex items-center">
-                    <PackageSearch className="mr-2 h-4 w-4" />
-                    البحث عن شاحنات
-                  </Button>
-                </Link>
+                <>
+                  <Link to="/customer-dashboard">
+                    <Button variant="ghost" className="flex items-center">
+                      <BarChart3 className="ml-2 h-4 w-4" />
+                      لوحة التحكم
+                    </Button>
+                  </Link>
+                  <Link to="/find-trucks">
+                    <Button variant="ghost" className="flex items-center">
+                      <PackageSearch className="ml-2 h-4 w-4" />
+                      البحث عن شاحنات
+                    </Button>
+                  </Link>
+                </>
               )}
               
               {user.role === "driver" && (
                 <Link to="/dashboard">
                   <Button variant="ghost" className="flex items-center">
-                    <BarChart3 className="mr-2 h-4 w-4" />
+                    <BarChart3 className="ml-2 h-4 w-4" />
                     لوحة التحكم
                   </Button>
                 </Link>
@@ -63,14 +71,14 @@ const Navbar = () => {
               
               <Link to="/chat">
                 <Button variant="ghost" className="flex items-center">
-                  <MessageSquare className="mr-2 h-4 w-4" />
+                  <MessageSquare className="ml-2 h-4 w-4" />
                   الرسائل
                 </Button>
               </Link>
               
               <Link to="/invoices">
                 <Button variant="ghost" className="flex items-center">
-                  <FileText className="mr-2 h-4 w-4" />
+                  <FileText className="ml-2 h-4 w-4" />
                   الفواتير
                 </Button>
               </Link>
@@ -78,7 +86,7 @@ const Navbar = () => {
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <Button variant="outline" className="flex items-center">
-                    <UserCircle className="mr-2 h-5 w-5" />
+                    <UserCircle className="ml-2 h-5 w-5" />
                     {user.name}
                     <ChevronDown className="mr-2 h-4 w-4" />
                   </Button>
