@@ -17,29 +17,41 @@ const Index = () => {
 
   return (
     <div className="min-h-screen">
-      {/* Hero Section */}
-      <section className="relative bg-gradient-to-br from-moprd-blue to-moprd-teal text-white">
-        <div className="container mx-auto px-4 py-16 md:py-24">
+      {/* Hero Section with Video Background */}
+      <section className="relative bg-gradient-to-br from-moprd-blue to-moprd-teal text-white overflow-hidden">
+        <div className="absolute inset-0 z-0">
+          <video
+            className="w-full h-full object-cover opacity-20"
+            autoPlay
+            muted
+            loop
+            playsInline
+            src="https://player.vimeo.com/external/373839498.sd.mp4?s=a93f4587a90551d713bc04abe5bca7af5f251082&profile_id=164&oauth2_token_id=57447761"
+          >
+            <source src="https://player.vimeo.com/external/373839498.sd.mp4?s=a93f4587a90551d713bc04abe5bca7af5f251082&profile_id=164&oauth2_token_id=57447761" type="video/mp4" />
+          </video>
+        </div>
+        <div className="container mx-auto px-4 py-16 md:py-24 relative z-10">
           <div className="grid md:grid-cols-2 gap-8 items-center">
             <div>
               <h1 className="text-4xl md:text-5xl font-bold mb-6">
-                Refrigerated Truck Rentals on Demand
+                شاحنات مبردة عند الطلب
               </h1>
               <p className="text-xl mb-8 text-white/90">
-                MOPRD connects you with nearby refrigerated truck drivers for all your cold transportation needs.
+                زكرت يربطك مع سائقي الشاحنات المبردة القريبين لجميع احتياجات النقل البارد.
               </p>
               <div className="flex flex-wrap gap-4">
                 {!user && (
                   <>
                     <Link to="/register">
                       <Button size="lg" className="bg-white text-moprd-blue hover:bg-gray-100">
-                        Get Started
-                        <ArrowRight className="ml-2 h-5 w-5" />
+                        ابدأ الآن
+                        <ArrowRight className="mr-2 h-5 w-5" />
                       </Button>
                     </Link>
                     <Link to="/login">
                       <Button size="lg" variant="outline" className="border-white text-white hover:bg-white/10">
-                        Login
+                        تسجيل الدخول
                       </Button>
                     </Link>
                   </>
@@ -47,16 +59,16 @@ const Index = () => {
                 {user?.role === "customer" && (
                   <Link to="/find-trucks">
                     <Button size="lg" className="bg-white text-moprd-blue hover:bg-gray-100">
-                      Find Available Trucks
-                      <ArrowRight className="ml-2 h-5 w-5" />
+                      ابحث عن الشاحنات المتاحة
+                      <ArrowRight className="mr-2 h-5 w-5" />
                     </Button>
                   </Link>
                 )}
                 {user?.role === "driver" && (
                   <Link to="/dashboard">
                     <Button size="lg" className="bg-white text-moprd-blue hover:bg-gray-100">
-                      Go to Dashboard
-                      <ArrowRight className="ml-2 h-5 w-5" />
+                      الذهاب إلى لوحة التحكم
+                      <ArrowRight className="mr-2 h-5 w-5" />
                     </Button>
                   </Link>
                 )}
@@ -68,7 +80,7 @@ const Index = () => {
               <div className="relative bg-white p-4 rounded-lg shadow-xl transform rotate-2">
                 <img 
                   src="/placeholder.svg" 
-                  alt="Refrigerated truck" 
+                  alt="شاحنة مبردة" 
                   className="rounded w-full h-64 object-cover"
                 />
                 <div className="absolute -bottom-3 -right-3 bg-moprd-cyan text-moprd-blue p-2 rounded-lg shadow-lg">
@@ -84,7 +96,7 @@ const Index = () => {
       {/* How It Works */}
       <section className="py-16">
         <div className="container mx-auto px-4">
-          <h2 className="text-3xl font-bold text-center mb-12">How MOPRD Works</h2>
+          <h2 className="text-3xl font-bold text-center mb-12">كيف تعمل زكرت</h2>
           <div className="grid md:grid-cols-3 gap-8">
             <div className="text-center p-6 bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow">
               <div className="flex justify-center mb-4">
@@ -92,9 +104,9 @@ const Index = () => {
                   <Truck className="h-10 w-10 text-moprd-blue" />
                 </div>
               </div>
-              <h3 className="text-xl font-semibold mb-3">Find Nearby Trucks</h3>
+              <h3 className="text-xl font-semibold mb-3">ابحث عن الشاحنات القريبة</h3>
               <p className="text-gray-600">
-                Browse available refrigerated trucks in your area and choose one that meets your needs.
+                تصفح الشاحنات المبردة المتاحة في منطقتك واختر ما يناسب احتياجاتك.
               </p>
             </div>
             <div className="text-center p-6 bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow">
@@ -103,9 +115,9 @@ const Index = () => {
                   <MessageSquare className="h-10 w-10 text-moprd-blue" />
                 </div>
               </div>
-              <h3 className="text-xl font-semibold mb-3">Request & Chat</h3>
+              <h3 className="text-xl font-semibold mb-3">طلب عروض أسعار والدردشة</h3>
               <p className="text-gray-600">
-                Request a quote and chat directly with drivers to discuss your transportation needs.
+                اطلب عرض سعر وتحدث مباشرة مع السائقين لمناقشة احتياجات النقل الخاصة بك.
               </p>
             </div>
             <div className="text-center p-6 bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow">
@@ -114,9 +126,9 @@ const Index = () => {
                   <Clock className="h-10 w-10 text-moprd-blue" />
                 </div>
               </div>
-              <h3 className="text-xl font-semibold mb-3">Book & Track</h3>
+              <h3 className="text-xl font-semibold mb-3">احجز وتتبع</h3>
               <p className="text-gray-600">
-                Accept a quote, schedule pickup and delivery, then track your shipment in real-time.
+                اقبل العرض، وجدول موعد الاستلام والتسليم، ثم تتبع شحنتك في الوقت الحقيقي.
               </p>
             </div>
           </div>
@@ -126,57 +138,57 @@ const Index = () => {
       {/* Features */}
       <section className="py-16 bg-gray-50">
         <div className="container mx-auto px-4">
-          <h2 className="text-3xl font-bold text-center mb-12">Why Choose MOPRD</h2>
+          <h2 className="text-3xl font-bold text-center mb-12">لماذا تختار زكرت</h2>
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
             <div className="flex items-start p-4">
-              <div className="flex-shrink-0 mr-4">
+              <div className="flex-shrink-0 ml-4">
                 <div className="p-2 bg-moprd-teal/20 rounded-full">
                   <Snowflake className="h-6 w-6 text-moprd-teal" />
                 </div>
               </div>
               <div>
-                <h3 className="text-lg font-semibold mb-2">Temperature Controlled</h3>
-                <p className="text-gray-600">All trucks are equipped with advanced refrigeration systems for safe transport.</p>
+                <h3 className="text-lg font-semibold mb-2">التحكم في درجة الحرارة</h3>
+                <p className="text-gray-600">جميع الشاحنات مجهزة بأنظمة تبريد متطورة للنقل الآمن.</p>
               </div>
             </div>
             <div className="flex items-start p-4">
-              <div className="flex-shrink-0 mr-4">
+              <div className="flex-shrink-0 ml-4">
                 <div className="p-2 bg-moprd-teal/20 rounded-full">
                   <Clock className="h-6 w-6 text-moprd-teal" />
                 </div>
               </div>
               <div>
-                <h3 className="text-lg font-semibold mb-2">On-Demand Service</h3>
-                <p className="text-gray-600">Book refrigerated trucks when you need them, where you need them.</p>
+                <h3 className="text-lg font-semibold mb-2">خدمة عند الطلب</h3>
+                <p className="text-gray-600">احجز شاحنات مبردة عندما تحتاجها، وأينما تحتاجها.</p>
               </div>
             </div>
             <div className="flex items-start p-4">
-              <div className="flex-shrink-0 mr-4">
+              <div className="flex-shrink-0 ml-4">
                 <div className="p-2 bg-moprd-teal/20 rounded-full">
                   <ShieldCheck className="h-6 w-6 text-moprd-teal" />
                 </div>
               </div>
               <div>
-                <h3 className="text-lg font-semibold mb-2">Vetted Drivers</h3>
-                <p className="text-gray-600">All drivers are verified and their vehicles regularly inspected for quality.</p>
+                <h3 className="text-lg font-semibold mb-2">سائقون موثوقون</h3>
+                <p className="text-gray-600">جميع السائقين تم التحقق منهم ويتم فحص مركباتهم بانتظام.</p>
               </div>
             </div>
             <div className="flex items-start p-4">
-              <div className="flex-shrink-0 mr-4">
+              <div className="flex-shrink-0 ml-4">
                 <div className="p-2 bg-moprd-teal/20 rounded-full">
                   <MessageSquare className="h-6 w-6 text-moprd-teal" />
                 </div>
               </div>
               <div>
-                <h3 className="text-lg font-semibold mb-2">Direct Communication</h3>
-                <p className="text-gray-600">Chat directly with drivers to ensure your specific needs are met.</p>
+                <h3 className="text-lg font-semibold mb-2">تواصل مباشر</h3>
+                <p className="text-gray-600">تحدث مباشرة مع السائقين للتأكد من تلبية احتياجاتك.</p>
               </div>
             </div>
           </div>
           <div className="mt-12 text-center">
             <Link to={user ? (user.role === "customer" ? "/find-trucks" : "/dashboard") : "/register"}>
               <Button size="lg" className="bg-moprd-teal hover:bg-moprd-blue">
-                {user ? (user.role === "customer" ? "Find a Truck Now" : "Access Driver Dashboard") : "Join MOPRD Today"}
+                {user ? (user.role === "customer" ? "ابحث عن شاحنة الآن" : "الوصول إلى لوحة تحكم السائق") : "انضم إلى زكرت اليوم"}
               </Button>
             </Link>
           </div>
@@ -188,26 +200,26 @@ const Index = () => {
         <div className="container mx-auto px-4 text-center">
           <div className="max-w-3xl mx-auto">
             <h2 className="text-3xl font-bold mb-6">
-              {!user && "Join the MOPRD Network Today"}
-              {user?.role === "customer" && "Need to transport refrigerated goods?"}
-              {user?.role === "driver" && "Ready to grow your refrigerated transport business?"}
+              {!user && "انضم إلى شبكة زكرت اليوم"}
+              {user?.role === "customer" && "هل تحتاج إلى نقل بضائع مبردة؟"}
+              {user?.role === "driver" && "جاهز لتنمية أعمالك في مجال النقل المبرد؟"}
             </h2>
             <p className="text-xl mb-8 text-white/90">
-              {!user && "Whether you need refrigerated transport or want to offer your truck services, MOPRD connects everyone in the cold chain logistics network."}
-              {user?.role === "customer" && "Find available refrigerated trucks in your area and get your goods moving with temperature-controlled confidence."}
-              {user?.role === "driver" && "Complete your profile, set your availability, and start receiving booking requests from customers in your area."}
+              {!user && "سواء كنت بحاجة إلى نقل مبرد أو ترغب في تقديم خدمات شاحنتك، تربط زكرت الجميع في شبكة لوجستية للسلسلة الباردة."}
+              {user?.role === "customer" && "ابحث عن الشاحنات المبردة المتاحة في منطقتك وانقل بضائعك بثقة مع التحكم في درجة الحرارة."}
+              {user?.role === "driver" && "أكمل ملفك الشخصي، وحدد توفرك، وابدأ في تلقي طلبات الحجز من العملاء في منطقتك."}
             </p>
             <div className="flex flex-wrap justify-center gap-4">
               {!user && (
                 <>
                   <Link to="/register?role=customer">
                     <Button size="lg" className="bg-white text-moprd-blue hover:bg-gray-100">
-                      Register as Customer
+                      التسجيل كعميل
                     </Button>
                   </Link>
                   <Link to="/register?role=driver">
                     <Button size="lg" variant="outline" className="border-white text-white hover:bg-white/10">
-                      Register as Driver
+                      التسجيل كسائق
                     </Button>
                   </Link>
                 </>
@@ -215,14 +227,14 @@ const Index = () => {
               {user?.role === "customer" && (
                 <Link to="/find-trucks">
                   <Button size="lg" className="bg-white text-moprd-blue hover:bg-gray-100">
-                    Find Available Trucks
+                    البحث عن الشاحنات المتاحة
                   </Button>
                 </Link>
               )}
               {user?.role === "driver" && (
                 <Link to="/truck-details">
                   <Button size="lg" className="bg-white text-moprd-blue hover:bg-gray-100">
-                    Complete Your Profile
+                    أكمل ملفك الشخصي
                   </Button>
                 </Link>
               )}

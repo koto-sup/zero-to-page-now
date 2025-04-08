@@ -78,7 +78,7 @@ const ChatBox: React.FC<ChatBoxProps> = ({
       senderId: user?.id || "unknown",
       senderName: user?.name || "Anonymous",
       senderAvatar: user?.profileImage,
-      content: `I'm offering a price of $${parseFloat(quoteAmount).toFixed(2)} for this job.`,
+      content: `أقدم سعراً قدره ${parseFloat(quoteAmount).toFixed(2)} ريال لهذه الرحلة.`,
       timestamp: new Date(),
       isQuote: true,
       quoteAmount: parseFloat(quoteAmount),
@@ -108,7 +108,7 @@ const ChatBox: React.FC<ChatBoxProps> = ({
   return (
     <div className="flex flex-col h-full">
       <div className="flex items-center p-3 border-b">
-        <Avatar className="h-10 w-10 mr-3">
+        <Avatar className="h-10 w-10 ml-3">
           <img 
             src={recipientAvatar || "/placeholder.svg"} 
             alt={recipientName}
@@ -116,7 +116,7 @@ const ChatBox: React.FC<ChatBoxProps> = ({
         </Avatar>
         <div>
           <h3 className="font-medium">{recipientName}</h3>
-          <span className="text-xs text-muted-foreground">Online</span>
+          <span className="text-xs text-muted-foreground">متصل</span>
         </div>
       </div>
 
@@ -127,11 +127,11 @@ const ChatBox: React.FC<ChatBoxProps> = ({
           return (
             <div
               key={message.id}
-              className={`flex ${isOwnMessage ? "justify-end" : "justify-start"}`}
+              className={`flex ${isOwnMessage ? "justify-start" : "justify-end"}`}
             >
               <div className="flex items-start max-w-[80%]">
                 {!isOwnMessage && (
-                  <Avatar className="h-8 w-8 mr-2 mt-1">
+                  <Avatar className="h-8 w-8 ml-2 mt-1">
                     <img
                       src={message.senderAvatar || "/placeholder.svg"}
                       alt={message.senderName}
@@ -151,7 +151,7 @@ const ChatBox: React.FC<ChatBoxProps> = ({
                     {message.isQuote && (
                       <div className="mt-2">
                         <Badge className="bg-white text-moprd-blue">
-                          Quote: ${message.quoteAmount?.toFixed(2)}
+                          السعر: {message.quoteAmount?.toFixed(2)} ريال
                         </Badge>
                         
                         {!isOwnMessage && !message.isAccepted && (
@@ -160,13 +160,13 @@ const ChatBox: React.FC<ChatBoxProps> = ({
                             onClick={() => handleAcceptQuote(message.id)}
                             className="mt-2 bg-green-600 hover:bg-green-700"
                           >
-                            Accept Quote
+                            قبول العرض
                           </Button>
                         )}
                         
                         {message.isAccepted && (
                           <Badge className="mt-2 bg-green-500">
-                            Accepted
+                            تم قبول العرض
                           </Badge>
                         )}
                       </div>
@@ -186,36 +186,37 @@ const ChatBox: React.FC<ChatBoxProps> = ({
       {showQuoteForm && user?.role === "driver" ? (
         <div className="border-t p-3">
           <div className="flex items-center">
-            <div className="flex-1 mr-2">
-              <div className="mb-1 text-sm font-medium">Enter your price ($)</div>
+            <div className="flex-1 ml-2">
+              <div className="mb-1 text-sm font-medium">أدخل السعر (ريال)</div>
               <div className="flex">
                 <div className="relative flex-1">
-                  <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
-                    <span className="text-gray-500">$</span>
+                  <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+                    <span className="text-gray-500">ريال</span>
                   </div>
                   <input
                     type="number"
                     value={quoteAmount}
                     onChange={(e) => setQuoteAmount(e.target.value)}
-                    className="pl-7 block w-full rounded-md border-gray-300 shadow-sm focus:border-moprd-teal focus:ring focus:ring-moprd-light focus:ring-opacity-50 py-1.5"
+                    className="pr-14 block w-full rounded-md border-gray-300 shadow-sm focus:border-moprd-teal focus:ring focus:ring-moprd-light focus:ring-opacity-50 py-1.5"
                     placeholder="0.00"
                     min="0"
                     step="0.01"
+                    dir="ltr"
                   />
                 </div>
                 <Button
                   onClick={handleSendQuote}
-                  className="ml-2 bg-moprd-teal hover:bg-moprd-blue"
+                  className="mr-2 bg-moprd-teal hover:bg-moprd-blue"
                   disabled={!quoteAmount || isNaN(parseFloat(quoteAmount))}
                 >
-                  Send Quote
+                  إرسال العرض
                 </Button>
                 <Button
                   variant="ghost"
                   onClick={() => setShowQuoteForm(false)}
-                  className="ml-1"
+                  className="mr-1"
                 >
-                  Cancel
+                  إلغاء
                 </Button>
               </div>
             </div>
@@ -227,26 +228,27 @@ const ChatBox: React.FC<ChatBoxProps> = ({
             <Textarea
               value={newMessage}
               onChange={(e) => setNewMessage(e.target.value)}
-              placeholder="Type a message..."
+              placeholder="اكتب رسالة..."
               className="flex-1 resize-none"
               rows={1}
+              dir="rtl"
             />
-            <div className="ml-3 flex">
+            <div className="mr-3 flex">
               {user?.role === "driver" && (
                 <Button
                   variant="outline"
                   size="icon"
                   onClick={() => setShowQuoteForm(true)}
-                  className="mr-2"
-                  title="Send Quote"
+                  className="ml-2"
+                  title="إرسال عرض سعر"
                 >
-                  <span className="text-lg font-bold">$</span>
+                  <span className="text-lg font-bold">ريال</span>
                 </Button>
               )}
               <Button
                 variant="outline"
                 size="icon"
-                className="mr-2"
+                className="ml-2"
               >
                 <PaperclipIcon className="h-5 w-5" />
               </Button>
