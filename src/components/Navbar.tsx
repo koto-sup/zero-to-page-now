@@ -10,7 +10,8 @@ import {
   MessageSquare, 
   TruckIcon, 
   PackageSearch,
-  BarChart3
+  BarChart3,
+  FileText
 } from "lucide-react";
 import {
   DropdownMenu,
@@ -35,7 +36,7 @@ const Navbar = () => {
                 className="text-moprd-teal mr-2"
                 strokeWidth={2.5}
               />
-              <span className="font-bold text-2xl text-moprd-blue">MOPRD</span>
+              <span className="font-bold text-2xl text-moprd-blue">زكرت</span>
             </div>
           </Link>
         </div>
@@ -46,7 +47,7 @@ const Navbar = () => {
                 <Link to="/find-trucks">
                   <Button variant="ghost" className="flex items-center">
                     <PackageSearch className="mr-2 h-4 w-4" />
-                    Find Trucks
+                    البحث عن شاحنات
                   </Button>
                 </Link>
               )}
@@ -55,7 +56,7 @@ const Navbar = () => {
                 <Link to="/dashboard">
                   <Button variant="ghost" className="flex items-center">
                     <BarChart3 className="mr-2 h-4 w-4" />
-                    Dashboard
+                    لوحة التحكم
                   </Button>
                 </Link>
               )}
@@ -63,7 +64,14 @@ const Navbar = () => {
               <Link to="/chat">
                 <Button variant="ghost" className="flex items-center">
                   <MessageSquare className="mr-2 h-4 w-4" />
-                  Messages
+                  الرسائل
+                </Button>
+              </Link>
+              
+              <Link to="/invoices">
+                <Button variant="ghost" className="flex items-center">
+                  <FileText className="mr-2 h-4 w-4" />
+                  الفواتير
                 </Button>
               </Link>
               
@@ -72,33 +80,33 @@ const Navbar = () => {
                   <Button variant="outline" className="flex items-center">
                     <UserCircle className="mr-2 h-5 w-5" />
                     {user.name}
-                    <ChevronDown className="ml-2 h-4 w-4" />
+                    <ChevronDown className="mr-2 h-4 w-4" />
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end">
-                  <DropdownMenuLabel>My Account</DropdownMenuLabel>
+                  <DropdownMenuLabel>حسابي</DropdownMenuLabel>
                   <DropdownMenuSeparator />
                   <DropdownMenuItem asChild>
                     <Link to="/profile" className="cursor-pointer w-full">
-                      Profile
+                      الملف الشخصي
                     </Link>
                   </DropdownMenuItem>
                   {user.role === "driver" && (
                     <DropdownMenuItem asChild>
                       <Link to="/truck-details" className="cursor-pointer w-full">
-                        Truck Details
+                        تفاصيل الشاحنة
                       </Link>
                     </DropdownMenuItem>
                   )}
                   <DropdownMenuItem asChild>
                     <Link to="/bookings" className="cursor-pointer w-full">
-                      My Bookings
+                      حجوزاتي
                     </Link>
                   </DropdownMenuItem>
                   <DropdownMenuSeparator />
                   <DropdownMenuItem onClick={logout} className="text-red-500 cursor-pointer">
-                    <LogOut className="mr-2 h-4 w-4" />
-                    Logout
+                    <LogOut className="ml-2 h-4 w-4" />
+                    تسجيل الخروج
                   </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
@@ -106,10 +114,10 @@ const Navbar = () => {
           ) : (
             <div className="flex items-center gap-2">
               <Link to="/login">
-                <Button variant="ghost">Login</Button>
+                <Button variant="ghost">تسجيل الدخول</Button>
               </Link>
               <Link to="/register">
-                <Button className="bg-moprd-teal hover:bg-moprd-blue">Register</Button>
+                <Button className="bg-moprd-teal hover:bg-moprd-blue">إنشاء حساب</Button>
               </Link>
             </div>
           )}

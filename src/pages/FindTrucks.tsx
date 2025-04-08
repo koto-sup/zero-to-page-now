@@ -26,9 +26,9 @@ const MOCK_TRUCKS: Truck[] = [
   {
     id: "truck-1",
     driverId: "driver-1",
-    driverName: "John Driver",
-    truckModel: "Refrigerated Truck XL",
-    refrigerationCapacity: "5 tons",
+    driverName: "خالد السائق",
+    truckModel: "شاحنة مبردة XL",
+    refrigerationCapacity: "5 طن",
     rating: 4.8,
     distance: 1.2,
     image: "/placeholder.svg",
@@ -37,9 +37,9 @@ const MOCK_TRUCKS: Truck[] = [
   {
     id: "truck-2",
     driverId: "driver-2",
-    driverName: "Sarah Smith",
-    truckModel: "Cold Transport Pro",
-    refrigerationCapacity: "3 tons",
+    driverName: "محمد السائق",
+    truckModel: "ناقل بارد برو",
+    refrigerationCapacity: "3 طن",
     rating: 4.5,
     distance: 2.4,
     image: "/placeholder.svg",
@@ -48,9 +48,9 @@ const MOCK_TRUCKS: Truck[] = [
   {
     id: "truck-3",
     driverId: "driver-3",
-    driverName: "Mike Johnson",
-    truckModel: "Refrigerator Express",
-    refrigerationCapacity: "7 tons",
+    driverName: "أحمد السائق",
+    truckModel: "إكسبريس ثلاجة",
+    refrigerationCapacity: "7 طن",
     rating: 4.9,
     distance: 3.7,
     image: "/placeholder.svg",
@@ -59,9 +59,9 @@ const MOCK_TRUCKS: Truck[] = [
   {
     id: "truck-4",
     driverId: "driver-4",
-    driverName: "Emily Williams",
-    truckModel: "Chill Carrier",
-    refrigerationCapacity: "4 tons",
+    driverName: "سارة السائق",
+    truckModel: "ناقل مبرد",
+    refrigerationCapacity: "4 طن",
     rating: 4.6,
     distance: 4.1,
     image: "/placeholder.svg",
@@ -82,7 +82,7 @@ const FindTrucks = () => {
     e.preventDefault();
     
     if (!location.trim()) {
-      toast.error("Please enter a location");
+      toast.error("الرجاء إدخال موقع");
       return;
     }
     
@@ -108,9 +108,9 @@ const FindTrucks = () => {
   return (
     <div className="container mx-auto px-4 py-8">
       <div className="mb-8">
-        <h1 className="text-3xl font-bold mb-4">Find Refrigerated Trucks</h1>
+        <h1 className="text-3xl font-bold mb-4">البحث عن شاحنات مبردة</h1>
         <p className="text-gray-600">
-          Search for available refrigerated trucks in your area
+          ابحث عن الشاحنات المبردة المتاحة في منطقتك
         </p>
       </div>
 
@@ -118,11 +118,11 @@ const FindTrucks = () => {
         <CardContent className="pt-6">
           <form onSubmit={handleSearch} className="flex flex-col md:flex-row gap-4">
             <div className="flex-1">
-              <Label htmlFor="location" className="mb-2 block">Search Location</Label>
+              <Label htmlFor="location" className="mb-2 block">البحث عن موقع</Label>
               <div className="relative">
                 <Input
                   id="location"
-                  placeholder="Enter city, zip code or address"
+                  placeholder="أدخل المدينة أو الرمز البريدي أو العنوان"
                   value={location}
                   onChange={(e) => setLocation(e.target.value)}
                   className="pl-10"
@@ -138,11 +138,11 @@ const FindTrucks = () => {
               >
                 {isSearching ? (
                   <>
-                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                    Searching...
+                    <Loader2 className="ml-2 h-4 w-4 animate-spin" />
+                    جاري البحث...
                   </>
                 ) : (
-                  "Search"
+                  "بحث"
                 )}
               </Button>
             </div>
@@ -153,7 +153,7 @@ const FindTrucks = () => {
       {isLoaded && (
         <>
           <h2 className="text-2xl font-semibold mb-4">
-            {trucks.length} Trucks Found
+            تم العثور على {trucks.length} شاحنة
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
             {trucks.map((truck) => (
@@ -176,8 +176,8 @@ const FindTrucks = () => {
 
       {isLoaded && trucks.length === 0 && (
         <div className="text-center py-12">
-          <p className="text-xl text-gray-500">No trucks found in this area.</p>
-          <p className="text-gray-500 mt-2">Try expanding your search radius.</p>
+          <p className="text-xl text-gray-500">لم يتم العثور على شاحنات في هذه المنطقة.</p>
+          <p className="text-gray-500 mt-2">حاول توسيع نطاق البحث الخاص بك.</p>
         </div>
       )}
     </div>
