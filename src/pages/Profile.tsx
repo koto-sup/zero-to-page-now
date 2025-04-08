@@ -1,90 +1,79 @@
 
 import React, { useState } from "react";
+import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
 import { useAuth } from "@/contexts/AuthContext";
-import { toast } from "sonner";
 
 const Profile = () => {
   const { user } = useAuth();
-  const [formData, setFormData] = useState({
-    name: user?.name || "",
-    email: user?.email || "",
-    phone: user?.phone || "",
-    address: user?.address || "",
-  });
-
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
-    setFormData(prev => ({ ...prev, [name]: value }));
-  };
-
+  
+  const [name, setName] = useState(user?.name || "");
+  const [email, setEmail] = useState(user?.email || "");
+  // Create optional state values for phone and address
+  const [phone, setPhone] = useState("");
+  const [address, setAddress] = useState("");
+  
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    // In a real application, this would send data to an API
-    toast.success("تم تحديث الملف الشخصي بنجاح");
+    // Handle profile update logic
+    console.log("Profile updated:", { name, email, phone, address });
   };
-
+  
   return (
-    <div className="container mx-auto px-4 py-8">
-      <Card className="max-w-2xl mx-auto">
+    <div className="container mx-auto py-8">
+      <Card>
         <CardHeader>
-          <CardTitle className="text-center">الملف الشخصي</CardTitle>
+          <CardTitle>الملف الشخصي</CardTitle>
+          <CardDescription>قم بتحديث معلومات ملفك الشخصي</CardDescription>
         </CardHeader>
-        <CardContent>
-          <form onSubmit={handleSubmit} className="space-y-4">
+        <form onSubmit={handleSubmit}>
+          <CardContent className="space-y-4">
             <div className="space-y-2">
               <Label htmlFor="name">الاسم</Label>
-              <Input
+              <Input 
                 id="name"
-                name="name"
-                value={formData.name}
-                onChange={handleChange}
-                placeholder="اسمك الكامل"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
               />
             </div>
-            
             <div className="space-y-2">
               <Label htmlFor="email">البريد الإلكتروني</Label>
-              <Input
+              <Input 
                 id="email"
-                name="email"
                 type="email"
-                value={formData.email}
-                onChange={handleChange}
-                placeholder="بريدك الإلكتروني"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                disabled
               />
             </div>
-            
             <div className="space-y-2">
               <Label htmlFor="phone">رقم الهاتف</Label>
-              <Input
+              <Input 
                 id="phone"
-                name="phone"
-                value={formData.phone}
-                onChange={handleChange}
-                placeholder="رقم هاتفك"
+                value={phone}
+                onChange={(e) => setPhone(e.target.value)}
+                placeholder="أدخل رقم هاتفك"
               />
             </div>
-            
             <div className="space-y-2">
               <Label htmlFor="address">العنوان</Label>
-              <Input
+              <Textarea 
                 id="address"
-                name="address"
-                value={formData.address}
-                onChange={handleChange}
-                placeholder="عنوانك الكامل"
+                value={address}
+                onChange={(e) => setAddress(e.target.value)}
+                placeholder="أدخل عنوانك"
               />
             </div>
-            
-            <Button type="submit" className="w-full bg-moprd-teal hover:bg-moprd-blue">
-              تحديث الملف الشخصي
+          </CardContent>
+          <CardFooter>
+            <Button type="submit" className="bg-moprd-teal hover:bg-moprd-blue">
+              حفظ التغييرات
             </Button>
-          </form>
-        </CardContent>
+          </CardFooter>
+        </form>
       </Card>
     </div>
   );
