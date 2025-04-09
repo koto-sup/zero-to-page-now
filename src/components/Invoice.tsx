@@ -14,6 +14,8 @@ interface InvoiceProps {
   dropoffLocation: string;
   date: Date;
   amount: number;
+  serviceFee?: number;
+  subtotal?: number;
   taxAmount: number;
   totalAmount: number;
   items: {
@@ -34,6 +36,8 @@ const Invoice: React.FC<InvoiceProps> = ({
   dropoffLocation,
   date,
   amount,
+  serviceFee = 0,
+  subtotal = 0,
   taxAmount,
   totalAmount,
   items,
@@ -46,6 +50,8 @@ const Invoice: React.FC<InvoiceProps> = ({
     // In a real app, this would generate a PDF
     console.log("Downloading invoice as PDF");
   };
+
+  const actualSubtotal = subtotal || amount + serviceFee;
 
   return (
     <Card className="invoice-card max-w-4xl mx-auto my-8 print:shadow-none">
@@ -107,8 +113,8 @@ const Invoice: React.FC<InvoiceProps> = ({
               <tr key={index} className="border-b">
                 <td className="py-2 px-4">{item.description}</td>
                 <td className="py-2 px-4">{item.quantity}</td>
-                <td className="py-2 px-4">{item.unitPrice} ريال</td>
-                <td className="py-2 px-4">{item.total} ريال</td>
+                <td className="py-2 px-4">{item.unitPrice.toFixed(2)} ريال</td>
+                <td className="py-2 px-4">{item.total.toFixed(2)} ريال</td>
               </tr>
             ))}
           </tbody>
@@ -117,16 +123,24 @@ const Invoice: React.FC<InvoiceProps> = ({
         <div className="flex justify-end mb-8">
           <div className="w-64">
             <div className="flex justify-between py-2">
+              <span>خدمة النقل:</span>
+              <span>{amount.toFixed(2)} ريال</span>
+            </div>
+            <div className="flex justify-between py-2">
+              <span>رسوم تشغيلية (7%):</span>
+              <span>{serviceFee.toFixed(2)} ريال</span>
+            </div>
+            <div className="flex justify-between py-2 border-t border-gray-200 mt-2 pt-2">
               <span>المجموع الفرعي:</span>
-              <span>{amount} ريال</span>
+              <span>{actualSubtotal.toFixed(2)} ريال</span>
             </div>
             <div className="flex justify-between py-2">
               <span>الضريبة (15%):</span>
-              <span>{taxAmount} ريال</span>
+              <span>{taxAmount.toFixed(2)} ريال</span>
             </div>
             <div className="flex justify-between py-2 font-bold border-t border-gray-300 mt-2 pt-2">
               <span>الإجمالي:</span>
-              <span>{totalAmount} ريال</span>
+              <span>{totalAmount.toFixed(2)} ريال</span>
             </div>
           </div>
         </div>

@@ -44,6 +44,7 @@ const ChatBox: React.FC<ChatBoxProps> = ({
   const [newMessage, setNewMessage] = useState("");
   const [showQuoteForm, setShowQuoteForm] = useState(false);
   const [quoteAmount, setQuoteAmount] = useState<string>("");
+  const [showPaymentOptions, setShowPaymentOptions] = useState<string | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -93,15 +94,33 @@ const ChatBox: React.FC<ChatBoxProps> = ({
     }
   };
 
-  const handleAcceptQuote = (messageId: string) => {
+  const handleShowPaymentOptions = (messageId: string) => {
+    setShowPaymentOptions(messageId);
+  };
+
+  const handlePaymentMethod = (messageId: string, method: 'cash' | 'card') => {
+    // Update the message to show it's accepted
     setMessages(prev => 
       prev.map(msg => 
-        msg.id === messageId ? { ...msg, isAccepted: true } : msg
+        msg.id === messageId ? { 
+          ...msg, 
+          isAccepted: true,
+          content: method === 'cash' ? 
+            msg.content + " (تم اختيار الدفع نقداً)" : 
+            msg.content + " (تم اختيار الدفع بالبطاقة)" 
+        } : msg
       )
     );
     
+    setShowPaymentOptions(null);
+    
     if (onAcceptQuote) {
       onAcceptQuote(messageId);
+    }
+    
+    if (method === 'card') {
+      // Navigate to payment page or show payment form
+      window.location.href = `/invoice-details/${Date.now()}`;
     }
   };
 
@@ -154,14 +173,36 @@ const ChatBox: React.FC<ChatBoxProps> = ({
                           السعر: {message.quoteAmount?.toFixed(2)} ريال
                         </Badge>
                         
-                        {!isOwnMessage && !message.isAccepted && (
+                        {!isOwnMessage && !message.isAccepted && showPaymentOptions !== message.id && (
                           <Button
                             size="sm"
-                            onClick={() => handleAcceptQuote(message.id)}
+                            onClick={() => handleShowPaymentOptions(message.id)}
                             className="mt-2 bg-green-600 hover:bg-green-700"
                           >
                             قبول العرض
                           </Button>
+                        )}
+                        
+                        {showPaymentOptions === message.id && (
+                          <div className="mt-2 flex flex-col space-y-2">
+                            <div className="text-sm font-medium mb-1">طريقة الدفع:</div>
+                            <div className="flex space-x-2">
+                              <Button 
+                                size="sm"
+                                onClick={() => handlePaymentMethod(message.id, 'card')}
+                                className="bg-blue-600 hover:bg-blue-700 ml-2"
+                              >
+                                بطاقة ائتمان
+                              </Button>
+                              <Button
+                                size="sm"
+                                variant="outline"
+                                onClick={() => handlePaymentMethod(message.id, 'cash')}
+                              >
+                                نقداً للسائق
+                              </Button>
+                            </div>
+                          </div>
                         )}
                         
                         {message.isAccepted && (
@@ -229,9 +270,8 @@ const ChatBox: React.FC<ChatBoxProps> = ({
               value={newMessage}
               onChange={(e) => setNewMessage(e.target.value)}
               placeholder="اكتب رسالة..."
-              className="flex-1 resize-none"
+              className="flex-1 resize-none bg-white border border-gray-300 text-black"
               rows={1}
-              dir="rtl"
             />
             <div className="mr-3 flex">
               {user?.role === "driver" && (

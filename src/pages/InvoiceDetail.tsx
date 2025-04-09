@@ -18,6 +18,12 @@ const InvoiceDetail = () => {
     // Simulate loading invoice from API
     setTimeout(() => {
       // Mock data for the selected invoice
+      const tripAmount = 350;
+      const serviceFee = Math.round(tripAmount * 0.07 * 100) / 100; // 7% service fee
+      const subtotal = tripAmount + serviceFee;
+      const taxAmount = Math.round(subtotal * 0.15 * 100) / 100; // 15% VAT
+      const totalAmount = subtotal + taxAmount;
+      
       const mockInvoice = {
         invoiceId: id,
         customerId: "cust-123",
@@ -27,17 +33,25 @@ const InvoiceDetail = () => {
         pickupLocation: "الرياض، حي النرجس",
         dropoffLocation: "جدة، حي الشاطئ",
         date: new Date(),
-        amount: 350,
-        taxAmount: 52.5,
-        totalAmount: 402.5,
+        amount: tripAmount,
+        serviceFee: serviceFee,
+        subtotal: subtotal,
+        taxAmount: taxAmount,
+        totalAmount: totalAmount,
         isPaid: false,
         items: [
           {
             description: "نقل بضائع مبردة (15 كم)",
             quantity: 1,
-            unitPrice: 350,
-            total: 350,
+            unitPrice: tripAmount,
+            total: tripAmount,
           },
+          {
+            description: "رسوم تشغيلية (7%)",
+            quantity: 1,
+            unitPrice: serviceFee,
+            total: serviceFee,
+          }
         ],
       };
       
@@ -74,7 +88,7 @@ const InvoiceDetail = () => {
   }
 
   return (
-    <div className="container mx-auto px-4 py-8">
+    <div className="container mx-auto px-4 py-8 pb-24">
       <div className="mb-6">
         <Button
           variant="ghost"
@@ -108,6 +122,8 @@ const InvoiceDetail = () => {
             dropoffLocation={invoiceData.dropoffLocation}
             date={invoiceData.date}
             amount={invoiceData.amount}
+            serviceFee={invoiceData.serviceFee}
+            subtotal={invoiceData.subtotal}
             taxAmount={invoiceData.taxAmount}
             totalAmount={invoiceData.totalAmount}
             items={invoiceData.items}

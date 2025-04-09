@@ -3,7 +3,7 @@ import React from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Truck, Star, Clock, CheckCircle } from "lucide-react";
+import { Truck, Star, Clock, CheckCircle, ChevronLeft } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 
@@ -37,19 +37,36 @@ const TruckOffersList: React.FC<TruckOffersListProps> = ({
 
   const handleAcceptOffer = (offerId: string, driverId: string) => {
     toast.success("تم قبول العرض بنجاح", {
-      description: "سوف يتواصل السائق معك قريباً",
+      description: "سوف يتم تحويلك إلى صفحة الدفع",
       action: {
-        label: "مشاهدة المحادثة",
-        onClick: () => navigate(`/chat/${driverId}`)
+        label: "إلغاء",
+        onClick: () => console.log("Canceled payment")
       }
     });
-    onAcceptOffer(offerId);
+    
+    // Navigate to invoice details page to handle payment
+    navigate(`/invoice-details/${Date.now()}`);
+  };
+
+  const handleGoBack = () => {
+    navigate(-1);
   };
 
   return (
     <Card>
       <CardHeader>
-        <CardTitle className="text-xl">العروض المقدمة</CardTitle>
+        <div className="flex items-center justify-between">
+          <Button 
+            variant="ghost" 
+            size="sm" 
+            onClick={handleGoBack}
+            className="ml-2"
+          >
+            <ChevronLeft className="h-4 w-4 ml-1" />
+            رجوع
+          </Button>
+          <CardTitle className="text-xl">العروض المقدمة</CardTitle>
+        </div>
       </CardHeader>
       <CardContent>
         <div className="mb-4 p-4 bg-moprd-teal/10 rounded-md">
@@ -74,17 +91,17 @@ const TruckOffersList: React.FC<TruckOffersListProps> = ({
                 className="flex flex-col md:flex-row md:items-center justify-between p-4 border rounded-lg"
               >
                 <div className="flex items-center mb-3 md:mb-0">
-                  <div className="bg-moprd-light/20 p-2 rounded-full mr-3">
+                  <div className="bg-moprd-light/20 p-2 rounded-full ml-3">
                     <Truck className="h-8 w-8 text-moprd-blue" />
                   </div>
                   <div>
                     <h3 className="font-medium text-lg">{offer.driverName}</h3>
-                    <div className="flex items-center space-x-3 mr-3 text-sm text-gray-600">
+                    <div className="flex items-center space-x-3 ml-3 text-sm text-gray-600">
                       <div className="flex items-center">
                         <Star className="ml-1 h-4 w-4 text-yellow-500 fill-yellow-500" />
                         <span>{offer.rating.toFixed(1)}</span>
                       </div>
-                      <div className="flex items-center mr-3">
+                      <div className="flex items-center ml-3">
                         <Clock className="ml-1 h-4 w-4 text-moprd-teal" />
                         <span>{offer.estimatedArrival}</span>
                       </div>
@@ -104,7 +121,7 @@ const TruckOffersList: React.FC<TruckOffersListProps> = ({
                   </Badge>
                   
                   <Button 
-                    className="bg-moprd-teal hover:bg-moprd-blue w-full md:w-auto"
+                    className="bg-moprd-teal hover:bg-moprd-blue w-full md:w-auto mr-2"
                     onClick={() => handleAcceptOffer(offer.id, offer.driverId)}
                   >
                     <CheckCircle className="ml-2 h-4 w-4" />

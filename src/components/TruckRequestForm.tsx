@@ -5,7 +5,8 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { MapPin, Clock, Truck, Loader2 } from "lucide-react";
+import { MapPin, Clock, Truck, Loader2, ChevronLeft } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 import TruckMap from "@/components/TruckMap";
 
 interface TruckRequestFormProps {
@@ -18,6 +19,7 @@ interface TruckRequestFormProps {
 }
 
 const TruckRequestForm: React.FC<TruckRequestFormProps> = ({ onRequestSubmitted }) => {
+  const navigate = useNavigate();
   const [startLocation, setStartLocation] = useState("");
   const [destination, setDestination] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -72,10 +74,25 @@ const TruckRequestForm: React.FC<TruckRequestFormProps> = ({ onRequestSubmitted 
     }, 1500);
   };
 
+  const handleGoBack = () => {
+    navigate(-1);
+  };
+
   return (
     <Card className="mb-8">
       <CardHeader className="pb-2">
-        <CardTitle className="text-xl">طلب شاحنة مبردة</CardTitle>
+        <div className="flex items-center justify-between">
+          <Button 
+            variant="ghost" 
+            size="sm" 
+            onClick={handleGoBack}
+            className="ml-2"
+          >
+            <ChevronLeft className="h-4 w-4 ml-1" />
+            رجوع
+          </Button>
+          <CardTitle className="text-xl">طلب شاحنة مبردة</CardTitle>
+        </div>
       </CardHeader>
       <CardContent>
         <div className="h-[300px] w-full relative rounded-md overflow-hidden mb-6">

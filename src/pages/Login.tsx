@@ -8,7 +8,7 @@ import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { useAuth, UserRole } from "@/contexts/AuthContext";
 import { toast } from "sonner";
-import { Truck, User } from "lucide-react";
+import { Truck, User, ArrowRight } from "lucide-react";
 
 const Login = () => {
   const navigate = useNavigate();
@@ -24,15 +24,15 @@ const Login = () => {
     let isValid = true;
     
     if (!email) {
-      newErrors.email = "Email is required";
+      newErrors.email = "البريد الإلكتروني مطلوب";
       isValid = false;
     } else if (!/\S+@\S+\.\S+/.test(email)) {
-      newErrors.email = "Email is not valid";
+      newErrors.email = "البريد الإلكتروني غير صحيح";
       isValid = false;
     }
     
     if (!password) {
-      newErrors.password = "Password is required";
+      newErrors.password = "كلمة المرور مطلوبة";
       isValid = false;
     }
     
@@ -55,18 +55,33 @@ const Login = () => {
   };
   
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 p-4">
-      <Card className="w-full max-w-md">
+    <div className="min-h-screen flex items-center justify-center p-4 relative overflow-hidden">
+      {/* Video Background */}
+      <div className="absolute inset-0 z-0">
+        <video
+          className="w-full h-full object-cover opacity-40"
+          autoPlay
+          muted
+          loop
+          playsInline
+          src="https://player.vimeo.com/external/373839498.sd.mp4?s=a93f4587a90551d713bc04abe5bca7af5f251082&profile_id=164&oauth2_token_id=57447761"
+        >
+          <source src="https://player.vimeo.com/external/373839498.sd.mp4?s=a93f4587a90551d713bc04abe5bca7af5f251082&profile_id=164&oauth2_token_id=57447761" type="video/mp4" />
+        </video>
+        <div className="absolute inset-0 bg-gradient-to-t from-moprd-blue/80 to-moprd-teal/60"></div>
+      </div>
+      
+      <Card className="w-full max-w-md z-10 shadow-2xl bg-white/90 backdrop-blur">
         <CardHeader className="text-center">
-          <CardTitle className="text-2xl">Login to MOPRD</CardTitle>
+          <CardTitle className="text-2xl">تسجيل الدخول إلى زكرت</CardTitle>
           <CardDescription>
-            Enter your credentials to access your account
+            أدخل بيانات الاعتماد للوصول إلى حسابك
           </CardDescription>
         </CardHeader>
         <form onSubmit={handleSubmit}>
           <CardContent className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="email">Email</Label>
+              <Label htmlFor="email">البريد الإلكتروني</Label>
               <Input
                 id="email"
                 type="email"
@@ -79,7 +94,7 @@ const Login = () => {
               )}
             </div>
             <div className="space-y-2">
-              <Label htmlFor="password">Password</Label>
+              <Label htmlFor="password">كلمة المرور</Label>
               <Input
                 id="password"
                 type="password"
@@ -92,20 +107,20 @@ const Login = () => {
               )}
             </div>
             <div className="space-y-2">
-              <Label>Account Type</Label>
+              <Label>نوع الحساب</Label>
               <RadioGroup value={role} onValueChange={(value) => setRole(value as UserRole)} className="flex flex-col space-y-1">
                 <div className="flex items-center space-x-2">
                   <RadioGroupItem value="customer" id="customer" />
-                  <Label htmlFor="customer" className="flex items-center cursor-pointer">
-                    <User className="h-4 w-4 mr-2" />
-                    Customer
+                  <Label htmlFor="customer" className="flex items-center cursor-pointer mr-2">
+                    <User className="h-4 w-4 ml-2" />
+                    عميل
                   </Label>
                 </div>
                 <div className="flex items-center space-x-2">
                   <RadioGroupItem value="driver" id="driver" />
-                  <Label htmlFor="driver" className="flex items-center cursor-pointer">
-                    <Truck className="h-4 w-4 mr-2" />
-                    Truck Driver
+                  <Label htmlFor="driver" className="flex items-center cursor-pointer mr-2">
+                    <Truck className="h-4 w-4 ml-2" />
+                    سائق شاحنة
                   </Label>
                 </div>
               </RadioGroup>
@@ -117,13 +132,13 @@ const Login = () => {
               className="w-full bg-moprd-teal hover:bg-moprd-blue"
               disabled={isLoading}
             >
-              {isLoading ? "Logging in..." : "Login"}
+              {isLoading ? "جاري تسجيل الدخول..." : "تسجيل الدخول"}
             </Button>
             <div className="mt-4 text-center">
               <p className="text-sm text-muted-foreground">
-                Don't have an account?{" "}
+                ليس لديك حساب؟{" "}
                 <Link to="/register" className="text-moprd-teal hover:underline font-medium">
-                  Register
+                  إنشاء حساب جديد
                 </Link>
               </p>
             </div>
