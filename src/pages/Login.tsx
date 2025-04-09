@@ -8,7 +8,7 @@ import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useAuth, UserRole } from "@/contexts/AuthContext";
 import { toast } from "sonner";
-import { Truck, User, ArrowRight, Key, Lock, Google, Mail } from "lucide-react";
+import { Truck, User, ArrowRight, Key, Lock, Mail, Globe } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
 
 const Login = () => {
@@ -122,7 +122,7 @@ const Login = () => {
           <TabsContent value="auth">
             <div className="space-y-4 p-4">
               <Button variant="outline" className="w-full flex items-center justify-center gap-2" onClick={handleGoogleLogin}>
-                <Google className="h-5 w-5" />
+                <Globe className="h-5 w-5" />
                 <span>تسجيل الدخول باستخدام Google</span>
               </Button>
               <Button variant="outline" className="w-full flex items-center justify-center gap-2" onClick={handleMicrosoftLogin}>
