@@ -14,6 +14,7 @@ const iceButtonVariants = cva(
         outline: "border-2 border-sky-400 bg-white hover:bg-sky-50 text-sky-600",
         secondary: "bg-gradient-to-b from-cyan-300 to-cyan-500 text-white hover:from-cyan-400 hover:to-cyan-600",
         ghost: "bg-transparent hover:bg-sky-100 text-sky-600",
+        link: "text-sky-600 hover:text-sky-700 underline-offset-4 hover:underline bg-transparent",
       },
       size: {
         default: "h-12 px-6 py-3 text-base",
