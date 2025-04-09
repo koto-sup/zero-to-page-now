@@ -5,10 +5,11 @@ import { Button } from "@/components/ui/button";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useAuth, UserRole } from "@/contexts/AuthContext";
 import { toast } from "sonner";
-import { Truck, User, ArrowRight } from "lucide-react";
+import { Truck, User, ArrowRight, Key, Lock, Google, Mail } from "lucide-react";
+import { Separator } from "@/components/ui/separator";
 
 const Login = () => {
   const navigate = useNavigate();
@@ -53,6 +54,14 @@ const Login = () => {
       // Error is already handled in the auth context with toast
     }
   };
+
+  const handleGoogleLogin = () => {
+    toast.info("سيتم تنفيذ تسجيل الدخول عبر Google قريباً");
+  };
+
+  const handleMicrosoftLogin = () => {
+    toast.info("سيتم تنفيذ تسجيل الدخول عبر Microsoft قريباً");
+  };
   
   return (
     <div className="min-h-screen flex items-center justify-center p-4 relative overflow-hidden">
@@ -78,13 +87,66 @@ const Login = () => {
             أدخل بيانات الاعتماد للوصول إلى حسابك
           </CardDescription>
         </CardHeader>
-        <form onSubmit={handleSubmit}>
-          <CardContent className="space-y-4">
+
+        <Tabs defaultValue="role" className="w-full">
+          <TabsList className="grid grid-cols-2 mx-4">
+            <TabsTrigger value="role" className="flex items-center justify-center">حساب</TabsTrigger>
+            <TabsTrigger value="auth" className="flex items-center justify-center">مصادقة</TabsTrigger>
+          </TabsList>
+          
+          <TabsContent value="role">
+            <div className="grid grid-cols-2 gap-4 p-4">
+              <Button
+                variant={role === "customer" ? "default" : "outline"}
+                className={`h-32 flex flex-col items-center justify-center ${
+                  role === "customer" ? "bg-moprd-teal hover:bg-moprd-blue" : ""
+                }`}
+                onClick={() => setRole("customer")}
+              >
+                <User className="h-10 w-10 mb-2" />
+                <span>عميل</span>
+              </Button>
+              <Button
+                variant={role === "driver" ? "default" : "outline"}
+                className={`h-32 flex flex-col items-center justify-center ${
+                  role === "driver" ? "bg-moprd-teal hover:bg-moprd-blue" : ""
+                }`}
+                onClick={() => setRole("driver")}
+              >
+                <Truck className="h-10 w-10 mb-2" />
+                <span>سائق شاحنة</span>
+              </Button>
+            </div>
+          </TabsContent>
+
+          <TabsContent value="auth">
+            <div className="space-y-4 p-4">
+              <Button variant="outline" className="w-full flex items-center justify-center gap-2" onClick={handleGoogleLogin}>
+                <Google className="h-5 w-5" />
+                <span>تسجيل الدخول باستخدام Google</span>
+              </Button>
+              <Button variant="outline" className="w-full flex items-center justify-center gap-2" onClick={handleMicrosoftLogin}>
+                <svg className="h-5 w-5" viewBox="0 0 23 23" xmlns="http://www.w3.org/2000/svg">
+                  <path fill="#f3f3f3" d="M0 0h23v23H0z" />
+                  <path fill="#f35325" d="M1 1h10v10H1z" />
+                  <path fill="#81bc06" d="M12 1h10v10H12z" />
+                  <path fill="#05a6f0" d="M1 12h10v10H1z" />
+                  <path fill="#ffba08" d="M12 12h10v10H12z" />
+                </svg>
+                <span>تسجيل الدخول باستخدام Microsoft</span>
+              </Button>
+            </div>
+          </TabsContent>
+        </Tabs>
+
+        <CardContent className="space-y-4 p-6">
+          <form onSubmit={handleSubmit} className="space-y-4">
             <div className="space-y-2">
               <Label htmlFor="email">البريد الإلكتروني</Label>
               <Input
                 id="email"
                 type="email"
+                dir="ltr"
                 placeholder="your@email.com"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
@@ -98,6 +160,7 @@ const Login = () => {
               <Input
                 id="password"
                 type="password"
+                dir="ltr"
                 placeholder="••••••••"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
@@ -106,27 +169,13 @@ const Login = () => {
                 <p className="text-sm text-red-500">{errors.password}</p>
               )}
             </div>
-            <div className="space-y-2">
-              <Label>نوع الحساب</Label>
-              <RadioGroup value={role} onValueChange={(value) => setRole(value as UserRole)} className="flex flex-col space-y-1">
-                <div className="flex items-center space-x-2">
-                  <RadioGroupItem value="customer" id="customer" />
-                  <Label htmlFor="customer" className="flex items-center cursor-pointer mr-2">
-                    <User className="h-4 w-4 ml-2" />
-                    عميل
-                  </Label>
-                </div>
-                <div className="flex items-center space-x-2">
-                  <RadioGroupItem value="driver" id="driver" />
-                  <Label htmlFor="driver" className="flex items-center cursor-pointer mr-2">
-                    <Truck className="h-4 w-4 ml-2" />
-                    سائق شاحنة
-                  </Label>
-                </div>
-              </RadioGroup>
+            
+            <div className="text-left">
+              <Link to="/forgot-password" className="text-sm text-moprd-teal hover:underline">
+                نسيت كلمة المرور؟
+              </Link>
             </div>
-          </CardContent>
-          <CardFooter className="flex flex-col">
+
             <Button 
               type="submit"
               className="w-full bg-moprd-teal hover:bg-moprd-blue"
@@ -134,16 +183,20 @@ const Login = () => {
             >
               {isLoading ? "جاري تسجيل الدخول..." : "تسجيل الدخول"}
             </Button>
-            <div className="mt-4 text-center">
-              <p className="text-sm text-muted-foreground">
-                ليس لديك حساب؟{" "}
-                <Link to="/register" className="text-moprd-teal hover:underline font-medium">
-                  إنشاء حساب جديد
-                </Link>
-              </p>
-            </div>
-          </CardFooter>
-        </form>
+          </form>
+
+          <Separator className="my-4" />
+        </CardContent>
+        <CardFooter className="flex flex-col">
+          <div className="text-center">
+            <p className="text-sm text-muted-foreground">
+              ليس لديك حساب؟{" "}
+              <Link to="/register" className="text-moprd-teal hover:underline font-medium">
+                إنشاء حساب جديد
+              </Link>
+            </p>
+          </div>
+        </CardFooter>
       </Card>
     </div>
   );

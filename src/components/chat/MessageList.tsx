@@ -39,8 +39,19 @@ const MessageList: React.FC<MessageListProps> = ({
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   };
 
+  if (messages.length === 0) {
+    return (
+      <div className="flex flex-col items-center justify-center h-full bg-gray-50 p-4">
+        <div className="text-center">
+          <p className="text-muted-foreground mb-2">لا توجد رسائل بعد</p>
+          <p className="text-sm text-muted-foreground">ابدأ محادثة جديدة الآن</p>
+        </div>
+      </div>
+    );
+  }
+
   return (
-    <div className="flex-1 overflow-y-auto p-4 space-y-4">
+    <div className="flex-1 overflow-y-auto p-4 space-y-4 bg-gray-50">
       {messages.map((message) => (
         <Message
           key={message.id}
