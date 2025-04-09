@@ -1,133 +1,137 @@
 
 import React, { useState } from "react";
-import { useNavigate, Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
+import { IceButton } from "@/components/ui/ice-button";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { ArrowLeft, Mail, CheckCircle } from "lucide-react";
 import { toast } from "sonner";
+import { ArrowRight, Mail, RefreshCw } from "lucide-react";
 
 const ForgotPassword = () => {
   const navigate = useNavigate();
   const [email, setEmail] = useState("");
   const [isSubmitted, setIsSubmitted] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
-  
-  const validateForm = () => {
-    if (!email) {
-      setError("البريد الإلكتروني مطلوب");
-      return false;
-    } else if (!/\S+@\S+\.\S+/.test(email)) {
-      setError("البريد الإلكتروني غير صحيح");
-      return false;
-    }
-    setError("");
-    return true;
-  };
-  
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (!validateForm()) return;
+    // Simple email validation
+    if (!email || !/\S+@\S+\.\S+/.test(email)) {
+      setError("يرجى إدخال عنوان بريد إلكتروني صالح");
+      return;
+    }
+    
+    setIsLoading(true);
+    setError("");
     
     try {
-      // In a real app, call API to send password reset email
-      // For demo, we'll just simulate success
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      // Simulate API call to request password reset
+      await new Promise((resolve) => setTimeout(resolve, 1500));
+      
+      // In a real app, this would call an API endpoint
+      // For now we'll just simulate success
+      toast.success("تم إرسال رابط إعادة تعيين كلمة المرور", {
+        description: "يرجى التحقق من بريدك الإلكتروني للحصول على تعليمات إعادة التعيين"
+      });
+      
       setIsSubmitted(true);
-      toast.success("تم إرسال رابط إعادة تعيين كلمة المرور إلى بريدك الإلكتروني");
     } catch (error) {
-      console.error("Password reset request failed:", error);
-      toast.error("فشل طلب إعادة تعيين كلمة المرور. يرجى المحاولة مرة أخرى.");
+      setError("حدث خطأ أثناء إرسال طلب إعادة تعيين كلمة المرور. يرجى المحاولة مرة أخرى.");
+      toast.error("فشل إرسال رابط إعادة تعيين كلمة المرور");
+    } finally {
+      setIsLoading(false);
     }
   };
-  
+
   return (
-    <div className="min-h-screen flex items-center justify-center p-4 relative overflow-hidden">
-      {/* Video Background */}
-      <div className="absolute inset-0 z-0">
-        <video
-          className="w-full h-full object-cover opacity-40"
-          autoPlay
-          muted
-          loop
-          playsInline
-          src="https://player.vimeo.com/external/373839498.sd.mp4?s=a93f4587a90551d713bc04abe5bca7af5f251082&profile_id=164&oauth2_token_id=57447761"
-        >
-          <source src="https://player.vimeo.com/external/373839498.sd.mp4?s=a93f4587a90551d713bc04abe5bca7af5f251082&profile_id=164&oauth2_token_id=57447761" type="video/mp4" />
-        </video>
-        <div className="absolute inset-0 bg-gradient-to-t from-moprd-blue/80 to-moprd-teal/60"></div>
+    <div className="min-h-screen flex items-center justify-center p-4">
+      <div className="absolute inset-0 -z-10">
+        <div className="absolute inset-0 bg-gradient-to-b from-moprd-teal/10 to-moprd-blue/20"></div>
+        <div className="frost-overlay"></div>
       </div>
       
-      <Card className="w-full max-w-md z-10 shadow-2xl bg-white/90 backdrop-blur">
+      <Card className="w-full max-w-md ice-card">
         <CardHeader className="text-center">
-          <Button
-            variant="ghost"
-            size="icon"
-            className="absolute left-4 top-4"
-            onClick={() => navigate("/login")}
-          >
-            <ArrowLeft className="h-5 w-5" />
-          </Button>
           <CardTitle className="text-2xl">استعادة كلمة المرور</CardTitle>
           <CardDescription>
-            أدخل بريدك الإلكتروني لاستلام رابط إعادة تعيين كلمة المرور
+            أدخل بريدك الإلكتروني لإرسال رابط إعادة تعيين كلمة المرور
           </CardDescription>
         </CardHeader>
-        <CardContent className="space-y-4 p-6">
+        
+        <CardContent>
           {!isSubmitted ? (
             <form onSubmit={handleSubmit} className="space-y-4">
               <div className="space-y-2">
                 <Label htmlFor="email">البريد الإلكتروني</Label>
-                <Input
-                  id="email"
-                  type="email"
-                  dir="ltr"
-                  placeholder="your@email.com"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                />
-                {error && (
-                  <p className="text-sm text-red-500">{error}</p>
-                )}
+                <div className="relative">
+                  <Mail className="absolute right-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+                  <Input
+                    id="email"
+                    type="email"
+                    placeholder="your@email.com"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    className="pr-10 ice-input"
+                    dir="ltr"
+                  />
+                </div>
+                {error && <p className="text-sm text-red-500">{error}</p>}
               </div>
               
-              <Button 
+              <IceButton
                 type="submit"
-                className="w-full bg-moprd-teal hover:bg-moprd-blue"
+                className="w-full"
+                disabled={isLoading}
               >
-                إرسال رابط إعادة التعيين
-              </Button>
+                {isLoading ? (
+                  <>
+                    <RefreshCw className="ml-2 h-4 w-4 animate-spin" />
+                    جاري الإرسال...
+                  </>
+                ) : (
+                  "إرسال رابط إعادة التعيين"
+                )}
+              </IceButton>
             </form>
           ) : (
-            <div className="flex flex-col items-center justify-center py-8">
-              <div className="bg-green-100 rounded-full p-3 mb-4">
-                <CheckCircle className="h-10 w-10 text-green-600" />
+            <div className="text-center py-6">
+              <div className="mx-auto w-12 h-12 bg-green-100 rounded-full flex items-center justify-center mb-4">
+                <Mail className="h-6 w-6 text-green-600" />
               </div>
-              <h3 className="text-xl font-medium mb-2">تم إرسال الرابط</h3>
-              <p className="text-center text-muted-foreground mb-4">
-                تم إرسال رابط إعادة تعيين كلمة المرور إلى بريدك الإلكتروني {email}.
+              <h3 className="text-lg font-medium mb-2">تم إرسال البريد الإلكتروني</h3>
+              <p className="text-gray-500 mb-6">
+                لقد أرسلنا رابط إعادة تعيين كلمة المرور إلى <strong>{email}</strong>. يرجى التحقق من بريدك الإلكتروني واتباع التعليمات.
               </p>
-              <Button 
-                className="w-full bg-moprd-teal hover:bg-moprd-blue"
-                onClick={() => navigate("/login")}
+              
+              <Button
+                variant="outline"
+                onClick={() => setIsSubmitted(false)}
+                className="mb-2 w-full"
               >
-                العودة إلى تسجيل الدخول
+                إرسال مرة أخرى
               </Button>
             </div>
           )}
         </CardContent>
         
-        <CardFooter className="flex flex-col">
-          <div className="text-center">
-            <p className="text-sm text-muted-foreground">
-              <Link to="/login" className="text-moprd-teal hover:underline font-medium">
-                العودة إلى تسجيل الدخول
-              </Link>
-            </p>
-          </div>
+        <CardFooter className="flex justify-center">
+          <Link
+            to="/login"
+            className="flex items-center text-sm text-moprd-teal hover:underline"
+          >
+            <ArrowRight className="ml-2 h-4 w-4" />
+            العودة إلى تسجيل الدخول
+          </Link>
         </CardFooter>
+        
+        {/* Ice drips */}
+        <div className="ice-drip ice-drip-1"></div>
+        <div className="ice-drip ice-drip-2"></div>
+        <div className="ice-drip ice-drip-3"></div>
       </Card>
     </div>
   );

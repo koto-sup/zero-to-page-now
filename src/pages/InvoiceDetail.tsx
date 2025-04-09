@@ -72,6 +72,14 @@ const InvoiceDetail = () => {
     
     // Hide payment form
     setShowPayment(false);
+    
+    // After successful payment, redirect to tracking page after a short delay
+    setTimeout(() => {
+      toast.info("جاري تتبع السائق", {
+        description: "يمكنك الآن تتبع السائق على الخريطة"
+      });
+      navigate("/truck-tracking");
+    }, 1500);
   };
 
   const handleBackToList = () => {
@@ -132,19 +140,25 @@ const InvoiceDetail = () => {
           {!invoiceData.isPaid && (
             <div className="flex justify-center mt-6 mb-12">
               <Button 
-                className="bg-moprd-teal hover:bg-moprd-blue px-8 py-6 text-lg"
+                className="bg-moprd-teal hover:bg-moprd-blue px-8 py-6 text-lg flex items-center justify-center ice-button"
                 onClick={() => setShowPayment(true)}
               >
-                دفع الفاتورة الآن
+                <span className="relative z-10">دفع الفاتورة الآن</span>
               </Button>
             </div>
           )}
           
           {invoiceData.isPaid && (
             <div className="text-center mb-12 mt-6">
-              <p className="text-lg text-green-600 font-medium">
+              <p className="text-lg text-green-600 font-medium mb-4">
                 تم دفع هذه الفاتورة بالكامل
               </p>
+              <Button
+                className="bg-moprd-teal hover:bg-moprd-blue ice-button"
+                onClick={() => navigate("/truck-tracking")}
+              >
+                <span className="relative z-10">تتبع السائق</span>
+              </Button>
             </div>
           )}
         </>

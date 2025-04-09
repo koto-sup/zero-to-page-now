@@ -8,6 +8,7 @@ import { AuthProvider } from "./contexts/AuthContext";
 import { LanguageProvider } from "./contexts/LanguageContext";
 import Layout from "./components/Layout";
 
+// Import all pages
 import Index from "./pages/Index";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
@@ -23,6 +24,10 @@ import Invoices from "./pages/Invoices";
 import InvoiceDetail from "./pages/InvoiceDetail";
 import Profile from "./pages/Profile";
 import CustomerSupport from "./pages/CustomerSupport";
+import TruckTracking from "./pages/TruckTracking";
+
+// Initialize CSS classes for our icy UI components
+import "./styles/icy-theme.css";
 
 const queryClient = new QueryClient();
 
@@ -52,6 +57,7 @@ const App = () => (
                 <Route path="/profile" element={<Profile />} />
                 <Route path="/bookings" element={<CustomerDashboard />} />
                 <Route path="/support" element={<CustomerSupport />} />
+                <Route path="/truck-tracking" element={<TruckTracking />} />
                 {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
                 <Route path="*" element={<NotFound />} />
               </Routes>
