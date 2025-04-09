@@ -1,11 +1,12 @@
+
 import React, { useState } from 'react';
 import { Button } from "@/components/ui/button";
-import { IceButton } from "@/components/ui/ice-button";
+import { IceButtonV2 } from "@/components/ui/ice-button-v2";
+import { IceCard, IceCardHeader, IceCardContent, IceCardFooter, IceCardTitle } from "@/components/ui/ice-card";
 import { Input } from "@/components/ui/input";
-import { Card, CardContent, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
 import { Slider } from "@/components/ui/slider";
 import { toast } from "sonner";
-import { DollarSign, Clock, Map, Package, X, Check, AlertTriangle, User, MapPin } from "lucide-react";
+import { DollarSign, Clock, Map, Package, X, Check, AlertTriangle, User, MapPin, SnowflakeIcon } from "lucide-react";
 
 interface PriceQuoteFormProps {
   tripDetails: {
@@ -58,25 +59,28 @@ const PriceQuoteForm: React.FC<PriceQuoteFormProps> = ({ tripDetails, onSubmit, 
     "text-green-500";
 
   return (
-    <Card className="w-full max-w-2xl mx-auto">
-      <CardHeader>
-        <CardTitle className="text-xl flex items-center justify-between">
-          <span>تقديم عرض سعر</span>
+    <IceCard className="w-full max-w-2xl mx-auto">
+      <IceCardHeader>
+        <div className="flex items-center justify-between">
+          <IceCardTitle className="text-xl flex items-center">
+            <SnowflakeIcon className="mr-2 h-5 w-5 text-cyan-500" />
+            <span>تقديم عرض سعر</span>
+          </IceCardTitle>
           <Button variant="ghost" size="icon" onClick={onCancel} className="h-8 w-8">
             <X className="h-4 w-4" />
           </Button>
-        </CardTitle>
-      </CardHeader>
+        </div>
+      </IceCardHeader>
       
-      <CardContent>
-        <div className="mb-6 p-4 bg-sky-50 rounded-lg border border-sky-100">
+      <IceCardContent>
+        <div className="mb-6 p-4 bg-cyan-50 rounded-lg border border-cyan-100">
           <h3 className="font-medium mb-3 text-lg">تفاصيل الطلب</h3>
           
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="space-y-2">
               <div className="flex items-center">
-                <div className="w-8 h-8 bg-sky-100 rounded-full flex items-center justify-center ml-2">
-                  <User className="h-4 w-4 text-sky-600" />
+                <div className="w-8 h-8 bg-cyan-100 rounded-full flex items-center justify-center ml-2">
+                  <User className="h-4 w-4 text-cyan-600" />
                 </div>
                 <div>
                   <div className="text-sm text-gray-500">العميل</div>
@@ -85,8 +89,8 @@ const PriceQuoteForm: React.FC<PriceQuoteFormProps> = ({ tripDetails, onSubmit, 
               </div>
               
               <div className="flex items-center">
-                <div className="w-8 h-8 bg-sky-100 rounded-full flex items-center justify-center ml-2">
-                  <Package className="h-4 w-4 text-sky-600" />
+                <div className="w-8 h-8 bg-cyan-100 rounded-full flex items-center justify-center ml-2">
+                  <Package className="h-4 w-4 text-cyan-600" />
                 </div>
                 <div>
                   <div className="text-sm text-gray-500">نوع البضاعة</div>
@@ -97,8 +101,8 @@ const PriceQuoteForm: React.FC<PriceQuoteFormProps> = ({ tripDetails, onSubmit, 
             
             <div className="space-y-2">
               <div className="flex items-center">
-                <div className="w-8 h-8 bg-sky-100 rounded-full flex items-center justify-center ml-2">
-                  <Map className="h-4 w-4 text-sky-600" />
+                <div className="w-8 h-8 bg-cyan-100 rounded-full flex items-center justify-center ml-2">
+                  <Map className="h-4 w-4 text-cyan-600" />
                 </div>
                 <div>
                   <div className="text-sm text-gray-500">المسافة التقديرية</div>
@@ -107,8 +111,8 @@ const PriceQuoteForm: React.FC<PriceQuoteFormProps> = ({ tripDetails, onSubmit, 
               </div>
               
               <div className="flex items-center">
-                <div className="w-8 h-8 bg-sky-100 rounded-full flex items-center justify-center ml-2">
-                  <Clock className="h-4 w-4 text-sky-600" />
+                <div className="w-8 h-8 bg-cyan-100 rounded-full flex items-center justify-center ml-2">
+                  <Clock className="h-4 w-4 text-cyan-600" />
                 </div>
                 <div>
                   <div className="text-sm text-gray-500">الوقت التقديري</div>
@@ -118,10 +122,10 @@ const PriceQuoteForm: React.FC<PriceQuoteFormProps> = ({ tripDetails, onSubmit, 
             </div>
           </div>
           
-          <div className="mt-4 pt-3 border-t border-sky-200">
+          <div className="mt-4 pt-3 border-t border-cyan-200">
             <div className="flex items-center">
-              <div className="w-8 h-8 bg-sky-100 rounded-full flex items-center justify-center ml-2">
-                <MapPin className="h-4 w-4 text-sky-600" />
+              <div className="w-8 h-8 bg-cyan-100 rounded-full flex items-center justify-center ml-2">
+                <MapPin className="h-4 w-4 text-cyan-600" />
               </div>
               <div>
                 <div className="text-sm text-gray-500">من</div>
@@ -129,11 +133,11 @@ const PriceQuoteForm: React.FC<PriceQuoteFormProps> = ({ tripDetails, onSubmit, 
               </div>
             </div>
             
-            <div className="my-2 border-r-2 border-dashed border-sky-300 h-6 mr-4"></div>
+            <div className="my-2 border-r-2 border-dashed border-cyan-300 h-6 mr-4"></div>
             
             <div className="flex items-center">
-              <div className="w-8 h-8 bg-sky-100 rounded-full flex items-center justify-center ml-2">
-                <MapPin className="h-4 w-4 text-sky-600" />
+              <div className="w-8 h-8 bg-cyan-100 rounded-full flex items-center justify-center ml-2">
+                <MapPin className="h-4 w-4 text-cyan-600" />
               </div>
               <div>
                 <div className="text-sm text-gray-500">إلى</div>
@@ -161,7 +165,7 @@ const PriceQuoteForm: React.FC<PriceQuoteFormProps> = ({ tripDetails, onSubmit, 
             />
             <div className="flex flex-wrap items-center justify-between">
               <div className="flex items-center">
-                <DollarSign className="h-5 w-5 text-moprd-teal mr-2" />
+                <DollarSign className="h-5 w-5 text-cyan-500 mr-2" />
                 <Input 
                   type="number"
                   value={price}
@@ -217,18 +221,18 @@ const PriceQuoteForm: React.FC<PriceQuoteFormProps> = ({ tripDetails, onSubmit, 
             />
           </div>
         </form>
-      </CardContent>
+      </IceCardContent>
       
-      <CardFooter className="flex flex-col sm:flex-row gap-3 justify-end">
+      <IceCardFooter className="flex flex-col sm:flex-row gap-3 justify-end">
         <Button variant="outline" onClick={onCancel}>
           إلغاء
         </Button>
-        <IceButton onClick={handleSubmit}>
+        <IceButtonV2 onClick={handleSubmit}>
           <Check className="ml-2 h-4 w-4" />
           إرسال العرض
-        </IceButton>
-      </CardFooter>
-    </Card>
+        </IceButtonV2>
+      </IceCardFooter>
+    </IceCard>
   );
 };
 

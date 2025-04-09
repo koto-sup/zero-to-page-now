@@ -7,6 +7,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "./contexts/AuthContext";
 import { LanguageProvider } from "./contexts/LanguageContext";
 import Layout from "./components/Layout";
+import { ThemeProvider } from 'next-themes';
 
 // Import all pages
 import Index from "./pages/Index";
@@ -26,6 +27,9 @@ import Profile from "./pages/Profile";
 import CustomerSupport from "./pages/CustomerSupport";
 import TruckTracking from "./pages/TruckTracking";
 
+// Import custom navbar
+import AppNavbar from "./components/AppNavbar";
+
 // Initialize CSS classes for our icy UI components
 import "./styles/icy-theme.css";
 
@@ -34,37 +38,39 @@ const queryClient = new QueryClient();
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <TooltipProvider>
-      <LanguageProvider>
-        <AuthProvider>
-          <Toaster />
-          <Sonner />
-          <BrowserRouter>
-            <Layout>
-              <Routes>
-                <Route path="/" element={<Index />} />
-                <Route path="/login" element={<Login />} />
-                <Route path="/register" element={<Register />} />
-                <Route path="/forgot-password" element={<ForgotPassword />} />
-                <Route path="/find-trucks" element={<FindTrucks />} />
-                <Route path="/truck-details" element={<TruckDetails />} />
-                <Route path="/dashboard" element={<Dashboard />} />
-                <Route path="/admin-dashboard" element={<AdminDashboard />} />
-                <Route path="/customer-dashboard" element={<CustomerDashboard />} />
-                <Route path="/chat" element={<Chat />} />
-                <Route path="/chat/:driverId" element={<Chat />} />
-                <Route path="/invoices" element={<Invoices />} />
-                <Route path="/invoice-details/:id" element={<InvoiceDetail />} />
-                <Route path="/profile" element={<Profile />} />
-                <Route path="/bookings" element={<CustomerDashboard />} />
-                <Route path="/support" element={<CustomerSupport />} />
-                <Route path="/truck-tracking" element={<TruckTracking />} />
-                {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-                <Route path="*" element={<NotFound />} />
-              </Routes>
-            </Layout>
-          </BrowserRouter>
-        </AuthProvider>
-      </LanguageProvider>
+      <ThemeProvider attribute="class" defaultTheme="light">
+        <LanguageProvider>
+          <AuthProvider>
+            <Toaster />
+            <Sonner />
+            <BrowserRouter>
+              <Layout>
+                <Routes>
+                  <Route path="/" element={<Index />} />
+                  <Route path="/login" element={<Login />} />
+                  <Route path="/register" element={<Register />} />
+                  <Route path="/forgot-password" element={<ForgotPassword />} />
+                  <Route path="/find-trucks" element={<FindTrucks />} />
+                  <Route path="/truck-details" element={<TruckDetails />} />
+                  <Route path="/dashboard" element={<Dashboard />} />
+                  <Route path="/admin-dashboard" element={<AdminDashboard />} />
+                  <Route path="/customer-dashboard" element={<CustomerDashboard />} />
+                  <Route path="/chat" element={<Chat />} />
+                  <Route path="/chat/:driverId" element={<Chat />} />
+                  <Route path="/invoices" element={<Invoices />} />
+                  <Route path="/invoice-details/:id" element={<InvoiceDetail />} />
+                  <Route path="/profile" element={<Profile />} />
+                  <Route path="/bookings" element={<CustomerDashboard />} />
+                  <Route path="/support" element={<CustomerSupport />} />
+                  <Route path="/truck-tracking" element={<TruckTracking />} />
+                  {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+                  <Route path="*" element={<NotFound />} />
+                </Routes>
+              </Layout>
+            </BrowserRouter>
+          </AuthProvider>
+        </LanguageProvider>
+      </ThemeProvider>
     </TooltipProvider>
   </QueryClientProvider>
 );

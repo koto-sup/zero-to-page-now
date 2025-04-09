@@ -2,10 +2,12 @@
 import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
+import { IceButtonV2 } from "@/components/ui/ice-button-v2";
 import { ArrowRight } from "lucide-react";
 import Invoice from "@/components/Invoice";
 import PaymentForm from "@/components/PaymentForm";
 import { toast } from "sonner";
+import { IceCard, IceCardContent } from "@/components/ui/ice-card";
 
 const InvoiceDetail = () => {
   const { id } = useParams<{ id: string }>();
@@ -62,7 +64,9 @@ const InvoiceDetail = () => {
 
   const handlePaymentSuccess = () => {
     // In a real app, we'd update the invoice status in the database
-    toast.success("تم الدفع بنجاح!");
+    toast.success("تم الدفع بنجاح!", {
+      description: "جاري الانتقال إلى شاشة تتبع السائق..."
+    });
     
     // Update the invoice status locally
     setInvoiceData({
@@ -75,9 +79,6 @@ const InvoiceDetail = () => {
     
     // After successful payment, redirect to tracking page after a short delay
     setTimeout(() => {
-      toast.info("جاري تتبع السائق", {
-        description: "يمكنك الآن تتبع السائق على الخريطة"
-      });
       navigate("/truck-tracking");
     }, 1500);
   };
@@ -113,11 +114,15 @@ const InvoiceDetail = () => {
       </div>
 
       {showPayment ? (
-        <PaymentForm
-          amount={invoiceData.totalAmount}
-          onPaymentSuccess={handlePaymentSuccess}
-          onPaymentCancel={() => setShowPayment(false)}
-        />
+        <IceCard className="max-w-md mx-auto">
+          <IceCardContent>
+            <PaymentForm
+              amount={invoiceData.totalAmount}
+              onPaymentSuccess={handlePaymentSuccess}
+              onPaymentCancel={() => setShowPayment(false)}
+            />
+          </IceCardContent>
+        </IceCard>
       ) : (
         <>
           <Invoice
@@ -139,12 +144,12 @@ const InvoiceDetail = () => {
           
           {!invoiceData.isPaid && (
             <div className="flex justify-center mt-6 mb-12">
-              <Button 
-                className="bg-moprd-teal hover:bg-moprd-blue px-8 py-6 text-lg flex items-center justify-center ice-button"
+              <IceButtonV2 
+                className="px-8 py-6 text-lg flex items-center justify-center"
                 onClick={() => setShowPayment(true)}
               >
-                <span className="relative z-10">دفع الفاتورة الآن</span>
-              </Button>
+                دفع الفاتورة الآن
+              </IceButtonV2>
             </div>
           )}
           
@@ -153,12 +158,11 @@ const InvoiceDetail = () => {
               <p className="text-lg text-green-600 font-medium mb-4">
                 تم دفع هذه الفاتورة بالكامل
               </p>
-              <Button
-                className="bg-moprd-teal hover:bg-moprd-blue ice-button"
+              <IceButtonV2
                 onClick={() => navigate("/truck-tracking")}
               >
-                <span className="relative z-10">تتبع السائق</span>
-              </Button>
+                تتبع السائق
+              </IceButtonV2>
             </div>
           )}
         </>

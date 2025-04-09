@@ -1,9 +1,10 @@
 
 import React, { useState } from 'react';
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { IceButtonV2 } from "@/components/ui/ice-button-v2";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { IceCardHeader, IceCardTitle, IceCardDescription } from "@/components/ui/ice-card";
 import { toast } from "sonner";
 import { Loader2, CreditCard, Check } from "lucide-react";
 
@@ -66,15 +67,15 @@ const PaymentForm: React.FC<PaymentFormProps> = ({ amount, onPaymentSuccess, onP
   };
 
   return (
-    <Card className="max-w-md mx-auto">
-      <CardHeader>
-        <CardTitle>معلومات الدفع</CardTitle>
-        <CardDescription>
+    <>
+      <IceCardHeader>
+        <IceCardTitle>معلومات الدفع</IceCardTitle>
+        <IceCardDescription>
           يرجى إدخال بيانات بطاقتك الائتمانية لإتمام الدفع
-        </CardDescription>
-      </CardHeader>
+        </IceCardDescription>
+      </IceCardHeader>
       
-      <CardContent>
+      <div className="p-6">
         {!isComplete ? (
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="grid gap-2">
@@ -87,7 +88,7 @@ const PaymentForm: React.FC<PaymentFormProps> = ({ amount, onPaymentSuccess, onP
                   value={cardNumber}
                   onChange={(e) => setCardNumber(formatCardNumber(e.target.value))}
                   maxLength={19}
-                  className="pl-10"
+                  className="pl-10 ice-input"
                   dir="ltr"
                 />
               </div>
@@ -100,6 +101,7 @@ const PaymentForm: React.FC<PaymentFormProps> = ({ amount, onPaymentSuccess, onP
                 placeholder="الاسم كما يظهر على البطاقة"
                 value={cardName}
                 onChange={(e) => setCardName(e.target.value)}
+                className="ice-input"
               />
             </div>
             
@@ -113,6 +115,7 @@ const PaymentForm: React.FC<PaymentFormProps> = ({ amount, onPaymentSuccess, onP
                   onChange={(e) => setExpiryDate(formatExpiryDate(e.target.value))}
                   maxLength={5}
                   dir="ltr"
+                  className="ice-input"
                 />
               </div>
               <div className="grid gap-2">
@@ -124,6 +127,7 @@ const PaymentForm: React.FC<PaymentFormProps> = ({ amount, onPaymentSuccess, onP
                   onChange={(e) => setCvv(e.target.value.replace(/[^0-9]/g, ""))}
                   maxLength={3}
                   dir="ltr"
+                  className="ice-input"
                 />
               </div>
             </div>
@@ -142,10 +146,10 @@ const PaymentForm: React.FC<PaymentFormProps> = ({ amount, onPaymentSuccess, onP
               >
                 إلغاء
               </Button>
-              <Button 
-                type="submit" 
-                className="flex-1 bg-moprd-teal hover:bg-moprd-blue"
+              <IceButtonV2 
+                className="flex-1"
                 disabled={isProcessing}
+                onClick={handleSubmit}
               >
                 {isProcessing ? (
                   <>
@@ -155,7 +159,7 @@ const PaymentForm: React.FC<PaymentFormProps> = ({ amount, onPaymentSuccess, onP
                 ) : (
                   "إتمام الدفع"
                 )}
-              </Button>
+              </IceButtonV2>
             </div>
           </form>
         ) : (
@@ -167,10 +171,11 @@ const PaymentForm: React.FC<PaymentFormProps> = ({ amount, onPaymentSuccess, onP
             </div>
             <h3 className="text-lg font-medium mb-2">تم الدفع بنجاح!</h3>
             <p className="text-gray-500 mb-4">شكراً لك. تمت معالجة الدفع بنجاح.</p>
+            <p className="text-gray-500 mb-4">جاري الانتقال إلى صفحة تتبع السائق...</p>
           </div>
         )}
-      </CardContent>
-    </Card>
+      </div>
+    </>
   );
 };
 

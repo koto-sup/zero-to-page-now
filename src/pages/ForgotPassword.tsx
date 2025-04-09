@@ -2,15 +2,17 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { IceButton } from "@/components/ui/ice-button";
-import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from "@/components/ui/card";
+import { IceButtonV2 } from "@/components/ui/ice-button-v2";
+import { IceCard, IceCardHeader, IceCardTitle, IceCardDescription, IceCardContent, IceCardFooter } from "@/components/ui/ice-card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
 import { ArrowRight, Mail, RefreshCw } from "lucide-react";
+import { useAuth } from "@/contexts/AuthContext";
 
 const ForgotPassword = () => {
   const navigate = useNavigate();
+  const { resetPassword } = useAuth();
   const [email, setEmail] = useState("");
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -29,11 +31,11 @@ const ForgotPassword = () => {
     setError("");
     
     try {
-      // Simulate API call to request password reset
+      // In a real app with auth implementation, this would call the auth service
+      // resetPassword(email)
       await new Promise((resolve) => setTimeout(resolve, 1500));
       
-      // In a real app, this would call an API endpoint
-      // For now we'll just simulate success
+      // Simulate success
       toast.success("تم إرسال رابط إعادة تعيين كلمة المرور", {
         description: "يرجى التحقق من بريدك الإلكتروني للحصول على تعليمات إعادة التعيين"
       });
@@ -54,15 +56,15 @@ const ForgotPassword = () => {
         <div className="frost-overlay"></div>
       </div>
       
-      <Card className="w-full max-w-md ice-card">
-        <CardHeader className="text-center">
-          <CardTitle className="text-2xl">استعادة كلمة المرور</CardTitle>
-          <CardDescription>
+      <IceCard className="w-full max-w-md">
+        <IceCardHeader className="text-center">
+          <IceCardTitle className="text-2xl">استعادة كلمة المرور</IceCardTitle>
+          <IceCardDescription>
             أدخل بريدك الإلكتروني لإرسال رابط إعادة تعيين كلمة المرور
-          </CardDescription>
-        </CardHeader>
+          </IceCardDescription>
+        </IceCardHeader>
         
-        <CardContent>
+        <IceCardContent>
           {!isSubmitted ? (
             <form onSubmit={handleSubmit} className="space-y-4">
               <div className="space-y-2">
@@ -82,7 +84,7 @@ const ForgotPassword = () => {
                 {error && <p className="text-sm text-red-500">{error}</p>}
               </div>
               
-              <IceButton
+              <IceButtonV2
                 type="submit"
                 className="w-full"
                 disabled={isLoading}
@@ -95,7 +97,7 @@ const ForgotPassword = () => {
                 ) : (
                   "إرسال رابط إعادة التعيين"
                 )}
-              </IceButton>
+              </IceButtonV2>
             </form>
           ) : (
             <div className="text-center py-6">
@@ -107,32 +109,27 @@ const ForgotPassword = () => {
                 لقد أرسلنا رابط إعادة تعيين كلمة المرور إلى <strong>{email}</strong>. يرجى التحقق من بريدك الإلكتروني واتباع التعليمات.
               </p>
               
-              <Button
+              <IceButtonV2
                 variant="outline"
                 onClick={() => setIsSubmitted(false)}
                 className="mb-2 w-full"
               >
                 إرسال مرة أخرى
-              </Button>
+              </IceButtonV2>
             </div>
           )}
-        </CardContent>
+        </IceCardContent>
         
-        <CardFooter className="flex justify-center">
+        <IceCardFooter className="flex justify-center">
           <Link
             to="/login"
-            className="flex items-center text-sm text-moprd-teal hover:underline"
+            className="flex items-center text-sm text-cyan-600 hover:underline"
           >
             <ArrowRight className="ml-2 h-4 w-4" />
             العودة إلى تسجيل الدخول
           </Link>
-        </CardFooter>
-        
-        {/* Ice drips */}
-        <div className="ice-drip ice-drip-1"></div>
-        <div className="ice-drip ice-drip-2"></div>
-        <div className="ice-drip ice-drip-3"></div>
-      </Card>
+        </IceCardFooter>
+      </IceCard>
     </div>
   );
 };
