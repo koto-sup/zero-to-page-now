@@ -10,9 +10,9 @@ import {
   Store, 
   Construction, 
   Building2, 
-  GardenCart, 
   TrainFront,
-  Forklift 
+  Forklift,
+  Trees
 } from "lucide-react";
 
 interface TruckTypeSelectorProps {
@@ -52,7 +52,7 @@ const TruckTypeSelector: React.FC<TruckTypeSelectorProps> = ({
     { 
       id: "wood", 
       name: "شاحنة نقل الأخشاب", 
-      icon: <GardenCart className="h-6 w-6 text-amber-700" />,
+      icon: <Trees className="h-6 w-6 text-amber-700" />,
       price: "105 ريال/ساعة" 
     },
     { 

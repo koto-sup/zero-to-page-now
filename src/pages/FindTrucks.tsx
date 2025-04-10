@@ -21,6 +21,7 @@ interface TruckOffer {
   rating: number;
   price: number;
   estimatedArrival: string;
+  truckType: string;
 }
 
 const FindTrucks = () => {
@@ -43,7 +44,8 @@ const FindTrucks = () => {
             distance: 1.2,
             rating: 4.8,
             price: requestDetails.estimatedPrice - 10,
-            estimatedArrival: "10 دقائق"
+            estimatedArrival: "10 دقائق",
+            truckType: "refrigerated"
           },
           {
             id: "offer-2",
@@ -52,7 +54,8 @@ const FindTrucks = () => {
             distance: 2.4,
             rating: 4.5,
             price: requestDetails.estimatedPrice - 5,
-            estimatedArrival: "15 دقيقة"
+            estimatedArrival: "15 دقيقة",
+            truckType: "transport"
           },
           {
             id: "offer-3",
@@ -61,7 +64,8 @@ const FindTrucks = () => {
             distance: 3.7,
             rating: 4.9,
             price: requestDetails.estimatedPrice + 15,
-            estimatedArrival: "5 دقائق"
+            estimatedArrival: "5 دقائق",
+            truckType: "crane"
           }
         ];
         
