@@ -3,7 +3,7 @@ import React from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Truck, Star, Clock, CheckCircle, ChevronLeft } from "lucide-react";
+import { Truck, Star, Clock, CheckCircle, ChevronLeft, PercentIcon } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 
@@ -15,6 +15,7 @@ interface TruckOffer {
   rating: number;
   price: number;
   estimatedArrival: string;
+  truckType: string;
 }
 
 interface TruckOffersListProps {
@@ -24,6 +25,7 @@ interface TruckOffersListProps {
     destination: string;
     distance: number;
     estimatedPrice: number;
+    estimatedHours?: number;
   };
   onAcceptOffer: (offerId: string) => void;
 }
@@ -52,6 +54,10 @@ const TruckOffersList: React.FC<TruckOffersListProps> = ({
     navigate(-1);
   };
 
+  // Calculate hours if not provided
+  const estimatedHours = requestDetails.estimatedHours || 
+    Math.max(1, Math.round(requestDetails.distance / 30));
+
   return (
     <Card>
       <CardHeader>
@@ -74,7 +80,18 @@ const TruckOffersList: React.FC<TruckOffersListProps> = ({
           <p className="text-sm">من: {requestDetails.startLocation}</p>
           <p className="text-sm">إلى: {requestDetails.destination}</p>
           <p className="text-sm">المسافة: {requestDetails.distance} كم</p>
-          <p className="text-sm">السعر التقديري: {requestDetails.estimatedPrice.toFixed(2)} ريال</p>
+          <p className="text-sm">الوقت التقديري: {estimatedHours} ساعة</p>
+          <p className="text-sm">
+            السعر التقديري: {requestDetails.estimatedPrice.toFixed(2)} ريال
+            <span className="mr-2 text-green-600 text-xs">(يشمل خصم 15%)</span>
+          </p>
+        </div>
+        
+        <div className="mb-4 p-3 bg-blue-50 rounded-lg border border-blue-100 flex items-start">
+          <PercentIcon className="h-5 w-5 text-blue-500 mt-0.5 ml-2 flex-shrink-0" />
+          <div className="text-sm text-blue-700">
+            جميع الأسعار تشمل خصم 15%، ورسوم الخدمة تؤخذ من السائق وليس منك.
+          </div>
         </div>
         
         {offers.length === 0 ? (
@@ -88,7 +105,7 @@ const TruckOffersList: React.FC<TruckOffersListProps> = ({
             {offers.map((offer) => (
               <div 
                 key={offer.id}
-                className="flex flex-col md:flex-row md:items-center justify-between p-4 border rounded-lg"
+                className="flex flex-col md:flex-row md:items-center justify-between p-4 border rounded-lg hover:bg-muted/10 transition-colors"
               >
                 <div className="flex items-center mb-3 md:mb-0">
                   <div className="bg-moprd-light/20 p-2 rounded-full ml-3">
