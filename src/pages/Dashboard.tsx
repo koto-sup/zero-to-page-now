@@ -2,6 +2,7 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
+import { IceButtonV2 } from "@/components/ui/ice-button-v2";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Switch } from "@/components/ui/switch";
@@ -21,7 +22,8 @@ import {
   BarChart3,
   Clock,
   AlertCircle,
-  CheckSquare
+  CheckSquare,
+  Snowflake
 } from "lucide-react";
 
 // Mock data
@@ -126,19 +128,44 @@ const Dashboard = () => {
             Manage your truck details and bookings
           </p>
         </div>
-        <div className="flex items-center mt-4 md:mt-0">
-          <div className="flex items-center space-x-2 mr-4">
-            <Switch
-              checked={isAvailable}
-              onCheckedChange={handleAvailabilityChange}
-              id="availability"
-            />
-            <Label htmlFor="availability" className="font-medium">
-              {isAvailable ? "Available for Bookings" : "Unavailable"}
-            </Label>
+        <div className="flex flex-col md:flex-row items-center gap-4 mt-4 md:mt-0">
+          {/* Enhanced availability toggle with IceButtonV2 */}
+          <div className="w-full md:w-auto">
+            <IceButtonV2
+              className={`flex items-center justify-center gap-2 py-2 px-4 w-full md:w-auto ${
+                isAvailable 
+                ? "border border-cyan-400 shadow-lg shadow-cyan-200/50" 
+                : "border border-gray-300"
+              }`}
+              variant={isAvailable ? "default" : "outline"}
+              onClick={() => handleAvailabilityChange(!isAvailable)}
+              iceDrips={isAvailable}
+              iceGlow={isAvailable}
+            >
+              <div className={`p-2 rounded-full ${isAvailable ? "bg-cyan-100" : "bg-gray-100"}`}>
+                <Snowflake 
+                  className={`h-5 w-5 ${isAvailable ? "text-cyan-600" : "text-gray-400"}`} 
+                  size={20} 
+                />
+              </div>
+              <span className="font-medium">
+                {isAvailable ? "Available for Bookings" : "Currently Unavailable"}
+              </span>
+              <div className="relative ml-2">
+                <Switch
+                  checked={isAvailable}
+                  onCheckedChange={handleAvailabilityChange}
+                  className="ice-switch"
+                >
+                  <div className="ice-switch-thumb" />
+                </Switch>
+              </div>
+            </IceButtonV2>
           </div>
-          <Link to="/truck-details">
-            <Button variant="outline">Edit Truck Profile</Button>
+          <Link to="/truck-details" className="w-full md:w-auto">
+            <IceButtonV2 variant="outline" className="w-full md:w-auto">
+              Edit Truck Profile
+            </IceButtonV2>
           </Link>
         </div>
       </div>

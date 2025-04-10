@@ -15,7 +15,7 @@ import LanguageSelector from "@/components/LanguageSelector";
 const LoginForm = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
-  const { login } = useAuth(); // Changed from loginWithEmail to login
+  const { login } = useAuth();
   
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -128,9 +128,14 @@ const LoginForm = () => {
               <button
                 type="button"
                 onClick={() => setShowPassword(!showPassword)}
-                className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 p-1"
+                aria-label={showPassword ? "Hide password" : "Show password"}
               >
-                {showPassword ? <EyeOffIcon size={16} /> : <EyeIcon size={16} />}
+                {showPassword ? (
+                  <EyeOffIcon size={18} className="text-cyan-600" />
+                ) : (
+                  <EyeIcon size={18} className="text-cyan-600" />
+                )}
               </button>
             </div>
           </div>
@@ -154,6 +159,8 @@ const LoginForm = () => {
             type="submit"
             className="w-full"
             disabled={isLoading}
+            iceDrips={true}
+            iceGlow={true}
           >
             {isLoading ? (
               <>

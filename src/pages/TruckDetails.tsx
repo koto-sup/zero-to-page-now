@@ -2,6 +2,7 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
+import { IceButtonV2 } from "@/components/ui/ice-button-v2";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -9,7 +10,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
 import { useAuth } from "@/contexts/AuthContext";
 import { toast } from "sonner";
-import { ChevronLeft, CircleDollarSign, Info } from "lucide-react";
+import { ChevronLeft, CircleDollarSign, Info, Snowflake } from "lucide-react";
 import TruckTypeSelector from "@/components/TruckTypeSelector";
 
 const TruckDetails = () => {
@@ -53,12 +54,12 @@ const TruckDetails = () => {
     return (
       <div className="container mx-auto px-4 py-8 text-center">
         <p>غير مصرح بالوصول. يجب عليك تسجيل الدخول كسائق.</p>
-        <Button 
-          className="mt-4 bg-moprd-teal hover:bg-moprd-blue"
+        <IceButtonV2 
+          className="mt-4"
           onClick={() => navigate("/login")}
         >
           تسجيل الدخول
-        </Button>
+        </IceButtonV2>
       </div>
     );
   }
@@ -66,14 +67,16 @@ const TruckDetails = () => {
   return (
     <div className="container mx-auto px-4 py-8 pb-24">
       <div className="mb-8">
-        <Button 
+        <IceButtonV2 
           variant="ghost" 
           className="flex items-center mb-4"
           onClick={handleGoBack}
+          iceDrips={false}
+          iceGlow={false}
         >
           <ChevronLeft className="ml-2 h-4 w-4" />
           رجوع
-        </Button>
+        </IceButtonV2>
         <h1 className="text-3xl font-bold mb-4">معلومات المركبة</h1>
         <p className="text-gray-600">
           أضف أو عدل معلومات مركبتك لتعرض خدماتك على زكرت
@@ -100,6 +103,7 @@ const TruckDetails = () => {
                     value={plateNumber}
                     onChange={(e) => setPlateNumber(e.target.value)}
                     placeholder="أدخل رقم لوحة المركبة"
+                    className="ice-input"
                   />
                 </div>
                 
@@ -110,6 +114,7 @@ const TruckDetails = () => {
                     value={truckModel}
                     onChange={(e) => setTruckModel(e.target.value)}
                     placeholder="مثال: كاتربيلر 2023"
+                    className="ice-input"
                   />
                 </div>
               </div>
@@ -132,7 +137,7 @@ const TruckDetails = () => {
                     min="50"
                     value={hourlyRate}
                     onChange={(e) => setHourlyRate(e.target.value)}
-                    className="pr-10"
+                    className="pr-10 ice-input"
                   />
                 </div>
                 <div className="text-sm text-muted-foreground flex items-center justify-between">
@@ -149,26 +154,34 @@ const TruckDetails = () => {
                   onChange={(e) => setTruckDescription(e.target.value)}
                   placeholder="اكتب وصفًا للمركبة وخدماتك"
                   rows={4}
+                  className="ice-input"
                 />
               </div>
               
               <div className="flex items-center space-x-2 justify-end">
-                <Label htmlFor="available" className="ml-2">متاح للعمل حاليًا</Label>
-                <Switch
-                  id="available"
-                  checked={isAvailable}
-                  onCheckedChange={setIsAvailable}
-                />
+                <div className="flex items-center gap-2">
+                  <Snowflake className={`h-5 w-5 ${isAvailable ? "text-cyan-600" : "text-gray-400"}`} />
+                  <Label htmlFor="available" className="ml-2">متاح للعمل حاليًا</Label>
+                  <Switch
+                    id="available"
+                    checked={isAvailable}
+                    onCheckedChange={setIsAvailable}
+                    className="ice-switch"
+                  >
+                    <div className="ice-switch-thumb" />
+                  </Switch>
+                </div>
               </div>
               
               <div className="pt-4">
-                <Button 
+                <IceButtonV2 
                   type="submit" 
-                  className="w-full bg-moprd-teal hover:bg-moprd-blue"
+                  className="w-full"
                   disabled={loading}
+                  sparkle={true}
                 >
                   {loading ? "جاري الحفظ..." : "حفظ معلومات المركبة"}
-                </Button>
+                </IceButtonV2>
               </div>
             </form>
           </CardContent>
