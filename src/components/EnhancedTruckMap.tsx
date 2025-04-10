@@ -26,7 +26,7 @@ const IceNotification = ({ message, type = "info" }) => {
 };
 
 // Styled icy button component
-const IcyIcon = ({ children, pulse = false, size = "md", onClick }) => {
+const IcyIcon = ({ children, pulse = false, size = "md", onClick = () => {} }) => {
   const sizeClasses = {
     sm: "w-10 h-10",
     md: "w-14 h-14",
@@ -197,7 +197,7 @@ const EnhancedTruckMap = ({ tracking = false, distance = 2.3 }: EnhancedTruckMap
               />
             )}
             
-            <IcyIcon size="lg" pulse={currentDistance < 0.5}>
+            <IcyIcon size="lg" pulse={currentDistance < 0.5} onClick={() => {}}>
               <Truck 
                 size={36} 
                 className="text-blue-900" 

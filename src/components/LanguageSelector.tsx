@@ -11,14 +11,17 @@ const languages = [
 ];
 
 const LanguageSelector = () => {
-  const { currentLanguage, changeLanguage } = useLanguage();
+  const { language, changeLanguage } = useLanguage();
 
   const getCurrentLanguage = () => {
-    return languages.find(lang => lang.code === currentLanguage) || languages[0];
+    return languages.find(lang => lang.code === language) || languages[0];
   };
 
   const handleLanguageChange = (code: string) => {
-    changeLanguage(code);
+    // TypeScript requires us to validate that the code is a valid Language type
+    if (code === 'ar' || code === 'en' || code === 'fr' || code === 'es' || code === 'ur') {
+      changeLanguage(code);
+    }
   };
 
   const current = getCurrentLanguage();
@@ -36,7 +39,7 @@ const LanguageSelector = () => {
           <DropdownMenuItem
             key={language.code}
             onClick={() => handleLanguageChange(language.code)}
-            className={language.code === currentLanguage ? "bg-muted" : ""}
+            className={language.code === current.code ? "bg-muted" : ""}
           >
             <span className="mr-2">{language.flag}</span>
             {language.name}

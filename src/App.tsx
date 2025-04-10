@@ -1,7 +1,7 @@
 
+import React from "react";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
-import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "./contexts/AuthContext";
@@ -35,10 +35,13 @@ import "./styles/icy-theme.css";
 
 const queryClient = new QueryClient();
 
+// Create explicit TooltipProvider
+import { TooltipProvider } from "@/components/ui/tooltip";
+
 const App = () => (
   <QueryClientProvider client={queryClient}>
-    <TooltipProvider>
-      <ThemeProvider attribute="class" defaultTheme="light">
+    <ThemeProvider attribute="class" defaultTheme="light">
+      <TooltipProvider>
         <LanguageProvider>
           <AuthProvider>
             <Toaster />
@@ -70,8 +73,8 @@ const App = () => (
             </BrowserRouter>
           </AuthProvider>
         </LanguageProvider>
-      </ThemeProvider>
-    </TooltipProvider>
+      </TooltipProvider>
+    </ThemeProvider>
   </QueryClientProvider>
 );
 
