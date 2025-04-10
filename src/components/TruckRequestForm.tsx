@@ -1,191 +1,203 @@
 
-import React, { useState } from "react";
-import { toast } from "sonner";
+import React, { useState, useEffect } from "react";
+import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { MapPin, Clock, Truck, Loader2, ChevronLeft, PercentIcon } from "lucide-react";
-import { useNavigate } from "react-router-dom";
-import TruckMap from "@/components/TruckMap";
+import { MapPin, Navigation } from "lucide-react";
+import TruckTypeSelector from "@/components/TruckTypeSelector";
 
-interface TruckRequestFormProps {
-  onRequestSubmitted: (requestData: {
-    startLocation: string;
-    destination: string;
-    distance: number;
-    estimatedPrice: number;
-    estimatedHours: number;
-  }) => void;
+interface RequestDetails {
+  startLocation: string;
+  destination: string;
+  distance: number;
+  estimatedPrice: number;
 }
 
-const TruckRequestForm: React.FC<TruckRequestFormProps> = ({ onRequestSubmitted }) => {
-  const navigate = useNavigate();
+interface TruckRequestFormProps {
+  onRequestSubmitted: (details: RequestDetails) => void;
+  discountApplied?: boolean;
+}
+
+const TruckRequestForm: React.FC<TruckRequestFormProps> = ({ onRequestSubmitted, discountApplied = false }) => {
   const [startLocation, setStartLocation] = useState("");
   const [destination, setDestination] = useState("");
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [distance, setDistance] = useState<number | null>(null);
-  const [estimatedHours, setEstimatedHours] = useState<number | null>(null);
+  const [distance, setDistance] = useState(0);
+  const [estimatedPrice, setEstimatedPrice] = useState(0);
+  const [truckType, setTruckType] = useState("refrigerated");
+  const [loading, setLoading] = useState(false);
 
-  const calculateDistance = (start: string, dest: string): number => {
-    // في التطبيق الحقيقي، سنستخدم خدمة خرائط لحساب المسافة
-    // هذه مجرد محاكاة بسيطة للعرض التوضيحي
-    return parseFloat((Math.random() * 10 + 5).toFixed(1));
-  };
+  // Update price when truck type changes
+  useEffect(() => {
+    // Base prices for different truck types
+    const basePrices: Record<string, number> = {
+      refrigerated: 110,
+      transport: 95,
+      store: 120,
+      crane: 150,
+      wood: 105,
+      tractor: 130,
+      "loading-crane": 160,
+      bulldozer: 170,
+      "dump-truck": 125,
+      "skid-steer": 115,
+      flatbed: 100,
+      backhoe: 145,
+      "front-loader": 140
+    };
 
-  const handleCalculateDistance = () => {
-    if (!startLocation || !destination) {
-      toast.error("الرجاء إدخال نقطة البداية والوجهة");
-      return;
-    }
-
-    const calculatedDistance = calculateDistance(startLocation, destination);
+    const basePrice = basePrices[truckType] || 100;
+    const calculatedDistance = estimateDistance(startLocation, destination);
     setDistance(calculatedDistance);
     
-    // تقدير الوقت بالساعات (1 ساعة لكل 30 كم)
-    const hours = parseFloat((calculatedDistance / 30).toFixed(1));
-    setEstimatedHours(hours < 1 ? 1 : hours); // حد أدنى ساعة واحدة
+    let price = basePrice * calculatedDistance;
     
-    toast.success("تم حساب المسافة والوقت بنجاح");
+    // Apply discount if applicable
+    if (discountApplied) {
+      price = price * 0.85; // 15% discount
+    }
+    
+    setEstimatedPrice(Math.round(price));
+  }, [truckType, startLocation, destination, discountApplied]);
+
+  // Simulate distance calculation
+  const estimateDistance = (start: string, end: string): number => {
+    if (!start || !end) return 1;
+    // In a real app, we'd use a mapping API to calculate this
+    // For simulation, we'll generate a random distance between 1-20
+    return Math.max(1, Math.min(20, (start.length + end.length) % 20 + 1));
   };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     
     if (!startLocation || !destination) {
-      toast.error("الرجاء إدخال نقطة البداية والوجهة");
+      // In a real app, we'd show validation errors
       return;
     }
     
-    if (!distance || !estimatedHours) {
-      handleCalculateDistance();
-      return;
-    }
+    setLoading(true);
     
-    setIsSubmitting(true);
-    
-    // حساب السعر التقديري (110 ريال × عدد الساعات × خصم 15%)
-    const basePrice = 110 * estimatedHours;
-    const discountedPrice = Math.round(basePrice * 0.85); // تطبيق خصم 15%
-    
+    // Simulate API request delay
     setTimeout(() => {
-      setIsSubmitting(false);
-      
+      setLoading(false);
       onRequestSubmitted({
         startLocation,
         destination,
         distance,
-        estimatedPrice: discountedPrice,
-        estimatedHours: estimatedHours
+        estimatedPrice,
       });
-      
-      toast.success("تم إرسال طلبك إلى السائقين القريبين");
     }, 1500);
   };
 
-  const handleGoBack = () => {
-    navigate(-1);
-  };
-
   return (
-    <Card className="mb-8">
-      <CardHeader className="pb-2">
-        <div className="flex items-center justify-between">
-          <Button 
-            variant="ghost" 
-            size="sm" 
-            onClick={handleGoBack}
-            className="ml-2"
-          >
-            <ChevronLeft className="h-4 w-4 ml-1" />
-            رجوع
-          </Button>
-          <CardTitle className="text-xl">طلب مركبة</CardTitle>
-        </div>
-      </CardHeader>
-      <CardContent>
-        <div className="h-[300px] w-full relative rounded-md overflow-hidden mb-6">
-          <TruckMap />
-        </div>
-        
-        <div className="mb-4 p-3 bg-blue-50 rounded-lg border border-blue-100 flex items-start">
-          <PercentIcon className="h-5 w-5 text-blue-500 mt-0.5 ml-2 flex-shrink-0" />
-          <div className="text-sm text-blue-700">
-            جميع الأسعار تشمل خصم 15%، ورسوم الخدمة تؤخذ من السائق وليس منك.
-          </div>
-        </div>
-        
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div className="space-y-2">
-              <Label htmlFor="startLocation">نقطة الانطلاق</Label>
-              <div className="relative">
-                <MapPin className="absolute right-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
-                <Input
-                  id="startLocation"
-                  placeholder="أدخل موقع الانطلاق"
-                  value={startLocation}
-                  onChange={(e) => setStartLocation(e.target.value)}
-                  className="pr-10"
-                />
+    <form onSubmit={handleSubmit}>
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div className="space-y-6">
+          <Card>
+            <CardContent className="pt-6">
+              <div className="space-y-4">
+                <div>
+                  <Label htmlFor="startLocation">موقع الانطلاق</Label>
+                  <div className="relative">
+                    <MapPin className="absolute right-3 top-3 h-4 w-4 text-gray-400" />
+                    <Input
+                      id="startLocation"
+                      className="pr-10"
+                      placeholder="أدخل موقع الانطلاق"
+                      value={startLocation}
+                      onChange={(e) => setStartLocation(e.target.value)}
+                    />
+                  </div>
+                </div>
+                
+                <div>
+                  <Label htmlFor="destination">الوجهة</Label>
+                  <div className="relative">
+                    <Navigation className="absolute right-3 top-3 h-4 w-4 text-gray-400" />
+                    <Input
+                      id="destination"
+                      className="pr-10"
+                      placeholder="أدخل الوجهة"
+                      value={destination}
+                      onChange={(e) => setDestination(e.target.value)}
+                    />
+                  </div>
+                </div>
               </div>
-            </div>
-            
-            <div className="space-y-2">
-              <Label htmlFor="destination">الوجهة</Label>
-              <div className="relative">
-                <MapPin className="absolute right-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
-                <Input
-                  id="destination"
-                  placeholder="أدخل وجهة التوصيل"
-                  value={destination}
-                  onChange={(e) => setDestination(e.target.value)}
-                  className="pr-10"
-                />
+            </CardContent>
+          </Card>
+
+          <TruckTypeSelector 
+            selectedTruckType={truckType}
+            onTruckTypeChange={setTruckType}
+          />
+        </div>
+
+        <div className="space-y-6">
+          <Card>
+            <CardContent className="pt-6">
+              <h3 className="text-lg font-medium mb-4">تفاصيل الرحلة</h3>
+              
+              <div className="space-y-4">
+                <div className="flex justify-between border-b pb-2">
+                  <span>المسافة التقديرية:</span>
+                  <span className="font-medium">{distance} كم</span>
+                </div>
+                
+                <div className="flex justify-between border-b pb-2">
+                  <span>نوع الشاحنة:</span>
+                  <span className="font-medium">
+                    {truckType === "refrigerated" && "شاحنة مبردة"}
+                    {truckType === "transport" && "شاحنة نقل"}
+                    {truckType === "store" && "شاحنة متجر"}
+                    {truckType === "crane" && "شاحنة رافعة"}
+                    {truckType === "wood" && "شاحنة نقل الأخشاب"}
+                    {truckType === "tractor" && "جرار زراعي"}
+                    {truckType === "loading-crane" && "رافعة تحميل"}
+                    {truckType === "bulldozer" && "جرافة"}
+                    {truckType === "dump-truck" && "شاحنة قلابة"}
+                    {truckType === "skid-steer" && "لودر انزلاقي"}
+                    {truckType === "flatbed" && "شاحنة مسطحة"}
+                    {truckType === "backhoe" && "حفارة خلفية"}
+                    {truckType === "front-loader" && "لودر أمامي"}
+                  </span>
+                </div>
+                
+                <div className="flex justify-between border-b pb-2">
+                  <span>وقت الوصول التقديري:</span>
+                  <span className="font-medium">{Math.round(distance * 5)} دقيقة</span>
+                </div>
+                
+                <div className="flex justify-between text-lg font-semibold">
+                  <span>السعر التقديري:</span>
+                  <span className="text-green-600">
+                    {estimatedPrice} ريال
+                    {discountApplied && (
+                      <span className="mr-2 text-xs bg-green-100 text-green-700 px-2 py-1 rounded-full">
+                        خصم 15%
+                      </span>
+                    )}
+                  </span>
+                </div>
+                
+                <div className="text-xs text-gray-500 mt-2">
+                  الأسعار تقديرية وقد تتغير حسب العرض والطلب والمسافة الفعلية
+                </div>
               </div>
-            </div>
-          </div>
-          
-          <div className="flex justify-between items-center">
-            <Button 
-              type="button" 
-              variant="outline" 
-              onClick={handleCalculateDistance}
-              className="flex items-center"
-            >
-              <Clock className="ml-2 h-4 w-4" />
-              حساب المسافة والوقت
-            </Button>
-            
-            {distance && estimatedHours && (
-              <div className="text-left">
-                <p className="text-sm text-gray-500">المسافة التقديرية: <span className="font-bold text-black">{distance} كم</span></p>
-                <p className="text-sm text-gray-500">الوقت التقديري: <span className="font-bold text-black">{estimatedHours} ساعة</span></p>
-                <p className="text-sm text-gray-500">السعر التقديري: <span className="font-bold text-green-600">{Math.round(110 * estimatedHours * 0.85)} ريال</span></p>
-              </div>
-            )}
-          </div>
+            </CardContent>
+          </Card>
           
           <Button 
             type="submit" 
-            className="bg-moprd-teal hover:bg-moprd-blue w-full"
-            disabled={isSubmitting}
+            className="w-full bg-moprd-teal hover:bg-moprd-blue h-12 text-lg"
+            disabled={loading}
           >
-            {isSubmitting ? (
-              <>
-                <Loader2 className="ml-2 h-4 w-4 animate-spin" />
-                جاري إرسال الطلب...
-              </>
-            ) : (
-              <>
-                <Truck className="ml-2 h-4 w-4" />
-                طلب عروض من السائقين
-              </>
-            )}
+            {loading ? "جاري البحث..." : "البحث عن شاحنات"}
           </Button>
-        </form>
-      </CardContent>
-    </Card>
+        </div>
+      </div>
+    </form>
   );
 };
 

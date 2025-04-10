@@ -1,11 +1,15 @@
 
 import React from "react";
+import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Truck, Star, Clock, CheckCircle, ChevronLeft, PercentIcon } from "lucide-react";
-import { useNavigate } from "react-router-dom";
-import { toast } from "sonner";
+import { Star, Clock, MapPin, Truck } from "lucide-react";
+
+interface RequestDetails {
+  startLocation: string;
+  destination: string;
+  distance: number;
+  estimatedPrice: number;
+}
 
 interface TruckOffer {
   id: string;
@@ -20,137 +24,160 @@ interface TruckOffer {
 
 interface TruckOffersListProps {
   offers: TruckOffer[];
-  requestDetails: {
-    startLocation: string;
-    destination: string;
-    distance: number;
-    estimatedPrice: number;
-    estimatedHours?: number;
-  };
+  requestDetails: RequestDetails;
   onAcceptOffer: (offerId: string) => void;
+  discountApplied?: boolean;
 }
 
 const TruckOffersList: React.FC<TruckOffersListProps> = ({
   offers,
   requestDetails,
-  onAcceptOffer
+  onAcceptOffer,
+  discountApplied = false
 }) => {
-  const navigate = useNavigate();
-
-  const handleAcceptOffer = (offerId: string, driverId: string) => {
-    toast.success("تم قبول العرض بنجاح", {
-      description: "سوف يتم تحويلك إلى صفحة الدفع",
-      action: {
-        label: "إلغاء",
-        onClick: () => console.log("Canceled payment")
-      }
-    });
+  const getTruckTypeLabel = (type: string): string => {
+    const truckTypes: Record<string, string> = {
+      refrigerated: "شاحنة مبردة",
+      transport: "شاحنة نقل",
+      store: "شاحنة متجر",
+      crane: "شاحنة رافعة",
+      wood: "شاحنة نقل الأخشاب",
+      tractor: "جرار زراعي",
+      "loading-crane": "رافعة تحميل",
+      bulldozer: "جرافة",
+      "dump-truck": "شاحنة قلابة",
+      "skid-steer": "لودر انزلاقي",
+      flatbed: "شاحنة مسطحة",
+      backhoe: "حفارة خلفية",
+      "front-loader": "لودر أمامي"
+    };
     
-    // Navigate to invoice details page to handle payment
-    navigate(`/invoice-details/${Date.now()}`);
+    return truckTypes[type] || type;
   };
 
-  const handleGoBack = () => {
-    navigate(-1);
+  const renderStars = (rating: number) => {
+    return Array(5)
+      .fill(0)
+      .map((_, i) => (
+        <Star
+          key={i}
+          className={`h-4 w-4 ${
+            i < Math.floor(rating) ? "text-yellow-400 fill-yellow-400" : "text-gray-300"
+          }`}
+        />
+      ));
   };
 
-  // Calculate hours if not provided
-  const estimatedHours = requestDetails.estimatedHours || 
-    Math.max(1, Math.round(requestDetails.distance / 30));
+  const getOfferPrice = (originalPrice: number) => {
+    return discountApplied ? Math.round(originalPrice * 0.85) : originalPrice;
+  };
 
   return (
-    <Card>
-      <CardHeader>
-        <div className="flex items-center justify-between">
-          <Button 
-            variant="ghost" 
-            size="sm" 
-            onClick={handleGoBack}
-            className="ml-2"
-          >
-            <ChevronLeft className="h-4 w-4 ml-1" />
-            رجوع
-          </Button>
-          <CardTitle className="text-xl">العروض المقدمة</CardTitle>
-        </div>
-      </CardHeader>
-      <CardContent>
-        <div className="mb-4 p-4 bg-moprd-teal/10 rounded-md">
-          <h3 className="font-semibold mb-2">تفاصيل طلبك:</h3>
-          <p className="text-sm">من: {requestDetails.startLocation}</p>
-          <p className="text-sm">إلى: {requestDetails.destination}</p>
-          <p className="text-sm">المسافة: {requestDetails.distance} كم</p>
-          <p className="text-sm">الوقت التقديري: {estimatedHours} ساعة</p>
-          <p className="text-sm">
-            السعر التقديري: {requestDetails.estimatedPrice.toFixed(2)} ريال
-            <span className="mr-2 text-green-600 text-xs">(يشمل خصم 15%)</span>
-          </p>
-        </div>
-        
-        <div className="mb-4 p-3 bg-blue-50 rounded-lg border border-blue-100 flex items-start">
-          <PercentIcon className="h-5 w-5 text-blue-500 mt-0.5 ml-2 flex-shrink-0" />
-          <div className="text-sm text-blue-700">
-            جميع الأسعار تشمل خصم 15%، ورسوم الخدمة تؤخذ من السائق وليس منك.
+    <div>
+      <div className="bg-white rounded-lg p-4 shadow mb-6">
+        <h2 className="text-xl font-semibold mb-2">تفاصيل الطلب</h2>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div className="flex items-center">
+            <MapPin className="h-5 w-5 text-gray-500 ml-2" />
+            <div>
+              <div className="text-sm text-gray-500">موقع الانطلاق</div>
+              <div>{requestDetails.startLocation}</div>
+            </div>
+          </div>
+          <div className="flex items-center">
+            <MapPin className="h-5 w-5 text-gray-500 ml-2" />
+            <div>
+              <div className="text-sm text-gray-500">الوجهة</div>
+              <div>{requestDetails.destination}</div>
+            </div>
+          </div>
+          <div className="flex items-center">
+            <Clock className="h-5 w-5 text-gray-500 ml-2" />
+            <div>
+              <div className="text-sm text-gray-500">السعر التقديري</div>
+              <div className="flex items-center">
+                {requestDetails.estimatedPrice} ريال
+                {discountApplied && (
+                  <span className="mr-2 text-xs bg-green-100 text-green-700 px-2 py-1 rounded-full">
+                    خصم 15%
+                  </span>
+                )}
+              </div>
+            </div>
           </div>
         </div>
-        
-        {offers.length === 0 ? (
-          <div className="text-center p-8">
-            <Truck className="mx-auto h-12 w-12 text-gray-400 mb-2" />
-            <p className="text-lg font-medium">بانتظار العروض...</p>
-            <p className="text-sm text-gray-500 mt-1">سيتم إخطارك عندما تتلقى عروضاً من السائقين</p>
-          </div>
-        ) : (
-          <div className="space-y-4">
-            {offers.map((offer) => (
-              <div 
-                key={offer.id}
-                className="flex flex-col md:flex-row md:items-center justify-between p-4 border rounded-lg hover:bg-muted/10 transition-colors"
-              >
-                <div className="flex items-center mb-3 md:mb-0">
-                  <div className="bg-moprd-light/20 p-2 rounded-full ml-3">
-                    <Truck className="h-8 w-8 text-moprd-blue" />
-                  </div>
+      </div>
+
+      <h2 className="text-2xl font-bold mb-4">العروض المتاحة ({offers.length})</h2>
+
+      {offers.length === 0 ? (
+        <div className="text-center py-12 bg-gray-50 rounded-lg">
+          <Truck className="mx-auto h-12 w-12 text-gray-400 mb-3" />
+          <h3 className="text-lg font-medium text-gray-900">لا توجد عروض متاحة حاليًا</h3>
+          <p className="text-gray-500 mt-2">يرجى الانتظار أو تعديل طلبك للحصول على المزيد من العروض</p>
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {offers.map((offer) => (
+            <Card key={offer.id} className="overflow-hidden">
+              <div className="h-2 bg-moprd-teal"></div>
+              <CardContent className="pt-6">
+                <div className="flex items-center justify-between mb-4">
                   <div>
-                    <h3 className="font-medium text-lg">{offer.driverName}</h3>
-                    <div className="flex items-center space-x-3 ml-3 text-sm text-gray-600">
-                      <div className="flex items-center">
-                        <Star className="ml-1 h-4 w-4 text-yellow-500 fill-yellow-500" />
-                        <span>{offer.rating.toFixed(1)}</span>
-                      </div>
-                      <div className="flex items-center ml-3">
-                        <Clock className="ml-1 h-4 w-4 text-moprd-teal" />
-                        <span>{offer.estimatedArrival}</span>
-                      </div>
+                    <h3 className="font-bold text-lg">{offer.driverName}</h3>
+                    <div className="flex mt-1">
+                      {renderStars(offer.rating)}
+                      <span className="text-sm text-gray-500 mr-1">
+                        ({offer.rating})
+                      </span>
                     </div>
                   </div>
+                  <div className="h-12 w-12 rounded-full bg-gray-100 flex items-center justify-center">
+                    <Truck className="h-6 w-6 text-moprd-blue" />
+                  </div>
                 </div>
-                
-                <div className="flex flex-col md:flex-row items-center space-y-2 md:space-y-0 md:space-x-3 md:mr-3">
-                  <Badge 
-                    className={`px-3 py-1 text-lg ${
-                      offer.price <= requestDetails.estimatedPrice 
-                        ? "bg-green-100 text-green-800" 
-                        : "bg-yellow-100 text-yellow-800"
-                    }`}
-                  >
-                    {offer.price.toFixed(2)} ريال
-                  </Badge>
+
+                <div className="space-y-3">
+                  <div className="flex justify-between text-sm">
+                    <span className="text-gray-500">نوع الشاحنة</span>
+                    <span className="font-medium">{getTruckTypeLabel(offer.truckType)}</span>
+                  </div>
                   
+                  <div className="flex justify-between text-sm">
+                    <span className="text-gray-500">المسافة</span>
+                    <span className="font-medium">{offer.distance} كم</span>
+                  </div>
+                  
+                  <div className="flex justify-between text-sm">
+                    <span className="text-gray-500">وقت الوصول المقدر</span>
+                    <span className="font-medium">{offer.estimatedArrival}</span>
+                  </div>
+                  
+                  <div className="flex justify-between text-lg font-bold mt-4">
+                    <span>السعر</span>
+                    <div>
+                      <span className="text-green-600">{getOfferPrice(offer.price)} ريال</span>
+                      {discountApplied && (
+                        <div className="text-xs text-gray-500 line-through text-left">
+                          {offer.price} ريال
+                        </div>
+                      )}
+                    </div>
+                  </div>
+
                   <Button 
-                    className="bg-moprd-teal hover:bg-moprd-blue w-full md:w-auto mr-2"
-                    onClick={() => handleAcceptOffer(offer.id, offer.driverId)}
+                    className="w-full mt-2 bg-moprd-teal hover:bg-moprd-blue"
+                    onClick={() => onAcceptOffer(offer.id)}
                   >
-                    <CheckCircle className="ml-2 h-4 w-4" />
                     قبول العرض
                   </Button>
                 </div>
-              </div>
-            ))}
-          </div>
-        )}
-      </CardContent>
-    </Card>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+      )}
+    </div>
   );
 };
 
