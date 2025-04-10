@@ -1,4 +1,3 @@
-
 import React, { createContext, useContext, useState, useEffect } from "react";
 import { toast } from "sonner";
 
@@ -32,6 +31,7 @@ export interface AuthContextType {
   register: (name: string, email: string, password: string, role: UserRole) => Promise<void>;
   logout: () => void;
   updateDriverDetails: (details: Partial<DriverDetails>) => void;
+  resetPassword: (email: string) => Promise<void>; // Added resetPassword function
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -180,6 +180,33 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     toast.success("Driver details updated");
   };
 
+  // Add resetPassword function
+  const resetPassword = async (email: string): Promise<void> => {
+    setIsLoading(true);
+    
+    try {
+      // Simulate API call for password reset
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      
+      // Check if email exists in mock users
+      const userExists = MOCK_USERS.some(u => u.email === email);
+      if (!userExists) {
+        // Still return success to prevent email enumeration attacks
+        console.log("User not found, but returning success for security");
+      }
+      
+      // In a real app, this would send a reset email
+      console.log(`Password reset link would be sent to: ${email}`);
+      
+      toast.success("تم إرسال رابط إعادة تعيين كلمة المرور");
+    } catch (error) {
+      toast.error("فشل إرسال رابط إعادة تعيين كلمة المرور");
+      throw error;
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   return (
     <AuthContext.Provider
       value={{
@@ -190,6 +217,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         register,
         logout,
         updateDriverDetails,
+        resetPassword, // Add the new function to the context
       }}
     >
       {children}

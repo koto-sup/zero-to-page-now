@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -12,7 +11,7 @@ import { useAuth } from "@/contexts/AuthContext";
 
 const ForgotPassword = () => {
   const navigate = useNavigate();
-  const { resetPassword } = useAuth();
+  const { resetPassword } = useAuth(); // Now we can use resetPassword
   const [email, setEmail] = useState("");
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -31,9 +30,8 @@ const ForgotPassword = () => {
     setError("");
     
     try {
-      // In a real app with auth implementation, this would call the auth service
-      // resetPassword(email)
-      await new Promise((resolve) => setTimeout(resolve, 1500));
+      // Use the resetPassword function from AuthContext
+      await resetPassword(email);
       
       // Simulate success
       toast.success("تم إرسال رابط إعادة تعيين كلمة المرور", {

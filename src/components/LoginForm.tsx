@@ -15,7 +15,7 @@ import LanguageSelector from "@/components/LanguageSelector";
 const LoginForm = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
-  const { loginWithEmail } = useAuth();
+  const { login } = useAuth(); // Changed from loginWithEmail to login
   
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -45,8 +45,9 @@ const LoginForm = () => {
     setIsLoading(true);
     
     try {
-      // In a real app, this would call your auth service
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      // Use the login function from AuthContext, determine role based on email
+      const role = email.includes("driver") ? "driver" : "customer";
+      await login(email, password, role);
       
       // If remember me is checked, save the email to localStorage
       if (rememberMe) {
@@ -55,8 +56,8 @@ const LoginForm = () => {
         localStorage.removeItem("remembered_email");
       }
       
-      // Simulate login (integration with your auth system would go here)
-      if (email.includes("driver")) {
+      // Navigate based on user role
+      if (role === "driver") {
         navigate("/dashboard");
       } else {
         navigate("/customer-dashboard");
