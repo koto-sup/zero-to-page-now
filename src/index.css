@@ -154,6 +154,37 @@
     background: linear-gradient(135deg, rgba(255,255,255,0.8) 0%, rgba(255,255,255,0) 100%);
     transform: translate(-50%, -50%);
   }
+  
+  /* Truck type image styles */
+  .truck-type-image {
+    width: 48px;
+    height: 48px;
+    object-fit: contain;
+    transition: transform 0.2s ease;
+  }
+  
+  .truck-type-image-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #e6f7ff 0%, #cceeff 100%);
+    box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+    overflow: hidden;
+    margin-left: 12px;
+    transition: all 0.2s ease;
+  }
+  
+  .truck-type-selected .truck-type-image-container {
+    background: linear-gradient(135deg, #d0f0fd 0%, #88dbfb 100%);
+    box-shadow: 0 3px 8px rgba(0,149,255,0.15);
+  }
+  
+  .truck-type-selected .truck-type-image {
+    transform: scale(1.1);
+  }
 }
 
 @keyframes dripping {

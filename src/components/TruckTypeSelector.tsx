@@ -10,7 +10,6 @@ import {
   Store, 
   Construction, 
   Building2, 
-  TrainFront,
   Forklift,
   Trees
 } from "lucide-react";
@@ -20,87 +19,108 @@ interface TruckTypeSelectorProps {
   onTruckTypeChange: (value: string) => void;
 }
 
+interface TruckTypeInfo {
+  id: string;
+  name: string;
+  icon: JSX.Element;
+  image: string;
+  price: string;
+}
+
 const TruckTypeSelector: React.FC<TruckTypeSelectorProps> = ({
   selectedTruckType,
   onTruckTypeChange
 }) => {
-  const truckTypes = [
+  const truckTypes: TruckTypeInfo[] = [
     { 
       id: "refrigerated", 
       name: "شاحنة مبردة", 
       icon: <Truck className="h-6 w-6 text-cyan-500" />,
+      image: "/lovable-uploads/524d4fdf-7185-4546-908a-e43c8d728c38.png",
       price: "110 ريال/ساعة"
     },
     { 
       id: "transport", 
       name: "شاحنة نقل", 
       icon: <Truck className="h-6 w-6 text-blue-600" />,
+      image: "/assets/truck-transport.png",
       price: "95 ريال/ساعة" 
     },
     { 
       id: "store", 
       name: "شاحنة متجر", 
       icon: <Store className="h-6 w-6 text-green-600" />,
+      image: "/assets/truck-store.png",
       price: "120 ريال/ساعة" 
     },
     { 
       id: "crane", 
       name: "شاحنة رافعة", 
       icon: <Construction className="h-6 w-6 text-yellow-600" />,
+      image: "/assets/truck-crane.png",
       price: "150 ريال/ساعة" 
     },
     { 
       id: "wood", 
       name: "شاحنة نقل الأخشاب", 
       icon: <Trees className="h-6 w-6 text-amber-700" />,
+      image: "/assets/truck-wood.png",
       price: "105 ريال/ساعة" 
     },
     { 
       id: "tractor", 
       name: "جرار زراعي", 
       icon: <Tractor className="h-6 w-6 text-green-700" />,
+      image: "/assets/tractor.png",
       price: "130 ريال/ساعة" 
     },
     { 
       id: "loading-crane", 
       name: "رافعة تحميل", 
       icon: <Loader className="h-6 w-6 text-orange-600" />,
+      image: "/assets/loading-crane.png",
       price: "160 ريال/ساعة" 
     },
     { 
       id: "bulldozer", 
       name: "جرافة", 
       icon: <Construction className="h-6 w-6 text-yellow-500" />,
+      image: "/assets/bulldozer.png",
       price: "170 ريال/ساعة" 
     },
     { 
       id: "dump-truck", 
       name: "شاحنة قلابة", 
       icon: <Truck className="h-6 w-6 text-gray-600" />,
+      image: "/assets/dump-truck.png",
       price: "125 ريال/ساعة" 
     },
     { 
       id: "skid-steer", 
       name: "لودر انزلاقي", 
       icon: <Forklift className="h-6 w-6 text-yellow-800" />,
+      image: "/assets/skid-steer.png",
       price: "115 ريال/ساعة" 
     },
     { 
       id: "flatbed", 
       name: "شاحنة مسطحة", 
       icon: <Truck className="h-6 w-6 text-red-600" />,
+      image: "/assets/flatbed.png",
       price: "100 ريال/ساعة" 
     },
     { 
       id: "backhoe", 
       name: "حفارة خلفية", 
       icon: <Construction className="h-6 w-6 text-purple-600" />,
+      image: "/assets/backhoe.png",
       price: "145 ريال/ساعة" 
     },
     { 
       id: "front-loader", 
       name: "لودر أمامي", 
       icon: <Building2 className="h-6 w-6 text-indigo-600" />,
+      image: "/assets/front-loader.png",
       price: "140 ريال/ساعة" 
     }
   ];
@@ -129,7 +149,17 @@ const TruckTypeSelector: React.FC<TruckTypeSelectorProps> = ({
                 htmlFor={`truck-type-${type.id}`} 
                 className="flex items-center mr-2 p-2 cursor-pointer w-full hover:bg-muted/20 rounded-md transition-colors"
               >
-                <div className="ml-2 p-2 bg-cyan-50 rounded-full">{type.icon}</div>
+                <div className="ml-3 p-1 rounded-full bg-blue-50 flex items-center justify-center" style={{ width: "48px", height: "48px" }}>
+                  {type.id === "refrigerated" ? (
+                    <img 
+                      src={type.image} 
+                      alt={type.name} 
+                      className="max-w-full max-h-full" 
+                    />
+                  ) : (
+                    <div className="p-1 bg-cyan-50 rounded-full">{type.icon}</div>
+                  )}
+                </div>
                 <div>
                   <div className="font-medium">{type.name}</div>
                   <div className="text-sm text-gray-500">
