@@ -21,6 +21,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import LanguageSelector from "@/components/LanguageSelector";
 
 const Navbar = () => {
   const { user, logout } = useAuth();
@@ -41,6 +42,9 @@ const Navbar = () => {
           </Link>
         </div>
         <div className="flex items-center">
+          <div className="mr-4">
+            <LanguageSelector />
+          </div>
           {user ? (
             <div className="flex items-center gap-4">
               {user.role === "customer" && (

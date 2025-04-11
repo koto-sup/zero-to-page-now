@@ -9,7 +9,11 @@ import {
   MessageSquare, 
   Clock,
   ShieldCheck,
-  ArrowRight
+  ArrowRight,
+  Calendar,
+  TruckIcon,
+  Package,
+  CheckCircle
 } from "lucide-react";
 
 const Index = () => {
@@ -35,10 +39,10 @@ const Index = () => {
           <div className="grid md:grid-cols-2 gap-8 items-center">
             <div>
               <h1 className="text-4xl md:text-5xl font-bold mb-6">
-                شاحنات مبردة عند الطلب
+                شاحنات متخصصة عند الطلب
               </h1>
               <p className="text-xl mb-8 text-white/90">
-                زكرت يربطك مع سائقي الشاحنات المبردة القريبين لجميع احتياجات النقل البارد.
+                زكرت يربطك مع سائقي الشاحنات القريبين لجميع احتياجات النقل الخاصة بك، سواء كانت شاحنات مبردة أو نقل عام أو متخصصة.
               </p>
               <div className="flex flex-wrap gap-4">
                 {!user && (
@@ -80,13 +84,32 @@ const Index = () => {
               <div className="relative bg-white p-4 rounded-lg shadow-xl transform rotate-2">
                 <img 
                   src="/placeholder.svg" 
-                  alt="شاحنة مبردة" 
+                  alt="شاحنة متخصصة" 
                   className="rounded w-full h-64 object-cover"
                 />
                 <div className="absolute -bottom-3 -right-3 bg-moprd-cyan text-moprd-blue p-2 rounded-lg shadow-lg">
-                  <Snowflake className="h-10 w-10" />
+                  <TruckIcon className="h-10 w-10" />
                 </div>
               </div>
+            </div>
+          </div>
+          
+          <div className="flex flex-wrap justify-center mt-12 gap-4">
+            <div className="flex items-center bg-white/20 backdrop-blur-sm px-4 py-2 rounded-full">
+              <Snowflake className="h-5 w-5 mr-2" />
+              <span className="text-sm font-medium">شاحنات مبردة</span>
+            </div>
+            <div className="flex items-center bg-white/20 backdrop-blur-sm px-4 py-2 rounded-full">
+              <Package className="h-5 w-5 mr-2" />
+              <span className="text-sm font-medium">نقل البضائع</span>
+            </div>
+            <div className="flex items-center bg-white/20 backdrop-blur-sm px-4 py-2 rounded-full">
+              <Calendar className="h-5 w-5 mr-2" />
+              <span className="text-sm font-medium">إيجار يومي أو شهري</span>
+            </div>
+            <div className="flex items-center bg-white/20 backdrop-blur-sm px-4 py-2 rounded-full">
+              <CheckCircle className="h-5 w-5 mr-2" />
+              <span className="text-sm font-medium">خصومات للعملاء الدائمين</span>
             </div>
           </div>
         </div>
@@ -106,7 +129,7 @@ const Index = () => {
               </div>
               <h3 className="text-xl font-semibold mb-3">ابحث عن الشاحنات القريبة</h3>
               <p className="text-gray-600">
-                تصفح الشاحنات المبردة المتاحة في منطقتك واختر ما يناسب احتياجاتك.
+                تصفح الشاحنات المتاحة في منطقتك واختر ما يناسب احتياجاتك بناءً على نوع الشاحنة ومواصفاتها.
               </p>
             </div>
             <div className="text-center p-6 bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow">
@@ -117,7 +140,7 @@ const Index = () => {
               </div>
               <h3 className="text-xl font-semibold mb-3">طلب عروض أسعار والدردشة</h3>
               <p className="text-gray-600">
-                اطلب عرض سعر وتحدث مباشرة مع السائقين لمناقشة احتياجات النقل الخاصة بك.
+                اطلب عرض سعر وتحدث مباشرة مع السائقين لمناقشة احتياجات النقل الخاصة بك واختر مدة الإيجار المناسبة.
               </p>
             </div>
             <div className="text-center p-6 bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow">
@@ -128,7 +151,7 @@ const Index = () => {
               </div>
               <h3 className="text-xl font-semibold mb-3">احجز وتتبع</h3>
               <p className="text-gray-600">
-                اقبل العرض، وجدول موعد الاستلام والتسليم، ثم تتبع شحنتك في الوقت الحقيقي.
+                اقبل العرض، وجدول موعد الاستلام والتسليم، ثم تتبع شحنتك في الوقت الحقيقي عبر خريطة التتبع المباشرة.
               </p>
             </div>
           </div>
@@ -147,19 +170,19 @@ const Index = () => {
                 </div>
               </div>
               <div>
-                <h3 className="text-lg font-semibold mb-2">التحكم في درجة الحرارة</h3>
-                <p className="text-gray-600">جميع الشاحنات مجهزة بأنظمة تبريد متطورة للنقل الآمن.</p>
+                <h3 className="text-lg font-semibold mb-2">شاحنات متخصصة</h3>
+                <p className="text-gray-600">مجموعة متنوعة من الشاحنات المتخصصة بما في ذلك المبردة ونقل الأثاث والمعدات الثقيلة.</p>
               </div>
             </div>
             <div className="flex items-start p-4">
               <div className="flex-shrink-0 ml-4">
                 <div className="p-2 bg-moprd-teal/20 rounded-full">
-                  <Clock className="h-6 w-6 text-moprd-teal" />
+                  <Calendar className="h-6 w-6 text-moprd-teal" />
                 </div>
               </div>
               <div>
-                <h3 className="text-lg font-semibold mb-2">خدمة عند الطلب</h3>
-                <p className="text-gray-600">احجز شاحنات مبردة عندما تحتاجها، وأينما تحتاجها.</p>
+                <h3 className="text-lg font-semibold mb-2">خيارات مدة الإيجار</h3>
+                <p className="text-gray-600">اختر مدة الإيجار المناسبة لك: يومياً، أسبوعياً أو شهرياً بحسب احتياجاتك.</p>
               </div>
             </div>
             <div className="flex items-start p-4">
@@ -170,7 +193,7 @@ const Index = () => {
               </div>
               <div>
                 <h3 className="text-lg font-semibold mb-2">سائقون موثوقون</h3>
-                <p className="text-gray-600">جميع السائقين تم التحقق منهم ويتم فحص مركباتهم بانتظام.</p>
+                <p className="text-gray-600">جميع السائقين تم التحقق منهم ويتم فحص مركباتهم بانتظام لضمان الجودة والسلامة.</p>
               </div>
             </div>
             <div className="flex items-start p-4">
@@ -180,8 +203,8 @@ const Index = () => {
                 </div>
               </div>
               <div>
-                <h3 className="text-lg font-semibold mb-2">تواصل مباشر</h3>
-                <p className="text-gray-600">تحدث مباشرة مع السائقين للتأكد من تلبية احتياجاتك.</p>
+                <h3 className="text-lg font-semibold mb-2">تواصل مباشر وتتبع</h3>
+                <p className="text-gray-600">تحدث مباشرة مع السائقين وتتبع موقعهم في الوقت الحقيقي عبر الخريطة التفاعلية.</p>
               </div>
             </div>
           </div>
@@ -201,13 +224,13 @@ const Index = () => {
           <div className="max-w-3xl mx-auto">
             <h2 className="text-3xl font-bold mb-6">
               {!user && "انضم إلى شبكة زكرت اليوم"}
-              {user?.role === "customer" && "هل تحتاج إلى نقل بضائع مبردة؟"}
-              {user?.role === "driver" && "جاهز لتنمية أعمالك في مجال النقل المبرد؟"}
+              {user?.role === "customer" && "هل تحتاج إلى خدمات نقل متخصصة؟"}
+              {user?.role === "driver" && "جاهز لتنمية أعمالك وزيادة دخلك؟"}
             </h2>
             <p className="text-xl mb-8 text-white/90">
-              {!user && "سواء كنت بحاجة إلى نقل مبرد أو ترغب في تقديم خدمات شاحنتك، تربط زكرت الجميع في شبكة لوجستية للسلسلة الباردة."}
-              {user?.role === "customer" && "ابحث عن الشاحنات المبردة المتاحة في منطقتك وانقل بضائعك بثقة مع التحكم في درجة الحرارة."}
-              {user?.role === "driver" && "أكمل ملفك الشخصي، وحدد توفرك، وابدأ في تلقي طلبات الحجز من العملاء في منطقتك."}
+              {!user && "نوفر حلول نقل متكاملة لجميع احتياجاتك مع خيارات مرنة للإيجار اليومي أو الأسبوعي أو الشهري. انضم الآن واستفد من خصومات العملاء الدائمين."}
+              {user?.role === "customer" && "ابحث عن الشاحنات المتاحة في منطقتك واختر خطة الإيجار المناسبة، سواء ليوم أو أسبوع أو حتى شهر كامل."}
+              {user?.role === "driver" && "أكمل ملفك الشخصي، وحدد توفرك وخدماتك، وابدأ في تلقي طلبات الحجز المربحة من العملاء في منطقتك."}
             </p>
             <div className="flex flex-wrap justify-center gap-4">
               {!user && (

@@ -7,15 +7,6 @@ import { useLanguage } from "@/contexts/LanguageContext";
 import TruckRequestForm from "@/components/TruckRequestForm";
 import TruckOffersList from "@/components/TruckOffersList";
 import LanguageSelector from "@/components/LanguageSelector";
-import { 
-  NavigationMenu,
-  NavigationMenuContent,
-  NavigationMenuItem,
-  NavigationMenuLink,
-  NavigationMenuList,
-  NavigationMenuTrigger,
-} from "@/components/ui/navigation-menu";
-import { Menubar, MenubarContent, MenubarItem, MenubarMenu, MenubarTrigger } from "@/components/ui/menubar";
 import { Button } from "@/components/ui/button";
 
 interface RequestDetails {
@@ -109,7 +100,7 @@ const FindTrucks = () => {
     setRequestSubmitted(true);
   };
 
-  const handleAcceptOffer = (offerId: string) => {
+  const handleAcceptOffer = (offerId: string, rentalDuration: string = "day") => {
     // في تطبيق حقيقي، سنقوم بإرسال قبول العرض إلى الخادم
     // وإنشاء محادثة مع السائق
 
@@ -121,7 +112,13 @@ const FindTrucks = () => {
           description: "شكراً لاستخدامك زكرت"
         });
       }
-      navigate(`/chat/${selectedOffer.driverId}`);
+      
+      toast.success("تم قبول العرض!", {
+        description: `سيصلك السائق خلال ${selectedOffer.estimatedArrival} تقريباً`
+      });
+      
+      // Redirect to tracking page instead of chat
+      navigate(`/truck-tracking/${selectedOffer.driverId}`);
     }
   };
   

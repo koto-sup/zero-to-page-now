@@ -51,7 +51,7 @@ const Invoice: React.FC<InvoiceProps> = ({
     console.log("Downloading invoice as PDF");
   };
 
-  const actualSubtotal = subtotal || amount + serviceFee;
+  const actualSubtotal = subtotal || amount;
 
   return (
     <Card className="invoice-card max-w-4xl mx-auto my-8 print:shadow-none">
@@ -66,7 +66,7 @@ const Invoice: React.FC<InvoiceProps> = ({
           </div>
           <div className="text-right">
             <h2 className="font-bold text-xl">زكرت</h2>
-            <p className="text-sm text-gray-500">خدمات تأجير الشاحنات المبردة</p>
+            <p className="text-sm text-gray-500">خدمات تأجير الشاحنات</p>
           </div>
         </div>
       </CardHeader>
@@ -82,6 +82,9 @@ const Invoice: React.FC<InvoiceProps> = ({
             <h3 className="font-bold mb-2">السائق</h3>
             <p>{driverName}</p>
             <p className="text-sm text-gray-500">معرف السائق: {driverId}</p>
+            <p className="text-sm text-gray-500 bg-blue-50 rounded px-2 py-1 inline-block mt-1">
+              * يتم خصم رسوم خدمة 7% من السائق عند إتمام الطلب
+            </p>
           </div>
         </div>
 
@@ -125,10 +128,6 @@ const Invoice: React.FC<InvoiceProps> = ({
             <div className="flex justify-between py-2">
               <span>خدمة النقل:</span>
               <span>{amount.toFixed(2)} ريال</span>
-            </div>
-            <div className="flex justify-between py-2">
-              <span>رسوم تشغيلية (7%):</span>
-              <span>{serviceFee.toFixed(2)} ريال</span>
             </div>
             <div className="flex justify-between py-2 border-t border-gray-200 mt-2 pt-2">
               <span>المجموع الفرعي:</span>

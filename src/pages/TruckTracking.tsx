@@ -1,172 +1,295 @@
 
-import React, { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
-import { Badge } from "@/components/ui/badge";
+import React, { useState, useEffect, useRef } from "react";
+import { useParams, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { IceButtonV2 } from "@/components/ui/ice-button-v2";
-import { IceCard, IceCardContent } from "@/components/ui/ice-card";
-import { toast } from "sonner";
-import { Phone, MessageSquare, X, Share2, FileText } from "lucide-react";
-import { useAuth } from "@/contexts/AuthContext";
+import { Card, CardContent } from "@/components/ui/card";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import EnhancedTruckMap from "@/components/EnhancedTruckMap";
+import ChatBox from "@/components/ChatBox";
+import { toast } from "sonner";
+import { 
+  Clock, 
+  MapPin, 
+  Truck, 
+  Phone, 
+  ChevronDown, 
+  ChevronUp, 
+  X,
+  MessageCircle
+} from "lucide-react";
 
 const TruckTracking = () => {
+  const { driverId } = useParams<{ driverId: string }>();
   const navigate = useNavigate();
-  const { user } = useAuth();
-  const [estimatedTime, setEstimatedTime] = useState("15 دقيقة");
-  const [distance, setDistance] = useState(2.3);
-  const [driverInfo, setDriverInfo] = useState({
-    name: "خالد السائق",
-    phone: "+966 50 123 4567",
-    rating: 4.8,
-    plateNumber: "ل و د 1234",
-    status: "في الطريق"
-  });
+  
+  const [orderAccepted, setOrderAccepted] = useState(true);
+  const [orderStartTime, setOrderStartTime] = useState<Date>(new Date());
+  const [showChat, setShowChat] = useState(false);
+  const [canCancel, setCanCancel] = useState(true);
+  const [timeLeft, setTimeLeft] = useState(14 * 60); // 14 minutes in seconds
+  const [currentStatus, setCurrentStatus] = useState("جاري التحرك نحو موقعك");
+  
+  // Mock data
+  const orderDetails = {
+    orderId: "ORD-" + Math.floor(Math.random() * 1000000),
+    driverName: "خالد السائق",
+    driverId: driverId || "driver-1",
+    driverPhone: "+966 50 123 4567",
+    pickupLocation: "الرياض، حي النرجس",
+    deliveryLocation: "الرياض، حي الملقا",
+    vehicleType: "شاحنة مبردة",
+    licensePlate: "FYX 2847",
+    estimatedArrival: "10 دقائق",
+    rentalDuration: "يوم واحد",
+    price: "105 ريال",
+  };
+
+  // Mock messages for chat
+  const initialMessages = [
+    {
+      id: "msg-1",
+      senderId: "customer-1",
+      senderName: "أنا",
+      content: "مرحباً، أين أنت الآن؟",
+      timestamp: new Date(Date.now() - 3600000 * 0.5),
+    },
+    {
+      id: "msg-2",
+      senderId: orderDetails.driverId,
+      senderName: orderDetails.driverName,
+      senderAvatar: "/placeholder.svg",
+      content: "مرحباً، أنا في الطريق إليك. سأصل خلال 10 دقائق تقريباً.",
+      timestamp: new Date(Date.now() - 3600000 * 0.3),
+    },
+  ];
 
   useEffect(() => {
-    // Simulate driver movement with decreasing distance
-    const interval = setInterval(() => {
-      setDistance(prevDistance => {
-        const newDistance = Math.max(prevDistance - 0.1, 0).toFixed(1);
-        
-        // Update estimated time as well
-        const newTime = Math.max(Math.floor(Number(newDistance) * 5), 1);
-        setEstimatedTime(`${newTime} دقيقة`);
-        
-        // Show notification when driver is close
-        if (Number(newDistance) <= 0.5 && Number(prevDistance) > 0.5) {
-          toast.info("السائق قريب منك!", {
-            description: "السائق على بعد أقل من 500 متر",
-            duration: 5000
+    // Set the order start time to the current time
+    setOrderStartTime(new Date());
+    
+    // Timer to update the cancellation window
+    const timer = setInterval(() => {
+      setTimeLeft(prev => {
+        const newTime = prev - 1;
+        if (newTime <= 0) {
+          clearInterval(timer);
+          setCanCancel(false);
+          toast.info("انتهى وقت الإلغاء", {
+            description: "لم يعد بإمكانك إلغاء الطلب بعد الآن"
           });
+          return 0;
         }
+        return newTime;
+      });
+    }, 1000);
+    
+    // Simulating status updates
+    const statusTimer = setTimeout(() => {
+      setCurrentStatus("في الطريق إليك");
+      
+      setTimeout(() => {
+        setCurrentStatus("قريب من موقعك");
         
-        return Number(newDistance);
-      });
-    }, 5000);
-
-    return () => clearInterval(interval);
+        setTimeout(() => {
+          setCurrentStatus("وصل إلى موقعك");
+          toast.success("وصل السائق إلى موقعك!", {
+            description: "السائق في انتظارك الآن"
+          });
+        }, 30000); // 30 seconds later
+        
+      }, 20000); // 20 seconds later
+    }, 10000); // 10 seconds later
+    
+    return () => {
+      clearInterval(timer);
+      clearTimeout(statusTimer);
+    };
   }, []);
-
-  const handleCallDriver = () => {
-    // In a real app, this would initiate a phone call
-    toast.info("جاري الاتصال بالسائق", {
-      description: driverInfo.phone,
-      duration: 3000
-    });
+  
+  const formatTimeLeft = (seconds: number) => {
+    const minutes = Math.floor(seconds / 60);
+    const remainingSeconds = seconds % 60;
+    return `${minutes}:${remainingSeconds < 10 ? '0' : ''}${remainingSeconds}`;
   };
-
-  const handleChat = () => {
-    navigate("/chat/driver-1");
-  };
-
-  const handleCancel = () => {
-    // Show confirmation dialog
-    if (window.confirm("هل أنت متأكد من إلغاء هذه الرحلة؟ قد تخضع لرسوم الإلغاء.")) {
-      toast.error("تم إلغاء الرحلة", {
-        description: "سيتم إعادتك إلى الصفحة الرئيسية",
-        duration: 3000
+  
+  const handleCancelOrder = () => {
+    if (!canCancel) {
+      toast.error("لا يمكن إلغاء الطلب", {
+        description: "لقد تجاوزت فترة السماح للإلغاء (14 دقيقة)"
       });
-      navigate("/customer-dashboard");
+      return;
     }
-  };
-
-  const handleShareLocation = () => {
-    // In a real app, this would share the user's current location
-    toast.success("تم مشاركة موقعك الحالي", {
-      description: "سيتلقى السائق موقعك الدقيق",
-      duration: 3000
+    
+    // In a real app, we'd send a request to the server
+    toast.success("تم إلغاء الطلب", {
+      description: "سيتم إشعار السائق بإلغاء طلبك"
     });
+    
+    setTimeout(() => {
+      navigate("/find-trucks");
+    }, 2000);
+  };
+  
+  const handleCall = () => {
+    toast.info("جاري الاتصال بالسائق", {
+      description: orderDetails.driverPhone
+    });
+  };
+  
+  const toggleChat = () => {
+    setShowChat(prev => !prev);
   };
 
   return (
-    <div className="min-h-screen bg-background pb-20">
-      {/* Map container takes most of the screen */}
-      <div className="w-full h-[70vh] relative">
-        <EnhancedTruckMap tracking={true} distance={distance} />
+    <div className="container mx-auto px-4 py-8">
+      <div className="flex justify-between items-center mb-6">
+        <div>
+          <h1 className="text-3xl font-bold">تتبع الطلب</h1>
+          <p className="text-gray-600">رقم الطلب: {orderDetails.orderId}</p>
+        </div>
         
-        {/* Estimated arrival time overlay */}
-        <IceCard className="absolute top-4 right-4 left-4 p-4 z-10">
-          <IceCardContent className="p-0">
-            <div className="flex justify-between items-center">
-              <div>
-                <h2 className="text-lg font-bold">الوصول خلال</h2>
-                <div className="text-3xl font-bold text-moprd-blue">{estimatedTime}</div>
-              </div>
-              <div className="text-right">
-                <Badge className="bg-moprd-teal text-white">{driverInfo.status}</Badge>
-                <p className="mt-1">المسافة: {distance} كم</p>
-              </div>
+        <div>
+          {canCancel && (
+            <div className="flex flex-col items-end">
+              <span className="text-sm text-gray-500 mb-1">وقت متبقي للإلغاء:</span>
+              <span className="text-lg font-medium">{formatTimeLeft(timeLeft)}</span>
             </div>
-          </IceCardContent>
-        </IceCard>
+          )}
+        </div>
       </div>
-
-      {/* Driver info card */}
-      <div className="mx-4 -mt-10 relative z-10">
-        <IceCard className="rounded-xl">
-          <IceCardContent className="p-4">
-            <div className="flex items-center justify-between mb-3">
-              <div className="flex items-center">
-                <div className="w-14 h-14 bg-moprd-teal/20 rounded-full flex items-center justify-center mr-3">
-                  <img 
-                    src="https://api.dicebear.com/7.x/micah/svg?seed=driver123" 
-                    alt="Driver avatar" 
-                    className="w-10 h-10 rounded-full"
-                  />
+      
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div className="md:col-span-1">
+          <Card>
+            <CardContent className="p-6">
+              <div className="flex justify-between items-center mb-4">
+                <h2 className="text-xl font-bold">تفاصيل الطلب</h2>
+                <div className="px-2 py-1 bg-blue-100 text-blue-800 rounded-full text-xs font-medium">
+                  {currentStatus}
                 </div>
-                <div>
-                  <h3 className="font-bold text-lg">{driverInfo.name}</h3>
+              </div>
+              
+              <div className="space-y-4">
+                <div className="bg-gray-50 p-4 rounded-lg">
+                  <div className="flex items-center mb-3">
+                    <Truck className="text-moprd-blue h-5 w-5 ml-2" />
+                    <h3 className="font-medium">معلومات السائق</h3>
+                  </div>
                   <div className="flex items-center">
-                    <span className="text-yellow-500">★</span>
-                    <span className="ml-1">{driverInfo.rating}</span>
-                    <span className="mx-2">•</span>
-                    <span>{driverInfo.plateNumber}</span>
+                    <img 
+                      src="/placeholder.svg" 
+                      alt={orderDetails.driverName} 
+                      className="w-12 h-12 rounded-full mr-3"
+                    />
+                    <div>
+                      <p className="font-medium">{orderDetails.driverName}</p>
+                      <p className="text-sm text-gray-500">{orderDetails.vehicleType}</p>
+                      <p className="text-xs text-gray-500">لوحة الترخيص: {orderDetails.licensePlate}</p>
+                    </div>
                   </div>
                 </div>
-              </div>
+                
+                <div className="space-y-3">
+                  <div className="flex">
+                    <MapPin className="h-5 w-5 text-gray-500 ml-2 flex-shrink-0" />
+                    <div>
+                      <p className="text-sm text-gray-500">موقع الانطلاق</p>
+                      <p>{orderDetails.pickupLocation}</p>
+                    </div>
+                  </div>
+                  
+                  <div className="flex">
+                    <MapPin className="h-5 w-5 text-gray-500 ml-2 flex-shrink-0" />
+                    <div>
+                      <p className="text-sm text-gray-500">الوجهة</p>
+                      <p>{orderDetails.deliveryLocation}</p>
+                    </div>
+                  </div>
+                  
+                  <div className="flex">
+                    <Clock className="h-5 w-5 text-gray-500 ml-2 flex-shrink-0" />
+                    <div>
+                      <p className="text-sm text-gray-500">وقت الوصول المتوقع</p>
+                      <p>{orderDetails.estimatedArrival}</p>
+                    </div>
+                  </div>
+                  
+                  <div className="flex">
+                    <Clock className="h-5 w-5 text-gray-500 ml-2 flex-shrink-0" />
+                    <div>
+                      <p className="text-sm text-gray-500">مدة الإيجار</p>
+                      <p>{orderDetails.rentalDuration}</p>
+                    </div>
+                  </div>
+                </div>
 
-              <div className="flex gap-2">
-                <button 
-                  onClick={handleCallDriver}
-                  className="w-12 h-12 bg-cyan-100 hover:bg-cyan-200 rounded-full flex items-center justify-center transition-colors"
-                >
-                  <Phone className="text-cyan-600" />
-                </button>
-                <button 
-                  onClick={handleChat}
-                  className="w-12 h-12 bg-cyan-100 hover:bg-cyan-200 rounded-full flex items-center justify-center transition-colors"
-                >
-                  <MessageSquare className="text-cyan-600" />
-                </button>
-                <button 
-                  onClick={handleCancel}
-                  className="w-12 h-12 bg-red-100 hover:bg-red-200 rounded-full flex items-center justify-center transition-colors"
-                >
-                  <X className="text-red-500" />
-                </button>
+                <div className="pt-3 mt-3 border-t border-gray-200">
+                  <p className="font-medium mb-1">الإجمالي</p>
+                  <p className="text-2xl font-bold text-moprd-blue">{orderDetails.price}</p>
+                </div>
+                
+                <div className="flex flex-col gap-2">
+                  <Button 
+                    variant="outline" 
+                    className="w-full flex items-center justify-center"
+                    onClick={handleCall}
+                  >
+                    <Phone className="mr-2 h-4 w-4" />
+                    اتصال بالسائق
+                  </Button>
+                  
+                  <Button 
+                    variant="outline" 
+                    className="w-full flex items-center justify-center"
+                    onClick={toggleChat}
+                  >
+                    <MessageCircle className="mr-2 h-4 w-4" />
+                    {showChat ? "إخفاء المحادثة" : "محادثة السائق"}
+                  </Button>
+                  
+                  {canCancel && (
+                    <Button 
+                      variant="destructive" 
+                      className="w-full mt-2"
+                      onClick={handleCancelOrder}
+                    >
+                      <X className="mr-2 h-4 w-4" />
+                      إلغاء الطلب
+                    </Button>
+                  )}
+                </div>
               </div>
+            </CardContent>
+          </Card>
+        </div>
+        
+        <div className="md:col-span-2">
+          <div className={`grid grid-cols-1 gap-4 ${showChat ? 'md:grid-cols-2' : 'md:grid-cols-1'}`}>
+            <div className={`${showChat ? 'h-[500px]' : 'h-[500px]'}`}>
+              <Card className="h-full overflow-hidden">
+                <CardContent className="p-0 h-full">
+                  <EnhancedTruckMap tracking={true} distance={2.3} />
+                </CardContent>
+              </Card>
             </div>
-
-            <div className="grid grid-cols-2 gap-4 mt-4">
-              <IceButtonV2 
-                variant="outline" 
-                className="border-cyan-400 hover:bg-cyan-50"
-                onClick={() => navigate("/invoice-details/latest")}
-              >
-                <FileText className="mr-2 h-4 w-4" />
-                عرض تفاصيل الفاتورة
-              </IceButtonV2>
-              
-              <IceButtonV2
-                onClick={handleShareLocation}
-              >
-                <Share2 className="mr-2 h-4 w-4" />
-                مشاركة موقعي الحالي
-              </IceButtonV2>
-            </div>
-          </IceCardContent>
-        </IceCard>
+            
+            {showChat && (
+              <div className="h-[500px]">
+                <Card className="h-full overflow-hidden">
+                  <CardContent className="p-0 h-full">
+                    <ChatBox 
+                      chatId="tracking-chat" 
+                      recipientId={orderDetails.driverId} 
+                      recipientName={orderDetails.driverName}
+                      recipientAvatar="/placeholder.svg"
+                      initialMessages={initialMessages}
+                    />
+                  </CardContent>
+                </Card>
+              </div>
+            )}
+          </div>
+        </div>
       </div>
     </div>
   );
