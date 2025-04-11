@@ -9,7 +9,7 @@ interface TripDetailsProps {
   estimatedPrice: number;
   discountApplied?: boolean;
   loading: boolean;
-  onSubmit: () => void;
+  onSubmit: (e?: React.FormEvent) => void;
 }
 
 const TripDetails: React.FC<TripDetailsProps> = ({
@@ -88,7 +88,7 @@ const TripDetails: React.FC<TripDetailsProps> = ({
         type="submit" 
         className="w-full bg-moprd-teal hover:bg-moprd-blue h-12 text-lg"
         disabled={loading}
-        onClick={onSubmit}
+        onClick={(e) => onSubmit(e)}
       >
         {loading ? "جاري البحث..." : "البحث عن شاحنات"}
       </Button>
