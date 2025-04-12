@@ -8,6 +8,11 @@ export interface RequestDetails {
   destination: string;
   distance: number;
   estimatedPrice: number;
+  truckType?: string;
+  daysSelected?: number;
+  truckSize?: string;
+  excavatorHeadType?: string;
+  flatbedDeliveryOption?: string;
 }
 
 export interface TruckOffer {
@@ -43,38 +48,78 @@ export const useTruckFinderState = () => {
     if (requestSubmitted && requestDetails) {
       // محاكاة استلام عروض من السائقين
       const timer = setTimeout(() => {
-        const mockOffers: TruckOffer[] = [
-          {
-            id: "offer-1",
-            driverId: "driver-1",
-            driverName: "خالد السائق",
-            distance: 1.2,
-            rating: 4.8,
-            price: requestDetails.estimatedPrice - 10,
-            estimatedArrival: "10 دقائق",
-            truckType: "refrigerated"
-          },
-          {
-            id: "offer-2",
-            driverId: "driver-2",
-            driverName: "محمد السائق",
-            distance: 2.4,
-            rating: 4.5,
-            price: requestDetails.estimatedPrice - 5,
-            estimatedArrival: "15 دقيقة",
-            truckType: "transport"
-          },
-          {
-            id: "offer-3",
-            driverId: "driver-3",
-            driverName: "أحمد السائق",
-            distance: 3.7,
-            rating: 4.9,
-            price: requestDetails.estimatedPrice + 15,
-            estimatedArrival: "5 دقائق",
-            truckType: "crane"
-          }
-        ];
+        let mockOffers: TruckOffer[] = [];
+        const isRefrigeratedOrDayBased = requestDetails.truckType === 'refrigerated' || 
+          ["jcp", "dump-truck", "water-truck", "crawler-excavator", "wheel-excavator"].includes(requestDetails.truckType || '');
+        
+        if (isRefrigeratedOrDayBased) {
+          mockOffers = [
+            {
+              id: "offer-1",
+              driverId: "driver-1",
+              driverName: "خالد السائق",
+              distance: 1.2,
+              rating: 4.8,
+              price: requestDetails.estimatedPrice - 10,
+              estimatedArrival: "10 دقائق",
+              truckType: requestDetails.truckType || "refrigerated"
+            },
+            {
+              id: "offer-2",
+              driverId: "driver-2",
+              driverName: "محمد السائق",
+              distance: 2.4,
+              rating: 4.5,
+              price: requestDetails.estimatedPrice - 5,
+              estimatedArrival: "15 دقيقة",
+              truckType: requestDetails.truckType || "refrigerated"
+            },
+            {
+              id: "offer-3",
+              driverId: "driver-3",
+              driverName: "أحمد السائق",
+              distance: 3.7,
+              rating: 4.9,
+              price: requestDetails.estimatedPrice + 15,
+              estimatedArrival: "5 دقائق",
+              truckType: requestDetails.truckType || "refrigerated"
+            }
+          ];
+        } else {
+          // Legacy offers
+          mockOffers = [
+            {
+              id: "offer-1",
+              driverId: "driver-1",
+              driverName: "خالد السائق",
+              distance: 1.2,
+              rating: 4.8,
+              price: requestDetails.estimatedPrice - 10,
+              estimatedArrival: "10 دقائق",
+              truckType: "transport"
+            },
+            {
+              id: "offer-2",
+              driverId: "driver-2",
+              driverName: "محمد السائق",
+              distance: 2.4,
+              rating: 4.5,
+              price: requestDetails.estimatedPrice - 5,
+              estimatedArrival: "15 دقيقة",
+              truckType: "transport"
+            },
+            {
+              id: "offer-3",
+              driverId: "driver-3",
+              driverName: "أحمد السائق",
+              distance: 3.7,
+              rating: 4.9,
+              price: requestDetails.estimatedPrice + 15,
+              estimatedArrival: "5 دقائق",
+              truckType: "crane"
+            }
+          ];
+        }
         
         setOffers(mockOffers);
         

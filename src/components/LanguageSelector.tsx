@@ -18,9 +18,13 @@ const LanguageSelector = () => {
   };
 
   const handleLanguageChange = (code: string) => {
-    // TypeScript requires us to validate that the code is a valid Language type
-    if (code === 'ar' || code === 'en' || code === 'fr' || code === 'es' || code === 'ur') {
-      changeLanguage(code);
+    console.log("Changing language to:", code);
+    // Ensure we're only accepting valid language codes
+    if (code === 'ar' || code === 'en') {
+      changeLanguage(code as "ar" | "en" | "fr" | "es" | "ur");
+      
+      // Force a re-render by reloading the page component
+      window.location.reload();
     }
   };
 
@@ -39,7 +43,7 @@ const LanguageSelector = () => {
           <DropdownMenuItem
             key={language.code}
             onClick={() => handleLanguageChange(language.code)}
-            className={language.code === current.code ? "bg-muted" : ""}
+            className={`cursor-pointer ${language.code === current.code ? "bg-muted" : ""}`}
           >
             <span className="mr-2">{language.flag}</span>
             {language.name}

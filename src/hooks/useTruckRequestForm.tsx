@@ -9,6 +9,10 @@ export interface TruckRequestFormState {
   estimatedPrice: number;
   truckType: string;
   loading: boolean;
+  daysSelected?: number;
+  truckSize?: string;
+  excavatorHeadType?: string;
+  flatbedDeliveryOption?: string;
 }
 
 interface UseTruckRequestFormProps {
@@ -23,32 +27,66 @@ export const useTruckRequestForm = ({ discountApplied = false, onRequestSubmitte
     distance: 0,
     estimatedPrice: 0,
     truckType: "refrigerated",
-    loading: false
+    loading: false,
+    daysSelected: 1,
+    truckSize: "3ton",
+    excavatorHeadType: "buckets",
+    flatbedDeliveryOption: "none"
   });
 
   // Update price when truck type changes
   useEffect(() => {
-    // Base prices for different truck types
-    const basePrices: Record<string, number> = {
-      refrigerated: 110,
-      transport: 95,
-      store: 120,
-      crane: 150,
-      wood: 105,
-      tractor: 130,
-      "loading-crane": 160,
-      bulldozer: 170,
-      "dump-truck": 125,
-      "skid-steer": 115,
-      flatbed: 100,
-      backhoe: 145,
-      "front-loader": 140
-    };
-
-    const basePrice = basePrices[formState.truckType] || 100;
+    // Calculate estimated price based on the selected truck type
+    let price = 0;
     const calculatedDistance = estimateDistance(formState.startLocation, formState.destination);
     
-    let price = basePrice * calculatedDistance;
+    switch (formState.truckType) {
+      case "refrigerated":
+        // 14 SAR per km
+        price = 14 * calculatedDistance;
+        break;
+      case "jcp":
+        // 578 SAR per day + potential flatbed delivery cost
+        price = 578;
+        if (formState.flatbedDeliveryOption === "delivery") {
+          price += 238;
+        } else if (formState.flatbedDeliveryOption === "roundtrip") {
+          price += 488;
+        }
+        break;
+      case "dump-truck":
+        // 387 or 487 SAR per day based on size
+        price = formState.truckSize === "3ton" ? 387 : 487;
+        break;
+      case "water-truck":
+        // 148 SAR per day
+        price = 148;
+        break;
+      case "crawler-excavator":
+        // 687 SAR per day
+        price = 687;
+        break;
+      case "wheel-excavator":
+        // 1180 SAR per day
+        price = 1180;
+        break;
+      default:
+        // Base prices for legacy truck types
+        const basePrices: Record<string, number> = {
+          transport: 95,
+          store: 120,
+          crane: 150,
+          wood: 105,
+          tractor: 130,
+          "loading-crane": 160,
+          bulldozer: 170,
+          flatbed: 100,
+          backhoe: 145,
+          "front-loader": 140
+        };
+        const basePrice = basePrices[formState.truckType] || 100;
+        price = basePrice * calculatedDistance;
+    }
     
     // Apply discount if applicable
     if (discountApplied) {
@@ -61,7 +99,7 @@ export const useTruckRequestForm = ({ discountApplied = false, onRequestSubmitte
       estimatedPrice: Math.round(price)
     }));
     
-  }, [formState.truckType, formState.startLocation, formState.destination, discountApplied]);
+  }, [formState.truckType, formState.startLocation, formState.destination, discountApplied, formState.truckSize, formState.flatbedDeliveryOption]);
 
   // Simulate distance calculation
   const estimateDistance = (start: string, end: string): number => {
@@ -83,6 +121,22 @@ export const useTruckRequestForm = ({ discountApplied = false, onRequestSubmitte
     setFormState(prev => ({ ...prev, truckType: value }));
   };
 
+  const handleDaysChange = (value: number) => {
+    setFormState(prev => ({ ...prev, daysSelected: value }));
+  };
+
+  const handleTruckSizeChange = (value: string) => {
+    setFormState(prev => ({ ...prev, truckSize: value }));
+  };
+
+  const handleExcavatorHeadChange = (value: string) => {
+    setFormState(prev => ({ ...prev, excavatorHeadType: value }));
+  };
+
+  const handleFlatbedDeliveryOptionChange = (value: string) => {
+    setFormState(prev => ({ ...prev, flatbedDeliveryOption: value }));
+  };
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     
@@ -96,11 +150,18 @@ export const useTruckRequestForm = ({ discountApplied = false, onRequestSubmitte
     // Simulate API request delay
     setTimeout(() => {
       setFormState(prev => ({ ...prev, loading: false }));
+      
+      // Include additional details in the request
       onRequestSubmitted({
         startLocation: formState.startLocation,
         destination: formState.destination,
         distance: formState.distance,
         estimatedPrice: formState.estimatedPrice,
+        truckType: formState.truckType,
+        daysSelected: formState.daysSelected,
+        truckSize: formState.truckSize,
+        excavatorHeadType: formState.excavatorHeadType,
+        flatbedDeliveryOption: formState.flatbedDeliveryOption
       });
     }, 1500);
   };
@@ -110,6 +171,10 @@ export const useTruckRequestForm = ({ discountApplied = false, onRequestSubmitte
     handleStartLocationChange,
     handleDestinationChange,
     handleTruckTypeChange,
+    handleDaysChange,
+    handleTruckSizeChange,
+    handleExcavatorHeadChange,
+    handleFlatbedDeliveryOptionChange,
     handleSubmit
   };
 };

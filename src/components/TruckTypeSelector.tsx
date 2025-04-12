@@ -1,4 +1,3 @@
-
 import React from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
@@ -25,6 +24,7 @@ interface TruckTypeInfo {
   icon: JSX.Element;
   image: string;
   price: string;
+  description?: string;
 }
 
 const TruckTypeSelector: React.FC<TruckTypeSelectorProps> = ({
@@ -37,7 +37,47 @@ const TruckTypeSelector: React.FC<TruckTypeSelectorProps> = ({
       name: "شاحنة مبردة", 
       icon: <Truck className="h-6 w-6 text-cyan-500" />,
       image: "/lovable-uploads/524d4fdf-7185-4546-908a-e43c8d728c38.png",
-      price: "110 ريال/ساعة"
+      price: "14 ريال/كم",
+      description: "إيجار لمدة يوم واحد، السعر حسب العرض"
+    },
+    { 
+      id: "jcp", 
+      name: "شاحنة JCP", 
+      icon: <Construction className="h-6 w-6 text-yellow-600" />,
+      image: "/assets/jcp-truck.png",
+      price: "578 ريال/يوم",
+      description: "خيار نقل الشاحنة: 238 ريال للتوصيل، 488 ريال للتوصيل والإرجاع"
+    },
+    { 
+      id: "dump-truck", 
+      name: "شاحنة قلابة", 
+      icon: <Truck className="h-6 w-6 text-gray-600" />,
+      image: "/assets/dump-truck.png",
+      price: "387-487 ريال/يوم",
+      description: "3 طن: 387 ريال، 5 طن: 487 ريال" 
+    },
+    { 
+      id: "water-truck", 
+      name: "شاحنة شفط المياه", 
+      icon: <Truck className="h-6 w-6 text-blue-500" />,
+      image: "/assets/water-truck.png",
+      price: "148 ريال/يوم" 
+    },
+    { 
+      id: "crawler-excavator", 
+      name: "حفارة زاحفة", 
+      icon: <Construction className="h-6 w-6 text-orange-600" />,
+      image: "/assets/crawler-excavator.png",
+      price: "687 ريال/يوم",
+      description: "يمكن اختيار نوع الرأس" 
+    },
+    { 
+      id: "wheel-excavator", 
+      name: "حفارة بعجلات", 
+      icon: <Construction className="h-6 w-6 text-yellow-800" />,
+      image: "/assets/wheel-excavator.png",
+      price: "1180 ريال/يوم",
+      description: "يمكن اختيار نوع الرأس" 
     },
     { 
       id: "transport", 
@@ -87,13 +127,6 @@ const TruckTypeSelector: React.FC<TruckTypeSelectorProps> = ({
       icon: <Construction className="h-6 w-6 text-yellow-500" />,
       image: "/assets/bulldozer.png",
       price: "170 ريال/ساعة" 
-    },
-    { 
-      id: "dump-truck", 
-      name: "شاحنة قلابة", 
-      icon: <Truck className="h-6 w-6 text-gray-600" />,
-      image: "/assets/dump-truck.png",
-      price: "125 ريال/ساعة" 
     },
     { 
       id: "skid-steer", 
@@ -164,7 +197,10 @@ const TruckTypeSelector: React.FC<TruckTypeSelectorProps> = ({
                   <div className="font-medium">{type.name}</div>
                   <div className="text-sm text-gray-500">
                     {type.price}
-                    {type.id === selectedTruckType && (
+                    {type.description && (
+                      <div className="text-xs text-muted-foreground mt-1">{type.description}</div>
+                    )}
+                    {type.id === selectedTruckType && !type.description && (
                       <span className="mr-2 text-green-600">
                         (خصم 15% للعملاء)
                       </span>
