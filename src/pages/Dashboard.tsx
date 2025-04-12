@@ -1,6 +1,6 @@
 
 import React, { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { IceButtonV2 } from "@/components/ui/ice-button-v2";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -15,6 +15,7 @@ import {
 import { toast } from "sonner";
 import { useAuth } from "@/contexts/AuthContext";
 import { useLanguage } from "@/contexts/LanguageContext";
+import { useLanguageContent } from "@/hooks/useLanguageContent"; 
 import {
   TruckIcon,
   MessageSquare,
@@ -61,6 +62,9 @@ const mockBookings = [
 const Dashboard = () => {
   const { user, driverDetails, updateDriverDetails } = useAuth();
   const { language, t } = useLanguage();
+  const { getDashboardContent } = useLanguageContent();
+  const dashboardContent = getDashboardContent();
+  const navigate = useNavigate();
   const [isAvailable, setIsAvailable] = useState(driverDetails?.available || false);
   
   // Redirect if not a driver
@@ -95,8 +99,9 @@ const Dashboard = () => {
     toast.success(message);
   };
 
-  const handleContactCustomer = (bookingId: string) => {
-    window.location.href = "/chat";
+  const handleContactCustomer = (bookingId: string, customerId: string = "customer-1") => {
+    // Navigate to chat with this specific customer
+    navigate(`/chat/${customerId}`);
   };
   
   // Chart data
@@ -150,9 +155,7 @@ const Dashboard = () => {
         <div>
           <h1 className="text-3xl font-bold mb-2">{t('dashboard')}</h1>
           <p className="text-gray-600">
-            {language === 'en' 
-              ? "Manage your truck details and bookings" 
-              : "إدارة تفاصيل الشاحنة والحجوزات"}
+            {t('manageTruckDetails')}
           </p>
         </div>
         <div className="flex flex-col md:flex-row items-center gap-4 mt-4 md:mt-0">
@@ -287,13 +290,16 @@ const Dashboard = () => {
                       <p className="font-medium">Customer User</p>
                       <p className="text-sm text-muted-foreground">New York to Boston</p>
                     </div>
-                    <Badge className="bg-moprd-blue">New</Badge>
+                    <Badge className="bg-moprd-blue">{t('pending')}</Badge>
                   </div>
-                  <Link to="/chat">
-                    <Button size="sm" variant="outline" className="w-full">
-                      {t('respond')}
-                    </Button>
-                  </Link>
+                  <Button 
+                    size="sm" 
+                    variant="outline" 
+                    className="w-full"
+                    onClick={() => handleContactCustomer("new-request-1", "customer-1")}
+                  >
+                    {t('respond')}
+                  </Button>
                 </div>
                 <div className="bg-muted/20 p-3 rounded-lg">
                   <div className="flex justify-between items-start mb-2">
@@ -301,13 +307,16 @@ const Dashboard = () => {
                       <p className="font-medium">Jane Doe</p>
                       <p className="text-sm text-muted-foreground">Philadelphia to DC</p>
                     </div>
-                    <Badge className="bg-green-600">Quote Sent</Badge>
+                    <Badge className="bg-green-600">{t('completed')}</Badge>
                   </div>
-                  <Link to="/chat">
-                    <Button size="sm" variant="outline" className="w-full">
-                      {t('viewChat')}
-                    </Button>
-                  </Link>
+                  <Button 
+                    size="sm" 
+                    variant="outline" 
+                    className="w-full"
+                    onClick={() => handleContactCustomer("new-request-2", "customer-2")}
+                  >
+                    {t('viewChat')}
+                  </Button>
                 </div>
               </div>
             </CardContent>
@@ -384,16 +393,14 @@ const Dashboard = () => {
                             </Button>
                           </>
                         )}
-                        {booking.status !== "pending" && (
-                          <Button 
-                            size="sm" 
-                            variant="ghost" 
-                            className="h-8 w-8 p-0"
-                            onClick={() => handleContactCustomer(booking.id)}
-                          >
-                            <MessageSquare className="h-4 w-4" />
-                          </Button>
-                        )}
+                        <Button 
+                          size="sm" 
+                          variant="ghost" 
+                          className="h-8 w-8 p-0"
+                          onClick={() => handleContactCustomer(booking.id, booking.customerName.replace(" ", "-").toLowerCase())}
+                        >
+                          <MessageSquare className="h-4 w-4" />
+                        </Button>
                       </div>
                     </td>
                   </tr>

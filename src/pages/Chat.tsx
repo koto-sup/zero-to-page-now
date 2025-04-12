@@ -1,11 +1,13 @@
 
 import React, { useState, useEffect } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useAuth } from "@/contexts/AuthContext";
+import { useLanguage } from "@/contexts/LanguageContext";
+import { useLanguageContent } from "@/hooks/useLanguageContent";
 import { MessageSquare, Search } from "lucide-react";
 import ChatBox from "@/components/ChatBox";
 
@@ -21,7 +23,7 @@ interface ChatPreview {
 
 interface ChatDetailProps {
   chatId: string;
-  driverId: string;
+  recipientId: string;
 }
 
 // Mock data
@@ -55,50 +57,65 @@ const MOCK_CHATS: Record<string, ChatPreview[]> = {
       timestamp: new Date(),
       unread: true,
     },
+    {
+      id: "chat-2",
+      recipientId: "customer-2",
+      recipientName: "Jane Doe",
+      lastMessage: "When will you arrive?",
+      timestamp: new Date(Date.now() - 3600000),
+      unread: false,
+    },
   ],
 };
 
-const ChatDetail: React.FC<ChatDetailProps> = ({ chatId, driverId }) => {
-  // In a real app, we'd fetch messages from API
-  const initialMessages = [
-    {
-      id: "msg-1",
-      senderId: "customer-1",
-      senderName: "Customer User",
-      content: "Hello, I need to transport frozen goods from New York to Boston.",
-      timestamp: new Date(Date.now() - 3600000 * 2),
-    },
-    {
-      id: "msg-2",
-      senderId: "driver-1",
-      senderName: "John Driver",
-      senderAvatar: "/placeholder.svg",
-      content: "Hi there! I can help with that. When do you need this done?",
-      timestamp: new Date(Date.now() - 3600000 * 1.5),
-    },
-    {
-      id: "msg-3",
-      senderId: "customer-1",
-      senderName: "Customer User",
-      content: "This Friday, around noon. The goods need to maintain -5°C.",
-      timestamp: new Date(Date.now() - 3600000),
-    },
-    {
-      id: "msg-4",
-      senderId: "driver-1",
-      senderName: "John Driver",
-      senderAvatar: "/placeholder.svg",
-      content: "That works for me. My truck can maintain that temperature without issues.",
-      timestamp: new Date(Date.now() - 3600000 * 0.5),
-    },
-  ];
+// Mock messages for any chat
+const getMockMessages = (senderId: string, recipientId: string) => [
+  {
+    id: "msg-1",
+    senderId: recipientId,
+    senderName: "Recipient",
+    content: "Hello, I need transportation services.",
+    timestamp: new Date(Date.now() - 3600000 * 2),
+  },
+  {
+    id: "msg-2",
+    senderId: senderId,
+    senderName: "Sender",
+    content: "Hi there! I can help with that. What do you need?",
+    timestamp: new Date(Date.now() - 3600000 * 1.5),
+  },
+  {
+    id: "msg-3",
+    senderId: recipientId,
+    senderName: "Recipient",
+    content: "I need to transport goods from Location A to Location B.",
+    timestamp: new Date(Date.now() - 3600000),
+  },
+  {
+    id: "msg-4",
+    senderId: senderId,
+    senderName: "Sender",
+    content: "I can do that. When do you need this service?",
+    timestamp: new Date(Date.now() - 3600000 * 0.5),
+  },
+];
+
+const ChatDetail: React.FC<ChatDetailProps> = ({ chatId, recipientId }) => {
+  const { user } = useAuth();
+  const { getChatContent } = useLanguageContent();
+  const chatContent = getChatContent();
+  
+  // Generate mock messages based on current user and recipient
+  const initialMessages = getMockMessages(user?.id || "unknown", recipientId);
 
   return (
     <div className="h-full">
       <ChatBox
         chatId={chatId}
-        recipientId={driverId}
-        recipientName="John Driver"
+        recipientId={recipientId}
+        recipientName={recipientId === "customer-1" ? "Customer User" : 
+                      recipientId === "customer-2" ? "Jane Doe" : 
+                      recipientId === "driver-1" ? "John Driver" : "Sarah Smith"}
         recipientAvatar="/placeholder.svg"
         initialMessages={initialMessages}
       />
@@ -108,10 +125,15 @@ const ChatDetail: React.FC<ChatDetailProps> = ({ chatId, driverId }) => {
 
 const Chat = () => {
   const { user } = useAuth();
+  const { language } = useLanguage();
+  const { getChatContent } = useLanguageContent();
+  const chatContent = getChatContent();
   const { driverId } = useParams<{ driverId?: string }>();
+  const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState("");
   const [chats, setChats] = useState<ChatPreview[]>([]);
   const [selectedChatId, setSelectedChatId] = useState<string | null>(null);
+  const [selectedRecipientId, setSelectedRecipientId] = useState<string | null>(null);
 
   useEffect(() => {
     // In a real app, fetch chats from API
@@ -126,10 +148,25 @@ const Chat = () => {
       const existingChat = chats.find(chat => chat.recipientId === driverId);
       if (existingChat) {
         setSelectedChatId(existingChat.id);
+        setSelectedRecipientId(driverId);
       } else {
         // In a real app, we'd create a new chat in the database
         const newChatId = `chat-${Date.now()}`;
         setSelectedChatId(newChatId);
+        setSelectedRecipientId(driverId);
+        
+        // Add the new chat to the list
+        const newChat: ChatPreview = {
+          id: newChatId,
+          recipientId: driverId,
+          recipientName: driverId.includes("customer") ? "Customer User" : "John Driver",
+          recipientAvatar: "/placeholder.svg",
+          lastMessage: "New conversation",
+          timestamp: new Date(),
+          unread: false
+        };
+        
+        setChats([newChat, ...chats]);
       }
     }
   }, [driverId, user, chats]);
@@ -138,12 +175,19 @@ const Chat = () => {
     chat.recipientName.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
+  const handleChatSelect = (chat: ChatPreview) => {
+    setSelectedChatId(chat.id);
+    setSelectedRecipientId(chat.recipientId);
+    // Update URL to include the recipient ID
+    navigate(`/chat/${chat.recipientId}`);
+  };
+
   return (
     <div className="container mx-auto px-4 py-8">
       <div className="mb-8">
-        <h1 className="text-3xl font-bold mb-4">Messages</h1>
+        <h1 className="text-3xl font-bold mb-4">{chatContent.title}</h1>
         <p className="text-gray-600">
-          Chat with truck drivers or customers about your transportation needs
+          {chatContent.subtitle}
         </p>
       </div>
 
@@ -153,7 +197,7 @@ const Chat = () => {
             <div className="p-4 border-b">
               <div className="relative">
                 <Input
-                  placeholder="Search conversations"
+                  placeholder={chatContent.searchPlaceholder}
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   className="pl-10"
@@ -173,7 +217,7 @@ const Chat = () => {
                           ? "bg-moprd-teal/10 border-l-4 border-moprd-teal"
                           : ""
                       }`}
-                      onClick={() => setSelectedChatId(chat.id)}
+                      onClick={() => handleChatSelect(chat)}
                     >
                       <div className="flex items-center w-full">
                         <div className="relative">
@@ -207,18 +251,18 @@ const Chat = () => {
               ) : (
                 <div className="flex flex-col items-center justify-center h-full text-center p-4">
                   <MessageSquare className="h-12 w-12 text-gray-300 mb-4" />
-                  <h3 className="text-xl font-medium mb-2">No conversations yet</h3>
+                  <h3 className="text-xl font-medium mb-2">{chatContent.noConversations}</h3>
                   <p className="text-gray-500">
                     {user?.role === "customer"
-                      ? "Find a truck and request a quote to start chatting"
-                      : "Wait for customer requests or search for potential jobs"}
+                      ? chatContent.findTrucksPrompt
+                      : chatContent.waitCustomers}
                   </p>
                   {user?.role === "customer" && (
                     <Button 
                       className="mt-4 bg-moprd-teal hover:bg-moprd-blue"
-                      onClick={() => {/* Navigate to find trucks */}}
+                      onClick={() => navigate("/find-trucks")}
                     >
-                      Find Trucks
+                      {chatContent.title}
                     </Button>
                   )}
                 </div>
@@ -229,17 +273,17 @@ const Chat = () => {
 
         <div className="md:col-span-2">
           <Card className="h-full overflow-hidden">
-            {selectedChatId ? (
+            {selectedChatId && selectedRecipientId ? (
               <ChatDetail 
                 chatId={selectedChatId} 
-                driverId={driverId || filteredChats.find(c => c.id === selectedChatId)?.recipientId || ""}
+                recipientId={selectedRecipientId}
               />
             ) : (
               <div className="flex flex-col items-center justify-center h-full text-center p-8">
                 <MessageSquare className="h-16 w-16 text-gray-300 mb-4" />
-                <h3 className="text-2xl font-medium mb-2">Select a conversation</h3>
+                <h3 className="text-2xl font-medium mb-2">{chatContent.selectConversation}</h3>
                 <p className="text-gray-500">
-                  Choose a conversation from the list to start chatting
+                  {chatContent.selectPrompt}
                 </p>
               </div>
             )}

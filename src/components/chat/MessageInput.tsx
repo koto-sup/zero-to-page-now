@@ -3,6 +3,8 @@ import React, { useState } from "react";
 import { Send, PaperclipIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
+import { useLanguage } from "@/contexts/LanguageContext";
+import { useLanguageContent } from "@/hooks/useLanguageContent";
 
 interface MessageInputProps {
   onSendMessage: (content: string) => void;
@@ -16,6 +18,9 @@ const MessageInput: React.FC<MessageInputProps> = ({
   showQuoteOption 
 }) => {
   const [newMessage, setNewMessage] = useState("");
+  const { language } = useLanguage();
+  const { getChatContent } = useLanguageContent();
+  const chatContent = getChatContent();
 
   const handleSendMessage = () => {
     if (!newMessage.trim()) return;
@@ -29,7 +34,7 @@ const MessageInput: React.FC<MessageInputProps> = ({
         <Textarea
           value={newMessage}
           onChange={(e) => setNewMessage(e.target.value)}
-          placeholder="اكتب رسالة..."
+          placeholder={chatContent.messageInput}
           className="flex-1 resize-none bg-white border border-gray-300 text-black"
           rows={1}
         />

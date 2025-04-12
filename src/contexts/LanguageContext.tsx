@@ -1,4 +1,3 @@
-
 import React, { createContext, useState, useContext, useEffect } from "react";
 
 export type Language = "ar" | "en" | "fr" | "es" | "ur" | "hi" | "zh";
@@ -45,7 +44,9 @@ const translations: Record<Language, Record<string, string>> = {
     "completed": "مكتمل",
     "editTruckProfile": "تعديل ملف الشاحنة",
     "availableForBookings": "متاح للحجز",
-    "currentlyUnavailable": "غير متاح حالياً"
+    "currentlyUnavailable": "غير متاح حالياً",
+    "manageTruckDetails": "إدارة تفاصيل الشاحنة والحجوزات",
+    "messageInput": "اكتب رسالة..."
   },
   en: {
     // English translations
@@ -79,7 +80,9 @@ const translations: Record<Language, Record<string, string>> = {
     "completed": "Completed",
     "editTruckProfile": "Edit Truck Profile",
     "availableForBookings": "Available for Bookings",
-    "currentlyUnavailable": "Currently Unavailable"
+    "currentlyUnavailable": "Currently Unavailable",
+    "manageTruckDetails": "Manage your truck details and bookings",
+    "messageInput": "Type a message..."
   },
   fr: {
     // French translations
@@ -113,7 +116,9 @@ const translations: Record<Language, Record<string, string>> = {
     "completed": "Terminé",
     "editTruckProfile": "Modifier le Profil du Camion",
     "availableForBookings": "Disponible pour les Réservations",
-    "currentlyUnavailable": "Actuellement Indisponible"
+    "currentlyUnavailable": "Actuellement Indisponible",
+    "manageTruckDetails": "Gérer les détails de votre camion et les réservations",
+    "messageInput": "Tapez un message..."
   },
   es: {
     // Spanish translations
@@ -147,7 +152,9 @@ const translations: Record<Language, Record<string, string>> = {
     "completed": "Completado",
     "editTruckProfile": "Editar Perfil del Camión",
     "availableForBookings": "Disponible para Reservas",
-    "currentlyUnavailable": "Actualmente No Disponible"
+    "currentlyUnavailable": "Actualmente No Disponible",
+    "manageTruckDetails": "Gestione los detalles de su camión y las reservas",
+    "messageInput": "Escribe un mensaje..."
   },
   ur: {
     // Urdu translations
@@ -181,7 +188,9 @@ const translations: Record<Language, Record<string, string>> = {
     "completed": "مکمل",
     "editTruckProfile": "ٹرک پروفائل میں ترمیم کریں",
     "availableForBookings": "بکنگ کے لئے دستیاب",
-    "currentlyUnavailable": "فی الحال دستیاب نہیں"
+    "currentlyUnavailable": "فی الحال دستیاب نہیں",
+    "manageTruckDetails": "اپنے ٹرک کی تفصیلات اور بکنگز کا انتظام کریں",
+    "messageInput": "پیغام لکھیں..."
   },
   hi: {
     // Hindi translations
@@ -215,7 +224,9 @@ const translations: Record<Language, Record<string, string>> = {
     "completed": "पूर्ण",
     "editTruckProfile": "ट्रक प्रोफ़ाइल संपादित करें",
     "availableForBookings": "बुकिंग के लिए उपलब्ध",
-    "currentlyUnavailable": "वर्तमान में अनुपलब्ध"
+    "currentlyUnavailable": "वर्तमान में अनुपलब्ध",
+    "manageTruckDetails": "अपने ट्रक के विवरण और बुकिंग का प्रबंधन करें",
+    "messageInput": "संदेश टाइप करें..."
   },
   zh: {
     // Chinese translations
@@ -249,7 +260,9 @@ const translations: Record<Language, Record<string, string>> = {
     "completed": "已完成",
     "editTruckProfile": "编辑卡车资料",
     "availableForBookings": "可预订",
-    "currentlyUnavailable": "当前不可用"
+    "currentlyUnavailable": "当前不可用",
+    "manageTruckDetails": "管理您的卡车详情和预订",
+    "messageInput": "输入消息..."
   }
 };
 
