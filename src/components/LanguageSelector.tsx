@@ -8,6 +8,11 @@ import { useLanguage } from "@/contexts/LanguageContext";
 const languages = [
   { code: 'ar', name: 'العربية', flag: '🇸🇦' },
   { code: 'en', name: 'English', flag: '🇺🇸' },
+  { code: 'fr', name: 'Français', flag: '🇫🇷' },
+  { code: 'es', name: 'Español', flag: '🇪🇸' },
+  { code: 'ur', name: 'اردو', flag: '🇵🇰' },
+  { code: 'hi', name: 'हिन्दी', flag: '🇮🇳' },
+  { code: 'zh', name: '中文', flag: '🇨🇳' },
 ];
 
 const LanguageSelector = () => {
@@ -20,11 +25,9 @@ const LanguageSelector = () => {
   const handleLanguageChange = (code: string) => {
     console.log("Changing language to:", code);
     // Ensure we're only accepting valid language codes
-    if (code === 'ar' || code === 'en') {
-      changeLanguage(code as "ar" | "en" | "fr" | "es" | "ur");
-      
-      // Force a re-render by reloading the page component
-      window.location.reload();
+    if (languages.some(lang => lang.code === code)) {
+      changeLanguage(code as any);
+      // No page reload - the context will update the UI
     }
   };
 

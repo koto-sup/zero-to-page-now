@@ -14,6 +14,7 @@ import {
 } from "@/components/ui/chart";
 import { toast } from "sonner";
 import { useAuth } from "@/contexts/AuthContext";
+import { useLanguage } from "@/contexts/LanguageContext";
 import {
   TruckIcon,
   MessageSquare,
@@ -59,6 +60,7 @@ const mockBookings = [
 
 const Dashboard = () => {
   const { user, driverDetails, updateDriverDetails } = useAuth();
+  const { language, t } = useLanguage();
   const [isAvailable, setIsAvailable] = useState(driverDetails?.available || false);
   
   // Redirect if not a driver
@@ -71,7 +73,30 @@ const Dashboard = () => {
   const handleAvailabilityChange = (checked: boolean) => {
     setIsAvailable(checked);
     updateDriverDetails({ available: checked });
-    toast.success(`You are now ${checked ? "available" : "unavailable"} for bookings`);
+    
+    const message = language === 'en' 
+      ? `You are now ${checked ? "available" : "unavailable"} for bookings`
+      : checked ? "أنت الآن متاح للحجوزات" : "أنت الآن غير متاح للحجوزات";
+      
+    toast.success(message);
+  };
+
+  const handleAcceptBooking = (bookingId: string) => {
+    const message = language === 'en'
+      ? "Booking accepted successfully"
+      : "تم قبول الحجز بنجاح";
+    toast.success(message);
+  };
+
+  const handleRejectBooking = (bookingId: string) => {
+    const message = language === 'en'
+      ? "Booking rejected"
+      : "تم رفض الحجز";
+    toast.success(message);
+  };
+
+  const handleContactCustomer = (bookingId: string) => {
+    window.location.href = "/chat";
   };
   
   // Chart data
@@ -123,9 +148,11 @@ const Dashboard = () => {
     <div className="container mx-auto px-4 py-8">
       <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-8">
         <div>
-          <h1 className="text-3xl font-bold mb-2">Driver Dashboard</h1>
+          <h1 className="text-3xl font-bold mb-2">{t('dashboard')}</h1>
           <p className="text-gray-600">
-            Manage your truck details and bookings
+            {language === 'en' 
+              ? "Manage your truck details and bookings" 
+              : "إدارة تفاصيل الشاحنة والحجوزات"}
           </p>
         </div>
         <div className="flex flex-col md:flex-row items-center gap-4 mt-4 md:mt-0">
@@ -149,7 +176,7 @@ const Dashboard = () => {
                 />
               </div>
               <span className="font-medium">
-                {isAvailable ? "Available for Bookings" : "Currently Unavailable"}
+                {isAvailable ? t('availableForBookings') : t('currentlyUnavailable')}
               </span>
               <div className="relative ml-2">
                 <Switch
@@ -164,7 +191,7 @@ const Dashboard = () => {
           </div>
           <Link to="/truck-details" className="w-full md:w-auto">
             <IceButtonV2 variant="outline" className="w-full md:w-auto">
-              Edit Truck Profile
+              {t('editTruckProfile')}
             </IceButtonV2>
           </Link>
         </div>
@@ -176,7 +203,7 @@ const Dashboard = () => {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-medium text-muted-foreground">
-                  Today's Earnings
+                  {t('todaysEarnings')}
                 </p>
                 <h3 className="text-2xl font-bold">$185.00</h3>
               </div>
@@ -191,7 +218,7 @@ const Dashboard = () => {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-medium text-muted-foreground">
-                  Bookings This Week
+                  {t('bookingsThisWeek')}
                 </p>
                 <h3 className="text-2xl font-bold">8</h3>
               </div>
@@ -206,7 +233,7 @@ const Dashboard = () => {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-medium text-muted-foreground">
-                  Average Rating
+                  {t('averageRating')}
                 </p>
                 <div className="flex items-center">
                   <h3 className="text-2xl font-bold mr-1">4.8</h3>
@@ -228,7 +255,7 @@ const Dashboard = () => {
               <CardTitle className="text-lg font-medium">
                 <div className="flex items-center">
                   <BarChart3 className="h-5 w-5 mr-2" />
-                  Weekly Earnings Overview
+                  {t('weeklyEarningsOverview')}
                 </div>
               </CardTitle>
             </CardHeader>
@@ -248,7 +275,7 @@ const Dashboard = () => {
               <CardTitle className="text-lg font-medium">
                 <div className="flex items-center">
                   <MessageSquare className="h-5 w-5 mr-2" />
-                  New Requests
+                  {t('newRequests')}
                 </div>
               </CardTitle>
             </CardHeader>
@@ -264,7 +291,7 @@ const Dashboard = () => {
                   </div>
                   <Link to="/chat">
                     <Button size="sm" variant="outline" className="w-full">
-                      Respond
+                      {t('respond')}
                     </Button>
                   </Link>
                 </div>
@@ -278,7 +305,7 @@ const Dashboard = () => {
                   </div>
                   <Link to="/chat">
                     <Button size="sm" variant="outline" className="w-full">
-                      View Chat
+                      {t('viewChat')}
                     </Button>
                   </Link>
                 </div>
@@ -293,12 +320,12 @@ const Dashboard = () => {
           <CardTitle className="text-lg font-medium">
             <div className="flex items-center">
               <Clock className="h-5 w-5 mr-2" />
-              Recent Bookings
+              {t('recentBookings')}
             </div>
           </CardTitle>
           <Link to="/bookings">
             <Button variant="ghost" size="sm">
-              View All
+              {t('viewAll')}
             </Button>
           </Link>
         </CardHeader>
@@ -307,12 +334,12 @@ const Dashboard = () => {
             <table className="w-full text-sm">
               <thead>
                 <tr className="text-left border-b">
-                  <th className="pb-2 font-medium">Customer</th>
-                  <th className="pb-2 font-medium">Route</th>
-                  <th className="pb-2 font-medium">Date</th>
-                  <th className="pb-2 font-medium">Amount</th>
-                  <th className="pb-2 font-medium">Status</th>
-                  <th className="pb-2 font-medium">Actions</th>
+                  <th className="pb-2 font-medium">{t('customer')}</th>
+                  <th className="pb-2 font-medium">{t('route')}</th>
+                  <th className="pb-2 font-medium">{t('date')}</th>
+                  <th className="pb-2 font-medium">{t('amount')}</th>
+                  <th className="pb-2 font-medium">{t('status')}</th>
+                  <th className="pb-2 font-medium">{t('actions')}</th>
                 </tr>
               </thead>
               <tbody className="divide-y">
@@ -326,29 +353,44 @@ const Dashboard = () => {
                     <td className="py-3">${booking.amount}</td>
                     <td className="py-3">
                       {booking.status === "pending" && (
-                        <Badge className="bg-yellow-500">Pending</Badge>
+                        <Badge className="bg-yellow-500">{t('pending')}</Badge>
                       )}
                       {booking.status === "in_progress" && (
-                        <Badge className="bg-blue-500">In Progress</Badge>
+                        <Badge className="bg-blue-500">{t('inProgress')}</Badge>
                       )}
                       {booking.status === "completed" && (
-                        <Badge className="bg-green-600">Completed</Badge>
+                        <Badge className="bg-green-600">{t('completed')}</Badge>
                       )}
                     </td>
                     <td className="py-3">
                       <div className="flex space-x-1">
                         {booking.status === "pending" && (
                           <>
-                            <Button size="sm" variant="ghost" className="h-8 w-8 p-0">
+                            <Button 
+                              size="sm" 
+                              variant="ghost" 
+                              className="h-8 w-8 p-0"
+                              onClick={() => handleAcceptBooking(booking.id)}
+                            >
                               <CheckSquare className="h-4 w-4 text-green-600" />
                             </Button>
-                            <Button size="sm" variant="ghost" className="h-8 w-8 p-0">
+                            <Button 
+                              size="sm" 
+                              variant="ghost" 
+                              className="h-8 w-8 p-0"
+                              onClick={() => handleRejectBooking(booking.id)}
+                            >
                               <AlertCircle className="h-4 w-4 text-red-500" />
                             </Button>
                           </>
                         )}
                         {booking.status !== "pending" && (
-                          <Button size="sm" variant="ghost" className="h-8 w-8 p-0">
+                          <Button 
+                            size="sm" 
+                            variant="ghost" 
+                            className="h-8 w-8 p-0"
+                            onClick={() => handleContactCustomer(booking.id)}
+                          >
                             <MessageSquare className="h-4 w-4" />
                           </Button>
                         )}
