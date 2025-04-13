@@ -71,21 +71,8 @@ export const useTruckRequestForm = ({ discountApplied = false, onRequestSubmitte
         price = 1180;
         break;
       default:
-        // Base prices for legacy truck types
-        const basePrices: Record<string, number> = {
-          transport: 95,
-          store: 120,
-          crane: 150,
-          wood: 105,
-          tractor: 130,
-          "loading-crane": 160,
-          bulldozer: 170,
-          flatbed: 100,
-          backhoe: 145,
-          "front-loader": 140
-        };
-        const basePrice = basePrices[formState.truckType] || 100;
-        price = basePrice * calculatedDistance;
+        // Default fallback
+        price = 100;
     }
     
     // Apply discount if applicable

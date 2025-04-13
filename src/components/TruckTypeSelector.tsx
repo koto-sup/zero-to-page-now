@@ -1,14 +1,13 @@
+
 import React from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
 import { 
-  Truck, 
-  Construction, 
-  Tractor, 
   Snowflake,
   Droplets,
-  Shovel
+  Shovel,
+  Construction
 } from "lucide-react";
 import { useLanguage } from "@/contexts/LanguageContext";
 
@@ -38,7 +37,7 @@ const TruckTypeSelector: React.FC<TruckTypeSelectorProps> = ({
 
   const renderDumpTruckIcon = () => (
     <div className="p-2 rounded-full bg-gray-100 flex items-center justify-center">
-      <Truck className="h-6 w-6 text-gray-700" />
+      <Construction className="h-6 w-6 text-gray-700" />
     </div>
   );
 
@@ -54,7 +53,7 @@ const TruckTypeSelector: React.FC<TruckTypeSelectorProps> = ({
     </div>
   );
 
-  // Truck types with translations
+  // Truck types with translations - removed the specified truck types
   const getTruckTypes = () => {
     const baseTypes = [
       { 
@@ -103,83 +102,6 @@ const TruckTypeSelector: React.FC<TruckTypeSelectorProps> = ({
         image: "/assets/wheel-excavator.png",
         price: language === "en" ? "1180 SAR/day" : "1180 ريال/يوم",
         description: language === "en" ? "Head types available for selection" : "يمكن اختيار نوع الرأس" 
-      },
-      { 
-        id: "transport", 
-        name: language === "en" ? "Transport Truck" : "شاحنة نقل", 
-        icon: <Truck className="h-6 w-6 text-blue-600" />,
-        image: "/assets/truck-transport.png",
-        price: language === "en" ? "95 SAR/hour" : "95 ريال/ساعة" 
-      },
-      { 
-        id: "store", 
-        name: language === "en" ? "Store Truck" : "شاحنة متجر", 
-        icon: <Construction className="h-6 w-6 text-green-600" />,
-        image: "/assets/truck-store.png",
-        price: language === "en" ? "120 SAR/hour" : "120 ريال/ساعة" 
-      },
-      { 
-        id: "crane", 
-        name: language === "en" ? "Crane Truck" : "شاحنة رافعة", 
-        icon: <Construction className="h-6 w-6 text-yellow-600" />,
-        image: "/assets/truck-crane.png",
-        price: language === "en" ? "150 SAR/hour" : "150 ريال/ساعة" 
-      },
-      { 
-        id: "wood", 
-        name: language === "en" ? "Wood Transport Truck" : "شاحنة نقل الأخشاب", 
-        icon: <Tractor className="h-6 w-6 text-amber-700" />,
-        image: "/assets/truck-wood.png",
-        price: language === "en" ? "105 SAR/hour" : "105 ريال/ساعة" 
-      },
-      { 
-        id: "tractor", 
-        name: language === "en" ? "Agricultural Tractor" : "جرار زراعي", 
-        icon: <Tractor className="h-6 w-6 text-green-700" />,
-        image: "/assets/tractor.png",
-        price: language === "en" ? "130 SAR/hour" : "130 ريال/ساعة" 
-      },
-      { 
-        id: "loading-crane", 
-        name: language === "en" ? "Loading Crane" : "رافعة تحميل", 
-        icon: <Construction className="h-6 w-6 text-orange-600" />,
-        image: "/assets/loading-crane.png",
-        price: language === "en" ? "160 SAR/hour" : "160 ريال/ساعة" 
-      },
-      { 
-        id: "bulldozer", 
-        name: language === "en" ? "Bulldozer" : "جرافة", 
-        icon: <Construction className="h-6 w-6 text-yellow-500" />,
-        image: "/assets/bulldozer.png",
-        price: language === "en" ? "170 SAR/hour" : "170 ريال/ساعة" 
-      },
-      { 
-        id: "skid-steer", 
-        name: language === "en" ? "Skid Steer Loader" : "لودر انزلاقي", 
-        icon: <Construction className="h-6 w-6 text-yellow-800" />,
-        image: "/assets/skid-steer.png",
-        price: language === "en" ? "115 SAR/hour" : "115 ريال/ساعة" 
-      },
-      { 
-        id: "flatbed", 
-        name: language === "en" ? "Flatbed Truck" : "شاحنة مسطحة", 
-        icon: <Truck className="h-6 w-6 text-red-600" />,
-        image: "/assets/flatbed.png",
-        price: language === "en" ? "100 SAR/hour" : "100 ريال/ساعة" 
-      },
-      { 
-        id: "backhoe", 
-        name: language === "en" ? "Backhoe" : "حفارة خلفية", 
-        icon: <Construction className="h-6 w-6 text-purple-600" />,
-        image: "/assets/backhoe.png",
-        price: language === "en" ? "145 SAR/hour" : "145 ريال/ساعة" 
-      },
-      { 
-        id: "front-loader", 
-        name: language === "en" ? "Front Loader" : "لودر أمامي", 
-        icon: <Construction className="h-6 w-6 text-indigo-600" />,
-        image: "/assets/front-loader.png",
-        price: language === "en" ? "140 SAR/hour" : "140 ريال/ساعة" 
       }
     ];
     
