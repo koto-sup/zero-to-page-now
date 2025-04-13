@@ -60,7 +60,7 @@ const TruckTypeSelector: React.FC<TruckTypeSelectorProps> = ({
         id: "refrigerated", 
         name: language === "en" ? "Refrigerated Truck" : "شاحنة مبردة", 
         icon: renderRefrigeratedIcon(),
-        image: "/lovable-uploads/524d4fdf-7185-4546-908a-e43c8d728c38.png",
+        image: "/lovable-uploads/191e2114-a3a6-4a0a-9f35-7ee23e4fc07e.png",
         price: language === "en" ? "14 SAR/km" : "14 ريال/كم",
         description: language === "en" ? "One-day rental, price based on offers" : "إيجار لمدة يوم واحد، السعر حسب العرض"
       },
@@ -76,7 +76,7 @@ const TruckTypeSelector: React.FC<TruckTypeSelectorProps> = ({
         id: "dump-truck", 
         name: language === "en" ? "Dump Truck" : "شاحنة قلابة", 
         icon: renderDumpTruckIcon(),
-        image: "/assets/dump-truck.png",
+        image: "/lovable-uploads/191e2114-a3a6-4a0a-9f35-7ee23e4fc07e.png",
         price: language === "en" ? "387-487 SAR/day" : "387-487 ريال/يوم",
         description: language === "en" ? "3 tons: 387 SAR, 5 tons: 487 SAR" : "3 طن: 387 ريال، 5 طن: 487 ريال" 
       },
@@ -92,14 +92,14 @@ const TruckTypeSelector: React.FC<TruckTypeSelectorProps> = ({
         id: "water-truck", 
         name: language === "en" ? "Water Suction Truck" : "شاحنة شفط المياه", 
         icon: renderWaterTruckIcon(),
-        image: "/assets/water-truck.png",
+        image: "/lovable-uploads/191e2114-a3a6-4a0a-9f35-7ee23e4fc07e.png",
         price: language === "en" ? "148 SAR/day" : "148 ريال/يوم" 
       },
       { 
         id: "crawler-excavator", 
         name: language === "en" ? "Crawler Excavator" : "حفارة زاحفة", 
         icon: renderExcavatorIcon(),
-        image: "/assets/crawler-excavator.png",
+        image: "/lovable-uploads/191e2114-a3a6-4a0a-9f35-7ee23e4fc07e.png",
         price: language === "en" ? "687 SAR/day" : "687 ريال/يوم",
         description: language === "en" ? "Head types available for selection" : "يمكن اختيار نوع الرأس" 
       },
@@ -107,7 +107,7 @@ const TruckTypeSelector: React.FC<TruckTypeSelectorProps> = ({
         id: "wheel-excavator", 
         name: language === "en" ? "Wheel Excavator" : "حفارة بعجلات", 
         icon: renderExcavatorIcon(),
-        image: "/assets/wheel-excavator.png",
+        image: "/lovable-uploads/191e2114-a3a6-4a0a-9f35-7ee23e4fc07e.png",
         price: language === "en" ? "1180 SAR/day" : "1180 ريال/يوم",
         description: language === "en" ? "Head types available for selection" : "يمكن اختيار نوع الرأس" 
       }
