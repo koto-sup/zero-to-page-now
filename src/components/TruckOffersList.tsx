@@ -29,13 +29,15 @@ interface TruckOffersListProps {
   requestDetails: RequestDetails;
   onAcceptOffer: (offerId: string, rentalDuration: string) => void;
   discountApplied?: boolean;
+  acceptedOfferId?: string;
 }
 
 const TruckOffersList: React.FC<TruckOffersListProps> = ({
   offers,
   requestDetails,
   onAcceptOffer,
-  discountApplied = false
+  discountApplied = false,
+  acceptedOfferId
 }) => {
   // State to track rental duration for each offer
   const [rentalDurations, setRentalDurations] = useState<Record<string, string>>({});
@@ -54,7 +56,12 @@ const TruckOffersList: React.FC<TruckOffersListProps> = ({
       "skid-steer": "لودر انزلاقي",
       flatbed: "شاحنة مسطحة",
       backhoe: "حفارة خلفية",
-      "front-loader": "لودر أمامي"
+      "front-loader": "لودر أمامي",
+      "dump-loader": "شاحنة حفر وتحميل",
+      "water-truck": "شاحنة شفط المياه",
+      "crawler-excavator": "حفارة زاحفة",
+      "wheel-excavator": "حفارة بعجلات",
+      jcp: "شاحنة JCP"
     };
     
     return truckTypes[type] || type;
@@ -74,7 +81,7 @@ const TruckOffersList: React.FC<TruckOffersListProps> = ({
   };
 
   const getOfferPrice = (originalPrice: number) => {
-    return discountApplied ? Math.round(originalPrice * 0.85) : originalPrice;
+    return discountApplied ? Math.round(originalPrice * 0.82) : originalPrice; // Updated to 18% discount
   };
 
   const handleRentalDurationChange = (offerId: string, duration: string) => {
@@ -109,6 +116,11 @@ const TruckOffersList: React.FC<TruckOffersListProps> = ({
     }
   };
 
+  // Filter offers based on whether an offer has been accepted
+  const displayOffers = acceptedOfferId 
+    ? offers.filter(offer => offer.id === acceptedOfferId) 
+    : offers;
+
   return (
     <div>
       <div className="bg-white rounded-lg p-4 shadow mb-6">
@@ -136,7 +148,7 @@ const TruckOffersList: React.FC<TruckOffersListProps> = ({
                 {requestDetails.estimatedPrice} ريال
                 {discountApplied && (
                   <span className="mr-2 text-xs bg-green-100 text-green-700 px-2 py-1 rounded-full">
-                    خصم 15%
+                    خصم 18%
                   </span>
                 )}
               </div>
@@ -145,9 +157,14 @@ const TruckOffersList: React.FC<TruckOffersListProps> = ({
         </div>
       </div>
 
-      <h2 className="text-2xl font-bold mb-4">العروض المتاحة ({offers.length})</h2>
+      <h2 className="text-2xl font-bold mb-4">
+        {acceptedOfferId 
+          ? "العرض المقبول" 
+          : `العروض المتاحة (${displayOffers.length})`
+        }
+      </h2>
 
-      {offers.length === 0 ? (
+      {displayOffers.length === 0 ? (
         <div className="text-center py-12 bg-gray-50 rounded-lg">
           <Truck className="mx-auto h-12 w-12 text-gray-400 mb-3" />
           <h3 className="text-lg font-medium text-gray-900">لا توجد عروض متاحة حاليًا</h3>
@@ -155,7 +172,7 @@ const TruckOffersList: React.FC<TruckOffersListProps> = ({
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {offers.map((offer) => (
+          {displayOffers.map((offer) => (
             <Card key={offer.id} className="overflow-hidden">
               <div className="h-2 bg-moprd-teal"></div>
               <CardContent className="pt-6">
@@ -190,30 +207,32 @@ const TruckOffersList: React.FC<TruckOffersListProps> = ({
                     <span className="font-medium">{offer.estimatedArrival}</span>
                   </div>
                   
-                  <div className="mt-4 mb-3">
-                    <div className="flex items-center mb-2">
-                      <Calendar className="h-4 w-4 text-moprd-teal mr-2" />
-                      <span className="text-sm font-medium">مدة الإيجار:</span>
+                  {!acceptedOfferId && (
+                    <div className="mt-4 mb-3">
+                      <div className="flex items-center mb-2">
+                        <Calendar className="h-4 w-4 text-moprd-teal mr-2" />
+                        <span className="text-sm font-medium">مدة الإيجار:</span>
+                      </div>
+                      <RadioGroup 
+                        value={rentalDurations[offer.id] || "day"}
+                        onValueChange={(value) => handleRentalDurationChange(offer.id, value)}
+                        className="flex justify-between"
+                      >
+                        <div className="flex items-center">
+                          <RadioGroupItem value="day" id={`day-${offer.id}`} />
+                          <Label htmlFor={`day-${offer.id}`} className="mr-2 cursor-pointer">يوم</Label>
+                        </div>
+                        <div className="flex items-center">
+                          <RadioGroupItem value="week" id={`week-${offer.id}`} />
+                          <Label htmlFor={`week-${offer.id}`} className="mr-2 cursor-pointer">أسبوع</Label>
+                        </div>
+                        <div className="flex items-center">
+                          <RadioGroupItem value="month" id={`month-${offer.id}`} />
+                          <Label htmlFor={`month-${offer.id}`} className="mr-2 cursor-pointer">شهر</Label>
+                        </div>
+                      </RadioGroup>
                     </div>
-                    <RadioGroup 
-                      value={rentalDurations[offer.id] || "day"}
-                      onValueChange={(value) => handleRentalDurationChange(offer.id, value)}
-                      className="flex justify-between"
-                    >
-                      <div className="flex items-center">
-                        <RadioGroupItem value="day" id={`day-${offer.id}`} />
-                        <Label htmlFor={`day-${offer.id}`} className="mr-2 cursor-pointer">يوم</Label>
-                      </div>
-                      <div className="flex items-center">
-                        <RadioGroupItem value="week" id={`week-${offer.id}`} />
-                        <Label htmlFor={`week-${offer.id}`} className="mr-2 cursor-pointer">أسبوع</Label>
-                      </div>
-                      <div className="flex items-center">
-                        <RadioGroupItem value="month" id={`month-${offer.id}`} />
-                        <Label htmlFor={`month-${offer.id}`} className="mr-2 cursor-pointer">شهر</Label>
-                      </div>
-                    </RadioGroup>
-                  </div>
+                  )}
                   
                   <div className="flex justify-between text-lg font-bold mt-4">
                     <span>السعر ({getDurationLabel(rentalDurations[offer.id] || "day")})</span>
@@ -227,12 +246,14 @@ const TruckOffersList: React.FC<TruckOffersListProps> = ({
                     </div>
                   </div>
 
-                  <Button 
-                    className="w-full mt-2 bg-moprd-teal hover:bg-moprd-blue"
-                    onClick={() => onAcceptOffer(offer.id, rentalDurations[offer.id] || "day")}
-                  >
-                    قبول العرض
-                  </Button>
+                  {!acceptedOfferId && (
+                    <Button 
+                      className="w-full mt-2 bg-moprd-teal hover:bg-moprd-blue"
+                      onClick={() => onAcceptOffer(offer.id, rentalDurations[offer.id] || "day")}
+                    >
+                      قبول العرض
+                    </Button>
+                  )}
                 </div>
               </CardContent>
             </Card>

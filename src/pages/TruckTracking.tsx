@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect, useRef } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -29,9 +28,13 @@ const TruckTracking = () => {
   const [timeLeft, setTimeLeft] = useState(14 * 60); // 14 minutes in seconds
   const [currentStatus, setCurrentStatus] = useState("جاري التحرك نحو موقعك");
   
+  // Get stable order number from localStorage or generate a new one if it doesn't exist
+  const orderNumber = localStorage.getItem('lastOrderNumber') || 
+    "ORD-" + Math.floor(100000 + Math.random() * 900000);
+  
   // Mock data
   const orderDetails = {
-    orderId: "ORD-" + Math.floor(Math.random() * 1000000),
+    orderId: orderNumber,
     driverName: "خالد السائق",
     driverId: driverId || "driver-1",
     driverPhone: "+966 50 123 4567",
@@ -64,6 +67,9 @@ const TruckTracking = () => {
   ];
 
   useEffect(() => {
+    // Save the order number to localStorage to keep it stable
+    localStorage.setItem('lastOrderNumber', orderNumber);
+    
     // Set the order start time to the current time
     setOrderStartTime(new Date());
     
@@ -265,7 +271,7 @@ const TruckTracking = () => {
         
         <div className="md:col-span-2">
           <div className={`grid grid-cols-1 gap-4 ${showChat ? 'md:grid-cols-2' : 'md:grid-cols-1'}`}>
-            <div className={`${showChat ? 'h-[500px]' : 'h-[500px]'}`}>
+            <div className={showChat ? 'h-[500px]' : 'h-[500px]'}>
               <Card className="h-full overflow-hidden">
                 <CardContent className="p-0 h-full">
                   <EnhancedTruckMap tracking={true} distance={2.3} />
@@ -274,8 +280,8 @@ const TruckTracking = () => {
             </div>
             
             {showChat && (
-              <div className="h-[500px]">
-                <Card className="h-full overflow-hidden">
+              <div className="h-[500px] overflow-auto">
+                <Card className="h-full">
                   <CardContent className="p-0 h-full">
                     <ChatBox 
                       chatId="tracking-chat" 

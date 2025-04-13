@@ -7,7 +7,10 @@ import {
   Snowflake,
   Droplets,
   Shovel,
-  Construction
+  Construction,
+  Truck,
+  Hammer,
+  Forklift
 } from "lucide-react";
 import { useLanguage } from "@/contexts/LanguageContext";
 
@@ -37,7 +40,7 @@ const TruckTypeSelector: React.FC<TruckTypeSelectorProps> = ({
 
   const renderDumpTruckIcon = () => (
     <div className="p-2 rounded-full bg-gray-100 flex items-center justify-center">
-      <Construction className="h-6 w-6 text-gray-700" />
+      <Truck className="h-6 w-6 text-gray-700" />
     </div>
   );
 
@@ -52,15 +55,35 @@ const TruckTypeSelector: React.FC<TruckTypeSelectorProps> = ({
       <Shovel className="h-6 w-6 text-orange-600" />
     </div>
   );
+  
+  const renderDumpLoaderIcon = () => (
+    <div className="p-2 rounded-full bg-amber-100 flex items-center justify-center">
+      <Forklift className="h-6 w-6 text-amber-600" />
+    </div>
+  );
 
-  // Truck types with translations - removed the specified truck types
+  // Get truck icons based on ID
+  const getTruckIcon = (id: string) => {
+    switch(id) {
+      case "refrigerated": return "/lovable-uploads/refrigerated-truck.png";
+      case "jcp": return "/lovable-uploads/jcp-truck.png";
+      case "dump-truck": return "/lovable-uploads/dump-truck.png";
+      case "dump-loader": return "/lovable-uploads/0819c9a2-a973-40ee-b628-305175c366c9.png";
+      case "water-truck": return "/lovable-uploads/water-truck.png";
+      case "crawler-excavator": return "/lovable-uploads/crawler-excavator.png";
+      case "wheel-excavator": return "/lovable-uploads/wheel-excavator.png";
+      default: return "/lovable-uploads/191e2114-a3a6-4a0a-9f35-7ee23e4fc07e.png";
+    }
+  };
+
+  // Truck types with translations
   const getTruckTypes = () => {
     const baseTypes = [
       { 
         id: "refrigerated", 
         name: language === "en" ? "Refrigerated Truck" : "شاحنة مبردة", 
         icon: renderRefrigeratedIcon(),
-        image: "/lovable-uploads/191e2114-a3a6-4a0a-9f35-7ee23e4fc07e.png",
+        image: getTruckIcon("refrigerated"),
         price: language === "en" ? "14 SAR/km" : "14 ريال/كم",
         description: language === "en" ? "One-day rental, price based on offers" : "إيجار لمدة يوم واحد، السعر حسب العرض"
       },
@@ -68,7 +91,7 @@ const TruckTypeSelector: React.FC<TruckTypeSelectorProps> = ({
         id: "jcp", 
         name: language === "en" ? "JCP Truck" : "شاحنة JCP", 
         icon: renderJCPIcon(),
-        image: "/assets/jcp-truck.png",
+        image: getTruckIcon("jcp"),
         price: language === "en" ? "578 SAR/day" : "578 ريال/يوم",
         description: language === "en" ? "Delivery options: 238 SAR for delivery, 488 SAR for delivery and return" : "خيار نقل الشاحنة: 238 ريال للتوصيل، 488 ريال للتوصيل والإرجاع"
       },
@@ -76,15 +99,15 @@ const TruckTypeSelector: React.FC<TruckTypeSelectorProps> = ({
         id: "dump-truck", 
         name: language === "en" ? "Dump Truck" : "شاحنة قلابة", 
         icon: renderDumpTruckIcon(),
-        image: "/lovable-uploads/191e2114-a3a6-4a0a-9f35-7ee23e4fc07e.png",
+        image: getTruckIcon("dump-truck"),
         price: language === "en" ? "387-487 SAR/day" : "387-487 ريال/يوم",
         description: language === "en" ? "3 tons: 387 SAR, 5 tons: 487 SAR" : "3 طن: 387 ريال، 5 طن: 487 ريال" 
       },
       { 
         id: "dump-loader", 
         name: language === "en" ? "Dump Loader" : "شاحنة حفر وتحميل", 
-        icon: renderDumpTruckIcon(),
-        image: "/lovable-uploads/0819c9a2-a973-40ee-b628-305175c366c9.png",
+        icon: renderDumpLoaderIcon(),
+        image: getTruckIcon("dump-loader"),
         price: language === "en" ? "786 SAR/day" : "786 ريال/يوم",
         description: language === "en" ? "20 tons, 18 square meters" : "20 طن، 18 متر مربع" 
       },
@@ -92,14 +115,14 @@ const TruckTypeSelector: React.FC<TruckTypeSelectorProps> = ({
         id: "water-truck", 
         name: language === "en" ? "Water Suction Truck" : "شاحنة شفط المياه", 
         icon: renderWaterTruckIcon(),
-        image: "/lovable-uploads/191e2114-a3a6-4a0a-9f35-7ee23e4fc07e.png",
+        image: getTruckIcon("water-truck"),
         price: language === "en" ? "148 SAR/day" : "148 ريال/يوم" 
       },
       { 
         id: "crawler-excavator", 
         name: language === "en" ? "Crawler Excavator" : "حفارة زاحفة", 
         icon: renderExcavatorIcon(),
-        image: "/lovable-uploads/191e2114-a3a6-4a0a-9f35-7ee23e4fc07e.png",
+        image: getTruckIcon("crawler-excavator"),
         price: language === "en" ? "687 SAR/day" : "687 ريال/يوم",
         description: language === "en" ? "Head types available for selection" : "يمكن اختيار نوع الرأس" 
       },
@@ -107,7 +130,7 @@ const TruckTypeSelector: React.FC<TruckTypeSelectorProps> = ({
         id: "wheel-excavator", 
         name: language === "en" ? "Wheel Excavator" : "حفارة بعجلات", 
         icon: renderExcavatorIcon(),
-        image: "/lovable-uploads/191e2114-a3a6-4a0a-9f35-7ee23e4fc07e.png",
+        image: getTruckIcon("wheel-excavator"),
         price: language === "en" ? "1180 SAR/day" : "1180 ريال/يوم",
         description: language === "en" ? "Head types available for selection" : "يمكن اختيار نوع الرأس" 
       }
@@ -121,28 +144,28 @@ const TruckTypeSelector: React.FC<TruckTypeSelectorProps> = ({
   // Discount text based on language
   const getDiscountText = () => {
     switch(language) {
-      case 'en': return "(15% discount for customers)";
-      case 'fr': return "(15% de réduction pour les clients)";
-      case 'es': return "(15% de descuento para clientes)";
-      case 'ur': return "(گاہکوں کے لیے 15٪ چھوٹ)";
-      case 'hi': return "(ग्राहकों के लिए 15% छूट)";
-      case 'zh': return "(客户可享受15%折扣)";
+      case 'en': return "(18% discount for customers)";
+      case 'fr': return "(18% de réduction pour les clients)";
+      case 'es': return "(18% de descuento para clientes)";
+      case 'ur': return "(گاہکوں کے لیے 18٪ چھوٹ)";
+      case 'hi': return "(ग्राहकों के लिए 18% छूट)";
+      case 'zh': return "(客户可享受18%折扣)";
       case 'ar': 
-      default: return "(خصم 15% للعملاء)";
+      default: return "(خصم 18% للعملاء)";
     }
   };
 
   // Info box text based on language
   const getInfoBoxText = () => {
     switch(language) {
-      case 'en': return "15% fee is charged from the driver, not the customer. Prices are negotiable.";
-      case 'fr': return "Des frais de 15% sont facturés au conducteur, pas au client. Les prix sont négociables.";
-      case 'es': return "Se cobra una tarifa del 15% al conductor, no al cliente. Los precios son negociables.";
-      case 'ur': return "15٪ فیس ڈرائیور سے لی جاتی ہے، کسٹمر سے نہیں۔ قیمتیں قابل مذاکرہ ہیں۔";
-      case 'hi': return "15% शुल्क ड्राइवर से लिया जाता है, ग्राहक से नहीं। कीमतें बातचीत योग्य हैं।";
-      case 'zh': return "15%的费用向司机收取，而非客户。价格可议。";
+      case 'en': return "18% fee is charged from the driver, not the customer. Prices are negotiable.";
+      case 'fr': return "Des frais de 18% sont facturés au conducteur, pas au client. Les prix sont négociables.";
+      case 'es': return "Se cobra una tarifa del 18% al conductor, no al cliente. Los precios son negociables.";
+      case 'ur': return "18٪ فیس ڈرائیور سے لی جاتی ہے، کسٹمر سے نہیں۔ قیمتیں قابل مذاکرہ ہیں۔";
+      case 'hi': return "18% शुल्क ड्राइवर से लिया जाता है, ग्राहक से नहीं। कीमतें बातचीत योग्य हैं।";
+      case 'zh': return "18%的费用向司机收取，而非客户。价格可议。";
       case 'ar':
-      default: return "يتم أخذ رسوم 15% من السائق وليس العميل، والأسعار قابلة للتفاوض.";
+      default: return "يتم أخذ رسوم 18% من السائق وليس العميل، والأسعار قابلة للتفاوض.";
     }
   };
 

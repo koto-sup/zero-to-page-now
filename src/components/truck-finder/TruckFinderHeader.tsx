@@ -1,5 +1,7 @@
 
 import React from "react";
+import { ArrowLeft, Gift } from "lucide-react";
+import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import LanguageSelector from "@/components/LanguageSelector";
 
@@ -10,6 +12,7 @@ interface TruckFinderHeaderProps {
   couponApplied: boolean;
   applyCoupon: () => void;
   requestSubmitted: boolean;
+  hideLanguageButton?: boolean;
 }
 
 const TruckFinderHeader: React.FC<TruckFinderHeaderProps> = ({
@@ -18,26 +21,36 @@ const TruckFinderHeader: React.FC<TruckFinderHeaderProps> = ({
   hasDiscount,
   couponApplied,
   applyCoupon,
-  requestSubmitted
+  requestSubmitted,
+  hideLanguageButton = false
 }) => {
   return (
-    <div className="flex justify-between items-center mb-8">
+    <div className="mb-6 flex justify-between items-start">
       <div>
-        <h1 className="text-3xl font-bold mb-4">{pageTitle}</h1>
-        <p className="text-gray-600">{description}</p>
-      </div>
-      
-      <div className="flex items-center space-x-2">
-        {hasDiscount && !requestSubmitted && (
+        <div className="flex items-center mb-2">
+          <Link to="/customer-dashboard" className="text-muted-foreground hover:text-primary mr-2">
+            <ArrowLeft className="h-5 w-5" />
+          </Link>
+          <h1 className="text-2xl font-bold">{pageTitle}</h1>
+          {!hideLanguageButton && (
+            <div className="mr-2">
+              <LanguageSelector />
+            </div>
+          )}
+        </div>
+        <p className="text-muted-foreground mb-4 max-w-2xl">{description}</p>
+        
+        {!requestSubmitted && hasDiscount && !couponApplied && (
           <Button 
+            variant="outline" 
+            size="sm"
+            className="flex items-center text-green-600 border-green-200 bg-green-50 hover:bg-green-100"
             onClick={applyCoupon}
-            variant="outline"
-            className={`${couponApplied ? 'bg-green-100 border-green-500' : ''} ml-2`}
           >
-            {couponApplied ? 'تم تطبيق الخصم (15%)' : 'تطبيق كوبون الخصم'}
+            <Gift className="h-4 w-4 mr-2" />
+            تطبيق خصم 18% (عملاء زكرت المميزين)
           </Button>
         )}
-        <LanguageSelector />
       </div>
     </div>
   );

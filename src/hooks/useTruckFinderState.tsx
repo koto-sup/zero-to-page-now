@@ -35,13 +35,16 @@ export const useTruckFinderState = () => {
   const [offers, setOffers] = useState<TruckOffer[]>([]);
   const [hasDiscount, setHasDiscount] = useState(false);
   const [couponApplied, setCouponApplied] = useState(false);
+  const [completedOrders, setCompletedOrders] = useState(0);
 
   useEffect(() => {
-    // Check if user has made at least 2 orders for discount eligibility
+    // Check if user has made at least 7 orders for discount eligibility
     if (user) {
       // In a real app, this would be fetched from the backend
-      const previousOrders = 2; // Simulated previous orders count
-      setHasDiscount(previousOrders >= 2);
+      // Simulated previous orders count based on user ID
+      const previousOrders = user.id ? (parseInt(user.id.substring(0, 2), 16) % 10) : 0;
+      setCompletedOrders(previousOrders);
+      setHasDiscount(previousOrders >= 7); // Changed from 2 to 7 for discount eligibility
     }
   }, [user]);
 
@@ -51,7 +54,7 @@ export const useTruckFinderState = () => {
       const timer = setTimeout(() => {
         let mockOffers: TruckOffer[] = [];
         
-        const validTruckTypes = ["refrigerated", "jcp", "dump-truck", "water-truck", "crawler-excavator", "wheel-excavator"];
+        const validTruckTypes = ["refrigerated", "jcp", "dump-truck", "water-truck", "crawler-excavator", "wheel-excavator", "dump-loader"];
         const truckType = validTruckTypes.includes(requestDetails.truckType || '') 
           ? requestDetails.truckType 
           : 'refrigerated';
@@ -109,11 +112,13 @@ export const useTruckFinderState = () => {
     if (hasDiscount && !couponApplied) {
       setCouponApplied(true);
       toast.success("تم تطبيق الكوبون بنجاح!", {
-        description: "ستحصل على خصم 15% عند إتمام الطلب"
+        description: "ستحصل على خصم 18% عند إتمام الطلب"
       });
     } else if (!hasDiscount) {
       toast.error("ليس لديك خصم متاح", {
-        description: "يمكنك الحصول على خصم 15% بعد إتمام طلبين"
+        description: completedOrders >= 7 
+          ? "حدث خطأ في تطبيق الخصم، حاول مرة أخرى"
+          : `يمكنك الحصول على خصم 18% بعد إتمام 7 طلبات (${completedOrders}/7)`
       });
     } else {
       toast.info("تم تطبيق الكوبون بالفعل");
@@ -128,6 +133,7 @@ export const useTruckFinderState = () => {
     couponApplied,
     handleRequestSubmitted,
     applyCoupon,
-    setRequestSubmitted
+    setRequestSubmitted,
+    completedOrders
   };
 };
