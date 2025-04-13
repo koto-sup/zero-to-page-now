@@ -81,6 +81,14 @@ const TruckTypeSelector: React.FC<TruckTypeSelectorProps> = ({
         description: language === "en" ? "3 tons: 387 SAR, 5 tons: 487 SAR" : "3 طن: 387 ريال، 5 طن: 487 ريال" 
       },
       { 
+        id: "dump-loader", 
+        name: language === "en" ? "Dump Loader" : "شاحنة حفر وتحميل", 
+        icon: renderDumpTruckIcon(),
+        image: "/lovable-uploads/0819c9a2-a973-40ee-b628-305175c366c9.png",
+        price: language === "en" ? "786 SAR/day" : "786 ريال/يوم",
+        description: language === "en" ? "20 tons, 18 square meters" : "20 طن، 18 متر مربع" 
+      },
+      { 
         id: "water-truck", 
         name: language === "en" ? "Water Suction Truck" : "شاحنة شفط المياه", 
         icon: renderWaterTruckIcon(),
@@ -169,7 +177,7 @@ const TruckTypeSelector: React.FC<TruckTypeSelectorProps> = ({
           onValueChange={onTruckTypeChange} 
           className="grid grid-cols-1 md:grid-cols-2 gap-2"
         >
-          {truckTypes.map((type) => (
+          {getTruckTypes().map((type) => (
             <div key={type.id} className="flex items-center">
               <RadioGroupItem value={type.id} id={`truck-type-${type.id}`} />
               <Label 
@@ -177,7 +185,7 @@ const TruckTypeSelector: React.FC<TruckTypeSelectorProps> = ({
                 className="flex items-center mr-2 p-2 cursor-pointer w-full hover:bg-muted/20 rounded-md transition-colors"
               >
                 <div className="ml-3 p-1 rounded-full bg-blue-50 flex items-center justify-center" style={{ width: "48px", height: "48px" }}>
-                  {type.id === "refrigerated" ? (
+                  {type.image ? (
                     <img 
                       src={type.image} 
                       alt={type.name} 

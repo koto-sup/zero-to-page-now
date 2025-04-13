@@ -24,6 +24,7 @@ const TruckRequestForm: React.FC<TruckRequestFormProps> = ({
     handleTruckSizeChange,
     handleExcavatorHeadChange,
     handleFlatbedDeliveryOptionChange,
+    handleRefrigeratedOptionChange,
     handleSubmit
   } = useTruckRequestForm({
     discountApplied,
@@ -58,6 +59,7 @@ const TruckRequestForm: React.FC<TruckRequestFormProps> = ({
           onTruckSizeChange={handleTruckSizeChange}
           onExcavatorHeadChange={handleExcavatorHeadChange}
           onFlatbedDeliveryOptionChange={handleFlatbedDeliveryOptionChange}
+          onRefrigeratedOptionChange={handleRefrigeratedOptionChange}
         />
       </div>
     </form>

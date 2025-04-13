@@ -7,6 +7,7 @@ import ExcavatorHeadOptions from "./ExcavatorHeadOptions";
 import FlatbedDeliveryOptions from "./FlatbedDeliveryOptions";
 import RentalDaysSelect from "./RentalDaysSelect";
 import TripSummary from "./TripSummary";
+import RefrigeratedOptions from "./RefrigeratedOptions";
 
 interface TripDetailsProps {
   distance: number;
@@ -19,6 +20,7 @@ interface TripDetailsProps {
   onTruckSizeChange?: (value: string) => void;
   onExcavatorHeadChange?: (value: string) => void;
   onFlatbedDeliveryOptionChange?: (value: string) => void;
+  onRefrigeratedOptionChange?: (value: string) => void;
 }
 
 const TripDetails: React.FC<TripDetailsProps> = ({
@@ -31,15 +33,17 @@ const TripDetails: React.FC<TripDetailsProps> = ({
   onDaysChange,
   onTruckSizeChange,
   onExcavatorHeadChange,
-  onFlatbedDeliveryOptionChange
+  onFlatbedDeliveryOptionChange,
+  onRefrigeratedOptionChange
 }) => {
   // Determine if this truck type has day-based pricing
-  const isDayBasedPricing = ["jcp", "dump-truck", "water-truck", "crawler-excavator", "wheel-excavator"].includes(truckType);
+  const isDayBasedPricing = ["jcp", "dump-truck", "dump-loader", "water-truck", "crawler-excavator", "wheel-excavator"].includes(truckType);
 
   // Determine if this truck requires special options
-  const needsTruckSizeOptions = truckType === "dump-truck";
+  const needsTruckSizeOptions = truckType === "dump-truck" || truckType === "dump-loader";
   const needsExcavatorHeadOptions = ["crawler-excavator", "wheel-excavator"].includes(truckType);
   const needsFlatbedOptions = truckType === "jcp";
+  const needsRefrigeratedOptions = truckType === "refrigerated";
 
   // Get price label based on truck type
   const getPriceLabel = () => {
@@ -63,7 +67,7 @@ const TripDetails: React.FC<TripDetailsProps> = ({
           />
           
           {needsTruckSizeOptions && onTruckSizeChange && (
-            <TruckSizeOptions onTruckSizeChange={onTruckSizeChange} />
+            <TruckSizeOptions onTruckSizeChange={onTruckSizeChange} truckType={truckType} />
           )}
           
           {needsExcavatorHeadOptions && onExcavatorHeadChange && (
@@ -72,6 +76,10 @@ const TripDetails: React.FC<TripDetailsProps> = ({
           
           {needsFlatbedOptions && onFlatbedDeliveryOptionChange && (
             <FlatbedDeliveryOptions onFlatbedDeliveryOptionChange={onFlatbedDeliveryOptionChange} />
+          )}
+          
+          {needsRefrigeratedOptions && onRefrigeratedOptionChange && (
+            <RefrigeratedOptions onRefrigeratedOptionChange={onRefrigeratedOptionChange} />
           )}
           
           {isDayBasedPricing && onDaysChange && (

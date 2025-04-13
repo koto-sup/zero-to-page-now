@@ -13,6 +13,7 @@ export interface RequestDetails {
   truckSize?: string;
   excavatorHeadType?: string;
   flatbedDeliveryOption?: string;
+  refrigeratedOption?: string;
 }
 
 export interface TruckOffer {
