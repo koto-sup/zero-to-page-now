@@ -13,10 +13,12 @@ const TruckSizeOptions: React.FC<TruckSizeOptionsProps> = ({ onTruckSizeChange, 
     return (
       <div className="border-b pb-4">
         <span className="block mb-2">حجم الشاحنة:</span>
-        <div className="flex items-center">
-          <RadioGroupItem value="20ton" id="20ton" checked disabled />
-          <Label htmlFor="20ton" className="mr-2">20 طن (18 متر مكعب) (786 ريال)</Label>
-        </div>
+        <RadioGroup defaultValue="20ton" onValueChange={onTruckSizeChange}>
+          <div className="flex items-center">
+            <RadioGroupItem value="20ton" id="20ton" />
+            <Label htmlFor="20ton" className="mr-2">20 طن (18 متر مكعب) (786 ريال)</Label>
+          </div>
+        </RadioGroup>
       </div>
     );
   }
