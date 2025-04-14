@@ -1,4 +1,3 @@
-
 import React from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
@@ -89,11 +88,10 @@ const TruckTypeSelector: React.FC<TruckTypeSelectorProps> = ({
       },
       { 
         id: "jcp", 
-        name: language === "en" ? "JCP Truck" : "شاحنة JCP", 
+        name: language === "en" ? "JCP Loader" : "لودر جي سي بي", 
         icon: renderJCPIcon(),
-        image: getTruckIcon("jcp"),
-        price: language === "en" ? "578 SAR/day" : "578 ريال/يوم",
-        description: language === "en" ? "Delivery options: 238 SAR for delivery, 488 SAR for delivery and return" : "خيار نقل الشاحنة: 238 ريال للتوصيل، 488 ريال للتوصيل والإرجاع"
+        image: "/lovable-uploads/2318cf76-07e2-4d0c-b6d4-2f949f32922d.png",
+        price: language === "en" ? "578 SAR/day" : "578 ريال/يوم"
       },
       { 
         id: "dump-truck", 
@@ -105,7 +103,7 @@ const TruckTypeSelector: React.FC<TruckTypeSelectorProps> = ({
       },
       { 
         id: "dump-loader", 
-        name: language === "en" ? "Dump Loader" : "شاحنة حفر وتحميل", 
+        name: language === "en" ? "Big Dump Truck" : "قلاب سيكس", 
         icon: renderDumpLoaderIcon(),
         image: getTruckIcon("dump-loader"),
         price: language === "en" ? "786 SAR/day" : "786 ريال/يوم",
@@ -138,8 +136,6 @@ const TruckTypeSelector: React.FC<TruckTypeSelectorProps> = ({
     
     return baseTypes;
   };
-
-  const truckTypes = getTruckTypes();
 
   // Discount text based on language
   const getDiscountText = () => {

@@ -1,4 +1,3 @@
-
 import React from "react";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
@@ -26,6 +25,11 @@ import InvoiceDetail from "./pages/InvoiceDetail";
 import Profile from "./pages/Profile";
 import CustomerSupport from "./pages/CustomerSupport";
 import TruckTracking from "./pages/TruckTracking";
+import AboutUs from "./pages/AboutUs";
+import ContactUs from "./pages/ContactUs";
+import Privacy from "./pages/Privacy";
+import Help from "./pages/Help";
+import Settings from "./pages/Settings";
 
 // Import custom navbar
 import AppNavbar from "./components/AppNavbar";
@@ -66,7 +70,11 @@ const App = () => (
                   <Route path="/bookings" element={<CustomerDashboard />} />
                   <Route path="/support" element={<CustomerSupport />} />
                   <Route path="/truck-tracking/:driverId" element={<TruckTracking />} />
-                  {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+                  <Route path="/about" element={<AboutUs />} />
+                  <Route path="/contact" element={<ContactUs />} />
+                  <Route path="/privacy" element={<Privacy />} />
+                  <Route path="/help" element={<Help />} />
+                  <Route path="/settings" element={<Settings />} />
                   <Route path="*" element={<NotFound />} />
                 </Routes>
               </Layout>

@@ -94,8 +94,11 @@ const TruckOffersList: React.FC<TruckOffersListProps> = ({
   const getPriceMultiplier = (duration: string) => {
     switch (duration) {
       case "day": return 1;
-      case "week": return 6.5; // 7 days with a small discount
-      case "month": return 25; // 30 days with a larger discount
+      case "week": return 6.5;
+      case "month": return 25;
+      case "3month": return 70;
+      case "6month": return 130;
+      case "year": return 240;
       default: return 1;
     }
   };
