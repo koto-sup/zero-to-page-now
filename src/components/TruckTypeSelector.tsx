@@ -1,17 +1,10 @@
+
 import React from "react";
 import { Card, CardContent } from "@/components/ui/card";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { Label } from "@/components/ui/label";
-import { 
-  Snowflake,
-  Droplets,
-  Shovel,
-  Construction,
-  Truck,
-  Hammer,
-  Forklift
-} from "lucide-react";
+import { RadioGroup } from "@/components/ui/radio-group";
 import { useLanguage } from "@/contexts/LanguageContext";
+import { useTruckTypes } from "@/hooks/useTruckTypes";
+import { TruckTypeItem } from "./truck-selector/TruckTypeItem";
 
 interface TruckTypeSelectorProps {
   selectedTruckType: string;
@@ -23,120 +16,8 @@ const TruckTypeSelector: React.FC<TruckTypeSelectorProps> = ({
   onTruckTypeChange
 }) => {
   const { language } = useLanguage();
-  
-  // Icon renderers with cartoon-like styling
-  const renderRefrigeratedIcon = () => (
-    <div className="p-2 rounded-full bg-blue-100 flex items-center justify-center">
-      <Snowflake className="h-6 w-6 text-blue-500" />
-    </div>
-  );
+  const { getTruckTypes } = useTruckTypes();
 
-  const renderJCPIcon = () => (
-    <div className="p-2 rounded-full bg-yellow-100 flex items-center justify-center">
-      <Construction className="h-6 w-6 text-yellow-600" />
-    </div>
-  );
-
-  const renderDumpTruckIcon = () => (
-    <div className="p-2 rounded-full bg-gray-100 flex items-center justify-center">
-      <Truck className="h-6 w-6 text-gray-700" />
-    </div>
-  );
-
-  const renderWaterTruckIcon = () => (
-    <div className="p-2 rounded-full bg-cyan-100 flex items-center justify-center">
-      <Droplets className="h-6 w-6 text-cyan-600" />
-    </div>
-  );
-
-  const renderExcavatorIcon = () => (
-    <div className="p-2 rounded-full bg-orange-100 flex items-center justify-center">
-      <Shovel className="h-6 w-6 text-orange-600" />
-    </div>
-  );
-  
-  const renderDumpLoaderIcon = () => (
-    <div className="p-2 rounded-full bg-amber-100 flex items-center justify-center">
-      <Forklift className="h-6 w-6 text-amber-600" />
-    </div>
-  );
-
-  // Get truck icons based on ID
-  const getTruckIcon = (id: string) => {
-    switch(id) {
-      case "refrigerated": return "/lovable-uploads/cc1d2b91-8416-4580-9616-be1490769ef3.png"; // 4-refrigerated truck icon
-      case "jcp": return "/lovable-uploads/2318cf76-07e2-4d0c-b6d4-2f949f32922d.png"; // 2-jcp
-      case "dump-truck": return "/lovable-uploads/32960499-cd1d-4f47-bcee-37716adba4b6.png"; // 3-small dump truck
-      case "water-truck": return "/lovable-uploads/9f9124a6-b272-49c2-bead-347e67f29b98.png"; // 5-Water Suction Truck
-      case "wheel-excavator": return "/lovable-uploads/dad6802a-4aea-43eb-9b55-7eeae82566c1.png"; // 6-wheel Excavator
-      case "crawler-excavator": return "/lovable-uploads/6e80d2c0-5926-46c1-9822-363538ef97f9.png"; // 7-Crawler Excavator
-      default: return "/lovable-uploads/191e2114-a3a6-4a0a-9f35-7ee23e4fc07e.png";
-    }
-  };
-
-  // Truck types with translations
-  const getTruckTypes = () => {
-    const baseTypes = [
-      { 
-        id: "refrigerated", 
-        name: language === "en" ? "Refrigerated Truck" : "شاحنة مبردة", 
-        icon: renderRefrigeratedIcon(),
-        image: getTruckIcon("refrigerated"),
-        price: language === "en" ? "14 SAR/km" : "14 ريال/كم",
-        description: language === "en" ? "One-day rental, price based on offers" : "إيجار لمدة يوم واحد، السعر حسب العرض"
-      },
-      { 
-        id: "jcp", 
-        name: language === "en" ? "JCP Loader" : "لودر جي سي بي", 
-        icon: renderJCPIcon(),
-        image: "/lovable-uploads/2318cf76-07e2-4d0c-b6d4-2f949f32922d.png",
-        price: language === "en" ? "578 SAR/day" : "578 ريال/يوم"
-      },
-      { 
-        id: "dump-truck", 
-        name: language === "en" ? "Dump Truck" : "شاحنة قلابة", 
-        icon: renderDumpTruckIcon(),
-        image: getTruckIcon("dump-truck"),
-        price: language === "en" ? "387-487 SAR/day" : "387-487 ريال/يوم",
-        description: language === "en" ? "3 tons: 387 SAR, 5 tons: 487 SAR" : "3 طن: 387 ريال، 5 طن: 487 ريال" 
-      },
-      { 
-        id: "dump-loader", 
-        name: language === "en" ? "Big Dump Truck" : "قلاب سيكس", 
-        icon: renderDumpLoaderIcon(),
-        image: getTruckIcon("dump-loader"),
-        price: language === "en" ? "786 SAR/day" : "786 ريال/يوم",
-        description: language === "en" ? "20 tons, 18 square meters" : "20 طن، 18 متر مربع" 
-      },
-      { 
-        id: "water-truck", 
-        name: language === "en" ? "Water Suction Truck" : "شاحنة شفط المياه", 
-        icon: renderWaterTruckIcon(),
-        image: getTruckIcon("water-truck"),
-        price: language === "en" ? "148 SAR/day" : "148 ريال/يوم" 
-      },
-      { 
-        id: "crawler-excavator", 
-        name: language === "en" ? "Crawler Excavator" : "حفارة زاحفة", 
-        icon: renderExcavatorIcon(),
-        image: getTruckIcon("crawler-excavator"),
-        price: language === "en" ? "687 SAR/day" : "687 ريال/يوم",
-        description: language === "en" ? "Head types available for selection" : "يمكن اختيار نوع الرأس" 
-      },
-      { 
-        id: "wheel-excavator", 
-        name: language === "en" ? "Wheel Excavator" : "حفارة بعجلات", 
-        icon: renderExcavatorIcon(),
-        image: getTruckIcon("wheel-excavator"),
-        price: language === "en" ? "1180 SAR/day" : "1180 ريال/يوم",
-        description: language === "en" ? "Head types available for selection" : "يمكن اختيار نوع الرأس" 
-      }
-    ];
-    
-    return baseTypes;
-  };
-
-  // Discount text based on language
   const getDiscountText = () => {
     switch(language) {
       case 'en': return "(18% discount for customers)";
@@ -150,21 +31,6 @@ const TruckTypeSelector: React.FC<TruckTypeSelectorProps> = ({
     }
   };
 
-  // Info box text based on language
-  const getInfoBoxText = () => {
-    switch(language) {
-      case 'en': return "18% fee is charged from the driver, not the customer. Prices are negotiable.";
-      case 'fr': return "Des frais de 18% sont facturés au conducteur, pas au client. Les prix sont négociables.";
-      case 'es': return "Se cobra una tarifa del 18% al conductor, no al cliente. Los precios son negociables.";
-      case 'ur': return "18٪ فیس ڈرائیور سے لی جاتی ہے، کسٹمر سے نہیں۔ قیمتیں قابل مذاکرہ ہیں۔";
-      case 'hi': return "18% शुल्क ड्राइवर से लिया जाता है, ग्राहक से नहीं। कीमतें बातचीत योग्य हैं।";
-      case 'zh': return "18%的费用向司机收取，而非客户。价格可议。";
-      case 'ar':
-      default: return "يتم أخذ رسوم 18% من السائق وليس العميل، والأسعار قابلة للتفاوض.";
-    }
-  };
-
-  // Get vehicle type label based on language
   const getVehicleTypeLabel = () => {
     switch(language) {
       case 'en': return "Vehicle Type";
@@ -175,6 +41,19 @@ const TruckTypeSelector: React.FC<TruckTypeSelectorProps> = ({
       case 'zh': return "车辆类型";
       case 'ar':
       default: return "نوع المركبة";
+    }
+  };
+
+  const getInfoBoxText = () => {
+    switch(language) {
+      case 'en': return "18% fee is charged from the driver, not the customer. Prices are negotiable.";
+      case 'fr': return "Des frais de 18% sont facturés au conducteur, pas au client. Les prix sont négociables.";
+      case 'es': return "Se cobra una tarifa del 18% al conductor, no al cliente. Los precios son negociables.";
+      case 'ur': return "18٪ فیس ڈرائیور سے لی جاتی ہے، کسٹمر سے نہیں۔ قیمتیں قابل مذاکرہ ہیں۔";
+      case 'hi': return "18% शुल्क ड्राइवर से लिया जाता है, ग्राहक से नहीं। कीमतें बातचीत योग्य हैं।";
+      case 'zh': return "18%的费用向司机收取，而非客户。价格可议。";
+      case 'ar':
+      default: return "يتم أخذ رسوم 18% من السائق وليس العميل، والأسعار قابلة للتفاوض.";
     }
   };
 
@@ -196,39 +75,12 @@ const TruckTypeSelector: React.FC<TruckTypeSelectorProps> = ({
           className="grid grid-cols-1 md:grid-cols-2 gap-2"
         >
           {getTruckTypes().map((type) => (
-            <div key={type.id} className="flex items-center">
-              <RadioGroupItem value={type.id} id={`truck-type-${type.id}`} />
-              <Label 
-                htmlFor={`truck-type-${type.id}`} 
-                className="flex items-center mr-2 p-2 cursor-pointer w-full hover:bg-muted/20 rounded-md transition-colors"
-              >
-                <div className="ml-3 p-1 rounded-full bg-blue-50 flex items-center justify-center" style={{ width: "48px", height: "48px" }}>
-                  {type.image ? (
-                    <img 
-                      src={type.image} 
-                      alt={type.name} 
-                      className="max-w-full max-h-full" 
-                    />
-                  ) : (
-                    type.icon
-                  )}
-                </div>
-                <div>
-                  <div className="font-medium">{type.name}</div>
-                  <div className="text-sm text-gray-500">
-                    {type.price}
-                    {type.description && (
-                      <div className="text-xs text-muted-foreground mt-1">{type.description}</div>
-                    )}
-                    {type.id === selectedTruckType && !type.description && (
-                      <span className="mr-2 text-green-600">
-                        {getDiscountText()}
-                      </span>
-                    )}
-                  </div>
-                </div>
-              </Label>
-            </div>
+            <TruckTypeItem
+              key={type.id}
+              type={type}
+              isSelected={type.id === selectedTruckType}
+              discountText={getDiscountText()}
+            />
           ))}
         </RadioGroup>
       </CardContent>
