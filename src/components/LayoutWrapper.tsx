@@ -22,10 +22,7 @@ const LayoutWrapper: React.FC<LayoutWrapperProps> = ({ children }) => {
       {children}
       
       {user && (
-        <BottomNavbar 
-          onLanguageChange={changeLanguage} 
-          currentLanguage={language}
-        />
+        <BottomNavbar />
       )}
     </div>
   );

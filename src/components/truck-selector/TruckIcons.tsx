@@ -7,9 +7,9 @@ import {
   Construction,
   Truck,
   Forklift,
-  Crane,
   HardHat,
-  Wrench
+  Wrench,
+  Hammer
 } from "lucide-react";
 
 interface IconProps {
@@ -55,7 +55,7 @@ export const TruckIcons = {
   
   renderCraneIcon: () => (
     <div className="p-2 rounded-full bg-red-100 flex items-center justify-center">
-      <Crane className="h-7 w-7 text-red-600" />
+      <Construction className="h-7 w-7 text-red-600" />
     </div>
   ),
   
