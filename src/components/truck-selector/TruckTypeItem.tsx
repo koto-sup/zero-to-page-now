@@ -18,7 +18,7 @@ export const TruckTypeItem: React.FC<TruckTypeItemProps> = ({ type, isSelected, 
         htmlFor={`truck-type-${type.id}`} 
         className="flex items-center mr-2 p-2 cursor-pointer w-full hover:bg-muted/20 rounded-md transition-colors"
       >
-        <div className="ml-3 p-1 rounded-full bg-blue-50 flex items-center justify-center" style={{ width: "64px", height: "64px" }}>
+        <div className="ml-3 p-2 rounded-full bg-blue-50 flex items-center justify-center" style={{ width: "80px", height: "80px" }}>
           {type.image ? (
             <img 
               src={type.image} 
@@ -26,18 +26,20 @@ export const TruckTypeItem: React.FC<TruckTypeItemProps> = ({ type, isSelected, 
               className="max-w-full max-h-full" 
             />
           ) : (
-            type.icon
+            <div className="scale-125">
+              {type.icon}
+            </div>
           )}
         </div>
-        <div className="ml-2">
-          <div className="font-medium">{type.name}</div>
+        <div className="ml-3">
+          <div className="font-medium text-lg">{type.name}</div>
           <div className="text-sm text-gray-500">
             {type.price}
             {type.description && (
               <div className="text-xs text-muted-foreground mt-1">{type.description}</div>
             )}
             {isSelected && !type.description && (
-              <span className="mr-2 text-green-600">
+              <span className="mr-2 text-green-600 font-semibold">
                 {discountText}
               </span>
             )}
