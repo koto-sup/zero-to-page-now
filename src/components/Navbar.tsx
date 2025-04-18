@@ -1,6 +1,7 @@
 
 import React from "react";
 import { Link } from "react-router-dom";
+import { useLanguage } from "@/contexts/LanguageContext";
 import { Button } from "@/components/ui/button";
 import { 
   MoreVertical, 
@@ -19,13 +20,15 @@ import {
 } from "@/components/ui/dropdown-menu";
 
 const Navbar = () => {
+  const { language, t } = useLanguage();
+  
   return (
     <nav className="bg-white shadow-sm">
       <div className="container mx-auto px-4">
         <div className="flex justify-between items-center h-16">
           <div className="flex space-x-4">
             <Link to="/">
-              <Button variant="ghost">الرئيسية</Button>
+              <Button variant="ghost">{language === "en" ? "Home" : "الرئيسية"}</Button>
             </Link>
           </div>
           <div className="flex items-center space-x-4">
@@ -45,31 +48,31 @@ const Navbar = () => {
                 <DropdownMenuItem asChild>
                   <Link to="/activity" className="flex items-center">
                     <Activity className="mr-2 h-4 w-4" />
-                    <span>النشاط</span>
+                    <span>{language === "en" ? "Activity" : "النشاط"}</span>
                   </Link>
                 </DropdownMenuItem>
                 <DropdownMenuItem asChild>
                   <Link to="/settings" className="flex items-center">
                     <Settings className="mr-2 h-4 w-4" />
-                    <span>الإعدادات</span>
+                    <span>{language === "en" ? "Settings" : "الإعدادات"}</span>
                   </Link>
                 </DropdownMenuItem>
                 <DropdownMenuItem asChild>
                   <Link to="/help" className="flex items-center">
                     <HelpCircle className="mr-2 h-4 w-4" />
-                    <span>المساعدة</span>
+                    <span>{language === "en" ? "Help" : "المساعدة"}</span>
                   </Link>
                 </DropdownMenuItem>
                 <DropdownMenuItem asChild>
                   <Link to="/about" className="flex items-center">
                     <Info className="mr-2 h-4 w-4" />
-                    <span>من نحن</span>
+                    <span>{language === "en" ? "About Us" : "من نحن"}</span>
                   </Link>
                 </DropdownMenuItem>
                 <DropdownMenuItem asChild>
                   <Link to="/contact" className="flex items-center">
                     <Contact className="mr-2 h-4 w-4" />
-                    <span>اتصل بنا</span>
+                    <span>{language === "en" ? "Contact Us" : "اتصل بنا"}</span>
                   </Link>
                 </DropdownMenuItem>
               </DropdownMenuContent>

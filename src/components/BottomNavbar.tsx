@@ -2,6 +2,7 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
+import { useLanguage } from "@/contexts/LanguageContext";
 import { 
   Home, 
   Truck, 
@@ -26,26 +27,38 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 
-interface BottomNavbarProps {
-  onLanguageChange: (language: string) => void;
-  currentLanguage: string;
-}
-
-const BottomNavbar: React.FC<BottomNavbarProps> = ({ onLanguageChange, currentLanguage }) => {
+const BottomNavbar = () => {
   const { user } = useAuth();
-  const [showLanguageSelector, setShowLanguageSelector] = React.useState(false);
+  const { language, changeLanguage } = useLanguage();
   
   if (!user) {
     return null;
   }
 
   const languages = [
-    { value: "ar", label: "العربية" },
-    { value: "en", label: "English" },
-    { value: "fr", label: "Français" },
-    { value: "es", label: "Español" },
-    { value: "ur", label: "اردو" }
+    { code: 'ar', name: 'العربية', flag: '🇸🇦' },
+    { code: 'en', name: 'English', flag: '🇺🇸' },
+    { code: 'fr', name: 'Français', flag: '🇫🇷' },
+    { code: 'es', name: 'Español', flag: '🇪🇸' },
+    { code: 'ur', name: 'اردو', flag: '🇵🇰' },
+    { code: 'hi', name: 'हिन्दी', flag: '🇮🇳' },
+    { code: 'zh', name: '中文', flag: '🇨🇳' },
   ];
+
+  const getCurrentLanguage = () => {
+    return languages.find(lang => lang.code === language) || languages[0];
+  };
+
+  const handleLanguageChange = (code: string) => {
+    console.log("Changing language to:", code);
+    // Ensure we're only accepting valid language codes
+    if (languages.some(lang => lang.code === code)) {
+      changeLanguage(code as any);
+      // No page reload - the context will update the UI
+    }
+  };
+
+  const current = getCurrentLanguage();
 
   return (
     <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 shadow-lg z-50">
@@ -55,7 +68,7 @@ const BottomNavbar: React.FC<BottomNavbarProps> = ({ onLanguageChange, currentLa
           className="flex flex-col items-center justify-center w-full h-full text-gray-600 hover:text-moprd-teal"
         >
           <Home size={20} />
-          <span className="text-xs mt-1">الرئيسية</span>
+          <span className="text-xs mt-1">{language === "en" ? "Home" : "الرئيسية"}</span>
         </Link>
         
         <Link
@@ -63,28 +76,29 @@ const BottomNavbar: React.FC<BottomNavbarProps> = ({ onLanguageChange, currentLa
           className="flex flex-col items-center justify-center w-full h-full text-gray-600 hover:text-moprd-teal"
         >
           <Truck size={20} />
-          <span className="text-xs mt-1">{user.role === "customer" ? "شاحنات" : "رحلات"}</span>
+          <span className="text-xs mt-1">{user.role === "customer" ? (language === "en" ? "Trucks" : "شاحنات") : (language === "en" ? "Trips" : "رحلات")}</span>
         </Link>
         
         <Sheet>
           <SheetTrigger asChild>
             <button className="flex flex-col items-center justify-center w-full h-full text-gray-600 hover:text-moprd-teal">
               <Globe size={20} />
-              <span className="text-xs mt-1">اللغة</span>
+              <span className="text-xs mt-1">{language === "en" ? "Language" : "اللغة"}</span>
             </button>
           </SheetTrigger>
           <SheetContent side="bottom" className="h-64">
             <div className="flex flex-col items-center justify-center h-full">
-              <h3 className="text-lg font-medium mb-4">اختر اللغة</h3>
+              <h3 className="text-lg font-medium mb-4">{language === "en" ? "Select Language" : "اختر اللغة"}</h3>
               <div className="w-full max-w-xs">
-                <Select value={currentLanguage} onValueChange={onLanguageChange}>
+                <Select value={language} onValueChange={handleLanguageChange}>
                   <SelectTrigger className="w-full">
-                    <SelectValue placeholder="اختر اللغة" />
+                    <SelectValue placeholder={language === "en" ? "Select language" : "اختر اللغة"} />
                   </SelectTrigger>
                   <SelectContent>
                     {languages.map((lang) => (
-                      <SelectItem key={lang.value} value={lang.value}>
-                        {lang.label}
+                      <SelectItem key={lang.code} value={lang.code}>
+                        <span className="mr-2">{lang.flag}</span>
+                        {lang.name}
                       </SelectItem>
                     ))}
                   </SelectContent>
@@ -99,7 +113,7 @@ const BottomNavbar: React.FC<BottomNavbarProps> = ({ onLanguageChange, currentLa
           className="flex flex-col items-center justify-center w-full h-full text-gray-600 hover:text-moprd-teal"
         >
           <MessageSquare size={20} />
-          <span className="text-xs mt-1">الرسائل</span>
+          <span className="text-xs mt-1">{language === "en" ? "Messages" : "الرسائل"}</span>
         </Link>
         
         <Link
@@ -107,7 +121,7 @@ const BottomNavbar: React.FC<BottomNavbarProps> = ({ onLanguageChange, currentLa
           className="flex flex-col items-center justify-center w-full h-full text-gray-600 hover:text-moprd-teal"
         >
           <User size={20} />
-          <span className="text-xs mt-1">حسابي</span>
+          <span className="text-xs mt-1">{language === "en" ? "Profile" : "حسابي"}</span>
         </Link>
       </nav>
     </div>

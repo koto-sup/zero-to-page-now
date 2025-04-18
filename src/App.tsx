@@ -1,3 +1,4 @@
+
 import React from "react";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
@@ -30,6 +31,7 @@ import ContactUs from "./pages/ContactUs";
 import Privacy from "./pages/Privacy";
 import Help from "./pages/Help";
 import Settings from "./pages/Settings";
+import Activity from "./pages/Activity";
 
 // Import custom navbar
 import AppNavbar from "./components/AppNavbar";
@@ -75,6 +77,7 @@ const App = () => (
                   <Route path="/privacy" element={<Privacy />} />
                   <Route path="/help" element={<Help />} />
                   <Route path="/settings" element={<Settings />} />
+                  <Route path="/activity" element={<Activity />} />
                   <Route path="*" element={<NotFound />} />
                 </Routes>
               </Layout>

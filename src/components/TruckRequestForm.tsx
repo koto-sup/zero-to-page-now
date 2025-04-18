@@ -5,6 +5,7 @@ import TruckTypeSelector from "@/components/TruckTypeSelector";
 import TripDetails from "@/components/truck-request/TripDetails";
 import { useTruckRequestForm } from "@/hooks/useTruckRequestForm";
 import { RequestDetails } from "@/hooks/useTruckFinderState";
+import { useTruckTypes } from "@/hooks/useTruckTypes";
 
 interface TruckRequestFormProps {
   onRequestSubmitted: (details: RequestDetails) => void;
@@ -31,6 +32,10 @@ const TruckRequestForm: React.FC<TruckRequestFormProps> = ({
     onRequestSubmitted
   });
 
+  const { getTruckTypes } = useTruckTypes();
+  const selectedTruckType = getTruckTypes().find(truck => truck.id === formState.truckType);
+  const hasKmPricing = selectedTruckType?.hasKmPricing || false;
+
   return (
     <form onSubmit={handleSubmit}>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -54,6 +59,7 @@ const TruckRequestForm: React.FC<TruckRequestFormProps> = ({
           estimatedPrice={formState.estimatedPrice}
           discountApplied={discountApplied}
           loading={formState.loading}
+          hasKmPricing={hasKmPricing}
           onSubmit={handleSubmit}
           onDaysChange={handleDaysChange}
           onTruckSizeChange={handleTruckSizeChange}

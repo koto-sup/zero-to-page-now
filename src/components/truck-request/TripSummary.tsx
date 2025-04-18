@@ -7,6 +7,7 @@ interface TripSummaryProps {
   estimatedPrice: number;
   discountApplied?: boolean;
   getPriceLabel: () => string;
+  hasKmPricing?: boolean;
 }
 
 const TripSummary: React.FC<TripSummaryProps> = ({ 
@@ -14,7 +15,8 @@ const TripSummary: React.FC<TripSummaryProps> = ({
   truckType, 
   estimatedPrice, 
   discountApplied = false,
-  getPriceLabel
+  getPriceLabel,
+  hasKmPricing = false
 }) => {
   const getTruckTypeName = (type: string): string => {
     const truckTypeNames: Record<string, string> = {
@@ -26,7 +28,7 @@ const TripSummary: React.FC<TripSummaryProps> = ({
       tractor: "جرار زراعي",
       "loading-crane": "رافعة تحميل",
       bulldozer: "جرافة",
-      "dump-truck": "شاحنة قلابة",
+      "dump-truck": "دينه قلاب صغير",
       "skid-steer": "لودر انزلاقي",
       flatbed: "شاحنة مسطحة",
       backhoe: "حفارة خلفية",
@@ -34,7 +36,15 @@ const TripSummary: React.FC<TripSummaryProps> = ({
       jcp: "شاحنة JCP",
       "water-truck": "شاحنة شفط المياه",
       "crawler-excavator": "حفارة زاحفة",
-      "wheel-excavator": "حفارة بعجلات"
+      "wheel-excavator": "حفارة بعجلات",
+      "crane-loader": "رافعة تحميل ٢٠ طن",
+      "loader-lowbed": "شاحنة سطحة كبيرة",
+      "jcb-forklift": "رافعة تلسكوبية جي سي بي",
+      "asphalt-paving-small": "آلة رصف الأسفلت الصغيرة",
+      "asphalt-paving-big": "آلة رصف الأسفلت الكبيرة",
+      "generator-repair": "إصلاح المولدات",
+      "hydraulic-crane": "رافعة شاحنة هيدروليكية 25 طن",
+      "basket-winch": "شاحنة رافعة سلة 21 متر"
     };
     
     return truckTypeNames[type] || type;
@@ -42,10 +52,12 @@ const TripSummary: React.FC<TripSummaryProps> = ({
 
   return (
     <div className="space-y-4">
-      <div className="flex justify-between border-b pb-2">
-        <span>المسافة التقديرية:</span>
-        <span className="font-medium">{distance} كم</span>
-      </div>
+      {hasKmPricing && (
+        <div className="flex justify-between border-b pb-2">
+          <span>المسافة التقديرية:</span>
+          <span className="font-medium">{distance} كم</span>
+        </div>
+      )}
       
       <div className="flex justify-between border-b pb-2">
         <span>نوع الشاحنة:</span>

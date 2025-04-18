@@ -15,6 +15,7 @@ interface TripDetailsProps {
   estimatedPrice: number;
   discountApplied?: boolean;
   loading: boolean;
+  hasKmPricing?: boolean;
   onSubmit: (e?: React.FormEvent) => void;
   onDaysChange?: (value: number) => void;
   onTruckSizeChange?: (value: string) => void;
@@ -29,6 +30,7 @@ const TripDetails: React.FC<TripDetailsProps> = ({
   estimatedPrice,
   discountApplied = false,
   loading,
+  hasKmPricing = false,
   onSubmit,
   onDaysChange,
   onTruckSizeChange,
@@ -37,17 +39,20 @@ const TripDetails: React.FC<TripDetailsProps> = ({
   onRefrigeratedOptionChange
 }) => {
   // Determine if this truck type has day-based pricing
-  const isDayBasedPricing = ["jcp", "dump-truck", "dump-loader", "water-truck", "crawler-excavator", "wheel-excavator"].includes(truckType);
+  const isDayBasedPricing = ["jcp", "dump-truck", "dump-loader", "water-truck", "crawler-excavator", "wheel-excavator", 
+                            "crane-loader", "jcb-forklift", "asphalt-paving-small", "asphalt-paving-big", 
+                            "hydraulic-crane", "basket-winch"].includes(truckType);
 
   // Determine if this truck requires special options
   const needsTruckSizeOptions = truckType === "dump-truck" || truckType === "dump-loader";
   const needsExcavatorHeadOptions = ["crawler-excavator", "wheel-excavator"].includes(truckType);
-  const needsFlatbedOptions = truckType === "jcp";
+  const needsFlatbedOptions = truckType === "jcp" || truckType === "jcb-forklift";
   const needsRefrigeratedOptions = truckType === "refrigerated";
 
   // Get price label based on truck type
   const getPriceLabel = () => {
-    if (truckType === "refrigerated") return "السعر التقديري (لكل كم):";
+    if (truckType === "refrigerated" || truckType === "loader-lowbed" || hasKmPricing) return "السعر التقديري (لكل كم):";
+    if (truckType === "generator-repair") return "سعر الزيارة:";
     if (isDayBasedPricing) return "السعر (لليوم الواحد):";
     return "السعر التقديري:";
   };
@@ -64,6 +69,7 @@ const TripDetails: React.FC<TripDetailsProps> = ({
             estimatedPrice={estimatedPrice}
             discountApplied={discountApplied}
             getPriceLabel={getPriceLabel}
+            hasKmPricing={hasKmPricing}
           />
           
           {needsTruckSizeOptions && onTruckSizeChange && (
