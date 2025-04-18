@@ -6,24 +6,52 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { useAuth } from "@/contexts/AuthContext";
+import { ArrowLeft, LogOut } from "lucide-react";
+import { useNavigate } from "react-router-dom";
+import { toast } from "sonner";
 
 const Profile = () => {
-  const { user } = useAuth();
+  const { user, logout } = useAuth();
+  const navigate = useNavigate();
   
   const [name, setName] = useState(user?.name || "");
   const [email, setEmail] = useState(user?.email || "");
-  // Create optional state values for phone and address
   const [phone, setPhone] = useState("");
   const [address, setAddress] = useState("");
   
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    // Handle profile update logic
     console.log("Profile updated:", { name, email, phone, address });
+    toast.success("تم تحديث الملف الشخصي بنجاح");
+  };
+
+  const handleLogout = async () => {
+    await logout();
+    navigate('/login');
+    toast.success("تم تسجيل الخروج بنجاح");
   };
   
   return (
     <div className="container mx-auto py-8">
+      <div className="flex items-center justify-between mb-6">
+        <Button 
+          variant="ghost" 
+          onClick={() => navigate(-1)}
+          className="flex items-center gap-2"
+        >
+          <ArrowLeft className="h-4 w-4" />
+          رجوع
+        </Button>
+        <Button
+          variant="destructive"
+          onClick={handleLogout}
+          className="flex items-center gap-2"
+        >
+          <LogOut className="h-4 w-4" />
+          تسجيل الخروج
+        </Button>
+      </div>
+
       <Card>
         <CardHeader>
           <CardTitle>الملف الشخصي</CardTitle>
