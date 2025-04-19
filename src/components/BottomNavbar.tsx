@@ -23,6 +23,15 @@ const BottomNavbar = () => {
     return location.pathname === path;
   };
 
+  // Get translations based on current language
+  const translations = {
+    home: language === 'en' ? "Home" : "الرئيسية",
+    trucks: language === 'en' ? "Trucks" : "شاحنات",
+    trips: language === 'en' ? "Trips" : "رحلات",
+    messages: language === 'en' ? "Messages" : "الرسائل",
+    profile: language === 'en' ? "Profile" : "حسابي"
+  };
+
   return (
     <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 shadow-lg z-50 dark:bg-background dark:border-border">
       <nav className="flex items-center justify-around h-16">
@@ -35,7 +44,7 @@ const BottomNavbar = () => {
           }`}
         >
           <Home size={20} />
-          <span className="text-xs mt-1">الرئيسية</span>
+          <span className="text-xs mt-1">{translations.home}</span>
         </Link>
         
         <Link
@@ -47,7 +56,7 @@ const BottomNavbar = () => {
           }`}
         >
           <Truck size={20} />
-          <span className="text-xs mt-1">{user.role === "customer" ? "شاحنات" : "رحلات"}</span>
+          <span className="text-xs mt-1">{user.role === "customer" ? translations.trucks : translations.trips}</span>
         </Link>
         
         <Link
@@ -59,7 +68,7 @@ const BottomNavbar = () => {
           }`}
         >
           <MessageSquare size={20} />
-          <span className="text-xs mt-1">الرسائل</span>
+          <span className="text-xs mt-1">{translations.messages}</span>
         </Link>
         
         <Link
@@ -71,7 +80,7 @@ const BottomNavbar = () => {
           }`}
         >
           <User size={20} />
-          <span className="text-xs mt-1">حسابي</span>
+          <span className="text-xs mt-1">{translations.profile}</span>
         </Link>
       </nav>
     </div>

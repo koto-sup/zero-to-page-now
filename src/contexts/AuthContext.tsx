@@ -1,7 +1,5 @@
 
-import React, { createContext, useContext, useState, useEffect } from "react";
-import { toast } from "sonner";
-import { useLanguage } from "@/contexts/LanguageContext";
+import React, { createContext, useState, useContext, useEffect } from "react";
 
 export type UserRole = "customer" | "driver" | "admin";
 
@@ -11,276 +9,160 @@ export interface User {
   email: string;
   role: UserRole;
   profileImage?: string;
+  phoneNumber?: string;
+  isActive?: boolean;
+  createdAt?: Date;
 }
 
-interface DriverDetails {
-  truckModel?: string;
-  licensePlate?: string;
-  refrigerationCapacity?: string;
-  truckImages?: string[];
-  location?: {
-    lat: number;
-    lng: number;
-  };
-  available?: boolean;
-}
-
-export interface AuthContextType {
+interface AuthContextType {
   user: User | null;
-  driverDetails: DriverDetails | null;
-  isLoading: boolean;
-  login: (email: string, password: string, role: UserRole) => Promise<void>;
-  register: (name: string, email: string, password: string, role: UserRole) => Promise<void>;
+  login: (email: string, password: string) => Promise<boolean>;
+  register: (userData: RegisterUserData) => Promise<boolean>;
   logout: () => void;
-  updateDriverDetails: (details: Partial<DriverDetails>) => void;
-  resetPassword: (email: string) => Promise<void>;
-  isAdmin: (userId: string) => boolean;
+  isLoading: boolean;
+  error: string | null;
+}
+
+interface RegisterUserData {
+  name: string;
+  email: string;
+  password: string;
+  role: UserRole;
+  phoneNumber?: string;
+  profileImage?: string;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-// Mock data for demo purposes - in a real app, this would be replaced with Supabase auth
-const MOCK_USERS = [
-  {
-    id: "driver-1",
-    email: "driver@example.com",
-    password: "password",
-    name: "John Driver",
-    role: "driver" as UserRole,
-    profileImage: "/placeholder.svg",
-    isAdmin: true,
-  },
-  {
-    id: "customer-1",
-    email: "customer@example.com",
-    password: "password",
-    name: "Customer User",
-    role: "customer" as UserRole,
-    isAdmin: false,
-  },
-  {
-    id: "admin-1",
-    email: "admin@example.com",
-    password: "password",
-    name: "Admin User",
-    role: "admin" as UserRole,
-    isAdmin: true,
-  }
-];
+// Helper function to get registered users from localStorage
+const getRegisteredUsers = (): RegisterUserData[] => {
+  const usersString = localStorage.getItem('registeredUsers');
+  return usersString ? JSON.parse(usersString) : [];
+};
 
-const MOCK_DRIVER_DETAILS = {
-  "driver-1": {
-    truckModel: "Refrigerated Truck XL",
-    licensePlate: "RF-1234",
-    refrigerationCapacity: "5 tons",
-    truckImages: ["/placeholder.svg"],
-    location: {
-      lat: 40.712776,
-      lng: -74.005974,
-    },
-    available: true,
-  },
+// Helper function to save registered users to localStorage
+const saveRegisteredUsers = (users: RegisterUserData[]) => {
+  localStorage.setItem('registeredUsers', JSON.stringify(users));
+};
+
+// Get the currently logged in user from localStorage
+const getStoredUser = (): User | null => {
+  const userString = localStorage.getItem('currentUser');
+  return userString ? JSON.parse(userString) : null;
+};
+
+// Save the current user to localStorage
+const saveCurrentUser = (user: User | null) => {
+  if (user) {
+    localStorage.setItem('currentUser', JSON.stringify(user));
+  } else {
+    localStorage.removeItem('currentUser');
+  }
 };
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [user, setUser] = useState<User | null>(null);
-  const [driverDetails, setDriverDetails] = useState<DriverDetails | null>(null);
-  const [isLoading, setIsLoading] = useState<boolean>(true);
-  const { language } = useLanguage();
-
-  // In a real app, this would be replaced with a Supabase-authenticated user
-  const getRegisteredUsers = () => {
-    const savedUsers = localStorage.getItem("moprd_registered_users");
-    return savedUsers ? JSON.parse(savedUsers) : [];
-  };
+  const [user, setUser] = useState<User | null>(getStoredUser());
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [error, setError] = useState<string | null>(null);
   
-  // Check for saved auth on mount
+  // Effect to persist user state
   useEffect(() => {
-    const savedUser = localStorage.getItem("moprd_user");
-    if (savedUser) {
-      try {
-        const parsedUser = JSON.parse(savedUser) as User;
-        setUser(parsedUser);
-        
-        // If driver, load driver details
-        if (parsedUser.role === "driver" && MOCK_DRIVER_DETAILS[parsedUser.id]) {
-          setDriverDetails(MOCK_DRIVER_DETAILS[parsedUser.id]);
-        }
-      } catch (error) {
-        console.error("Failed to parse saved user:", error);
-      }
-    }
-    setIsLoading(false);
-  }, []);
+    saveCurrentUser(user);
+  }, [user]);
 
-  const login = async (email: string, password: string, role: UserRole) => {
+  const login = async (email: string, password: string): Promise<boolean> => {
     setIsLoading(true);
-    
+    setError(null);
+
     try {
-      // Simulate API call
+      // Simulate API call delay
       await new Promise(resolve => setTimeout(resolve, 1000));
+
+      // Get registered users from localStorage
+      const users = getRegisteredUsers();
       
-      // Check mock users first
-      let foundUser = MOCK_USERS.find(
-        u => u.email === email && u.password === password
+      // Find user with matching email and password
+      const foundUser = users.find(u => 
+        u.email.toLowerCase() === email.toLowerCase() && u.password === password
       );
-      
-      // If not found in mock users, check registered users
+
       if (!foundUser) {
-        const registeredUsers = getRegisteredUsers();
-        foundUser = registeredUsers.find(
-          (u: any) => u.email === email && u.password === password
-        );
+        setError("Login failed. Please check your details and try again.");
+        setIsLoading(false);
+        return false;
       }
+
+      // Create user object without the password
+      const { password: _, ...userWithoutPassword } = foundUser;
       
-      if (!foundUser) {
-        throw new Error(language === "en" ? "Invalid credentials" : "بيانات اعتماد غير صالحة");
-      }
+      // Set the authenticated user
+      setUser({
+        ...userWithoutPassword,
+        id: foundUser.email,
+        isActive: true,
+        createdAt: new Date()
+      } as User);
       
-      // Remove password from user object
-      const { password: _, ...secureUser } = foundUser;
-      
-      setUser(secureUser);
-      localStorage.setItem("moprd_user", JSON.stringify(secureUser));
-      
-      // Load driver details if applicable
-      if (secureUser.role === "driver" && MOCK_DRIVER_DETAILS[secureUser.id]) {
-        setDriverDetails(MOCK_DRIVER_DETAILS[secureUser.id]);
-      }
-      
-      toast.success(language === "en" ? `Welcome back, ${secureUser.name}!` : `مرحبًا بعودتك، ${secureUser.name}!`);
-    } catch (error) {
-      toast.error(error.message || (language === "en" ? "Login failed" : "فشل تسجيل الدخول"));
-      throw error;
-    } finally {
       setIsLoading(false);
+      return true;
+    } catch (err) {
+      setError("An unexpected error occurred. Please try again.");
+      setIsLoading(false);
+      return false;
     }
   };
 
-  const register = async (name: string, email: string, password: string, role: UserRole) => {
+  const register = async (userData: RegisterUserData): Promise<boolean> => {
     setIsLoading(true);
-    
+    setError(null);
+
     try {
-      // Simulate API call
+      // Simulate API call delay
       await new Promise(resolve => setTimeout(resolve, 1000));
-      
-      // Check if user already exists in mock users
-      const userExistsInMock = MOCK_USERS.some(u => u.email === email);
-      
-      // Check if user already exists in registered users
-      const registeredUsers = getRegisteredUsers();
-      const userExistsInRegistered = registeredUsers.some((u: any) => u.email === email);
-      
-      if (userExistsInMock || userExistsInRegistered) {
-        throw new Error(language === "en" ? "User already exists with this email" : "مستخدم موجود بالفعل بهذا البريد الإلكتروني");
+
+      // Get existing users
+      const users = getRegisteredUsers();
+
+      // Check if email already exists
+      if (users.some(user => user.email.toLowerCase() === userData.email.toLowerCase())) {
+        setError("Email already in use. Please use a different email or login.");
+        setIsLoading(false);
+        return false;
       }
+
+      // Add the new user to the list
+      users.push(userData);
       
-      // Create new user
-      const newUser = {
-        id: `${role}-${Date.now()}`,
-        name,
-        email,
-        password,
-        role,
-      };
+      // Save the updated users list
+      saveRegisteredUsers(users);
+
+      // Create user object without the password
+      const { password: _, ...userWithoutPassword } = userData;
       
-      // Store user in registered users
-      const updatedRegisteredUsers = [...registeredUsers, newUser];
-      localStorage.setItem("moprd_registered_users", JSON.stringify(updatedRegisteredUsers));
+      // Auto-login the new user
+      setUser({
+        ...userWithoutPassword,
+        id: userData.email,
+        isActive: true,
+        createdAt: new Date()
+      } as User);
       
-      // Set user in state without password
-      const { password: _, ...secureUser } = newUser;
-      setUser(secureUser);
-      localStorage.setItem("moprd_user", JSON.stringify(secureUser));
-      
-      // Initialize empty driver details if driver
-      if (role === "driver") {
-        setDriverDetails({});
-      }
-      
-      toast.success(language === "en" ? "Account created successfully!" : "تم إنشاء الحساب بنجاح!");
-    } catch (error) {
-      toast.error(error.message || (language === "en" ? "Registration failed" : "فشل التسجيل"));
-      throw error;
-    } finally {
       setIsLoading(false);
+      return true;
+    } catch (err) {
+      setError("An unexpected error occurred during registration. Please try again.");
+      setIsLoading(false);
+      return false;
     }
   };
 
   const logout = () => {
     setUser(null);
-    setDriverDetails(null);
-    localStorage.removeItem("moprd_user");
-    toast.info(language === "en" ? "You've been logged out" : "لقد تم تسجيل خروجك");
-  };
-
-  const updateDriverDetails = (details: Partial<DriverDetails>) => {
-    if (user?.role !== "driver") return;
-    
-    setDriverDetails(prev => ({ ...prev, ...details }));
-    toast.success(language === "en" ? "Driver details updated" : "تم تحديث تفاصيل السائق");
-  };
-
-  const isAdmin = (userId: string) => {
-    // Check mock users for admin status
-    const mockUser = MOCK_USERS.find(u => u.id === userId);
-    if (mockUser && mockUser.isAdmin) {
-      return true;
-    }
-    
-    // Check if user role is admin
-    if (user && user.role === "admin") {
-      return true;
-    }
-    
-    // In a real app, you would check admin status from your database
-    return userId === "driver-1" || userId === "admin-1"; // Temporary solution
-  };
-
-  const resetPassword = async (email: string): Promise<void> => {
-    setIsLoading(true);
-    
-    try {
-      // Simulate API call for password reset
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
-      // Check if email exists in mock users
-      const userExistsInMock = MOCK_USERS.some(u => u.email === email);
-      
-      // Check if email exists in registered users
-      const userExistsInRegistered = registeredUsers.some((u: any) => u.email === email);
-      
-      if (!userExistsInMock && !userExistsInRegistered) {
-        // Still return success to prevent email enumeration attacks
-        console.log("User not found, but returning success for security");
-      }
-      
-      // In a real app, this would send a reset email
-      console.log(`Password reset link would be sent to: ${email}`);
-      
-      toast.success(language === "en" ? "Password reset link has been sent" : "تم إرسال رابط إعادة تعيين كلمة المرور");
-    } catch (error) {
-      toast.error(language === "en" ? "Failed to send password reset link" : "فشل إرسال رابط إعادة تعيين كلمة المرور");
-      throw error;
-    } finally {
-      setIsLoading(false);
-    }
+    saveCurrentUser(null);
   };
 
   return (
-    <AuthContext.Provider
-      value={{
-        user,
-        driverDetails,
-        isLoading,
-        login,
-        register,
-        logout,
-        updateDriverDetails,
-        resetPassword,
-        isAdmin,
-      }}
-    >
+    <AuthContext.Provider value={{ user, login, register, logout, isLoading, error }}>
       {children}
     </AuthContext.Provider>
   );
