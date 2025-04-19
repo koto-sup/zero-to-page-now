@@ -6,13 +6,16 @@ import { Truck } from "lucide-react";
 
 interface DashboardHeaderProps {
   userName: string | undefined;
+  greeting?: string; // Add this prop to match the usage in Dashboard.tsx
 }
 
-const DashboardHeader: React.FC<DashboardHeaderProps> = ({ userName }) => {
+const DashboardHeader: React.FC<DashboardHeaderProps> = ({ userName, greeting }) => {
   return (
     <div className="flex flex-col md:flex-row justify-between items-center mb-8">
       <div>
-        <h1 className="text-3xl font-bold mb-2">مرحبا، {userName}</h1>
+        <h1 className="text-3xl font-bold mb-2">
+          {greeting && `${greeting}, `}{userName}
+        </h1>
         <p className="text-gray-600">مرحبا بك في لوحة تحكم زكرت</p>
       </div>
       <div className="mt-4 md:mt-0">

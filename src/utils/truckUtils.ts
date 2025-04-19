@@ -28,4 +28,6 @@ export interface TruckType {
   description?: string;
   priceType?: "day" | "km" | "trip" | "service";
   hasKmPricing?: boolean;
+  capacity?: string;
+  refrigeration?: boolean;
 }

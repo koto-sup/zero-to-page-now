@@ -23,12 +23,14 @@ const TruckTypeItemWrapper: React.FC<TruckTypeItemWrapperProps> = ({
   isSelected, 
   discountText 
 }) => {
+  const description = `${type.description || ''} ${discountText || ''}`.trim();
+  
   return (
     <TruckTypeItem
       id={type.id}
       name={type.name}
       icon={type.icon}
-      description={`${type.description} ${discountText || ''}`}
+      description={description}
       selected={isSelected}
       onSelect={() => {}} // This will be handled by the parent RadioGroup
       capacity={type.capacity}

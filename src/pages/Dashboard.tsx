@@ -1,3 +1,4 @@
+
 import React from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import { useLanguage } from "@/contexts/LanguageContext";
@@ -55,9 +56,33 @@ const Dashboard = () => {
     navigate("/truck-details");
   };
 
+  // Sample data for required props
+  const nearbyTrucks = [
+    {
+      id: "truck-1",
+      driverName: "خالد السائق",
+      truckModel: "شاحنة مبردة XL",
+      distance: 1.2,
+      available: true
+    },
+    {
+      id: "truck-2",
+      driverName: "محمد السائق",
+      truckModel: "ناقل بارد برو",
+      distance: 2.4,
+      available: true
+    }
+  ];
+
+  const notifications = [
+    "شاحنة مبردة متاحة على بعد 1.2 كم من موقعك!",
+    "نلاحظ أنك تبحث عن شاحنات بسعة تبريد عالية، هناك 3 شاحنات متاحة الآن",
+    "تحذير: هناك اختناق مروري في الطريق المفضل لديك، يرجى التخطيط وفقًا لذلك"
+  ];
+
   return (
     <div className="container mx-auto px-4 py-8">
-      <DashboardHeader greeting={getGreeting()} />
+      <DashboardHeader greeting={getGreeting()} userName={user?.name} />
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
         <Card className="bg-white dark:bg-gray-800 shadow-md rounded-lg">
@@ -132,7 +157,7 @@ const Dashboard = () => {
           <h2 className="text-xl font-semibold mb-4">
             {language === "ar" ? "التسليمات القادمة" : "Upcoming Deliveries"}
           </h2>
-          <UpcomingDeliveries />
+          <UpcomingDeliveries user={user} />
         </div>
       </div>
 
@@ -140,10 +165,10 @@ const Dashboard = () => {
         <h2 className="text-xl font-semibold mb-4">
           {language === "ar" ? "توصيات الذكاء الاصطناعي" : "AI Recommendations"}
         </h2>
-        <AiRecommendations />
+        <AiRecommendations notifications={notifications} />
       </div>
 
-      <NearbyTrucksSection />
+      <NearbyTrucksSection nearbyTrucks={nearbyTrucks} />
     </div>
   );
 };

@@ -80,8 +80,8 @@ const TruckTypeSelector: React.FC<TruckTypeSelectorProps> = ({
               key={type.id}
               id={type.id}
               name={type.name}
-              icon={type.icon}
-              description={type.description}
+              icon={type.image} // Use image string instead of ReactNode
+              description={type.description || ""}
               selected={type.id === selectedTruckType}
               onSelect={onTruckTypeChange}
               capacity={type.capacity}
