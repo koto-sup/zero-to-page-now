@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -82,7 +81,13 @@ export const RegisterForm: React.FC<RegisterFormProps> = ({ initialRole = "custo
     if (!validateForm()) return;
     
     try {
-      await register(name, email, password, role);
+      await register({
+        name,
+        email,
+        password,
+        role
+      });
+      
       if (role === "driver") {
         navigate("/truck-details");
       } else if (role === "admin") {

@@ -14,6 +14,23 @@ export interface User {
   createdAt?: Date;
 }
 
+export interface DriverDetails {
+  truckType: string;
+  truckCapacity: string;
+  licensePlate: string;
+  refrigerationCapability: boolean;
+  available: boolean;
+}
+
+export interface RegisterUserData {
+  name: string;
+  email: string;
+  password: string;
+  role: UserRole;
+  phoneNumber?: string;
+  profileImage?: string;
+}
+
 interface AuthContextType {
   user: User | null;
   login: (email: string, password: string) => Promise<boolean>;
@@ -21,15 +38,10 @@ interface AuthContextType {
   logout: () => void;
   isLoading: boolean;
   error: string | null;
-}
-
-interface RegisterUserData {
-  name: string;
-  email: string;
-  password: string;
-  role: UserRole;
-  phoneNumber?: string;
-  profileImage?: string;
+  isAdmin: boolean;
+  driverDetails: DriverDetails | null;
+  updateDriverDetails: (details: DriverDetails) => Promise<boolean>;
+  resetPassword: (email: string) => Promise<boolean>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -60,8 +72,22 @@ const saveCurrentUser = (user: User | null) => {
   }
 };
 
+// Helper function to get driver details from localStorage
+const getDriverDetails = (userId: string): DriverDetails | null => {
+  const detailsString = localStorage.getItem(`driverDetails_${userId}`);
+  return detailsString ? JSON.parse(detailsString) : null;
+};
+
+// Helper function to save driver details to localStorage
+const saveDriverDetails = (userId: string, details: DriverDetails) => {
+  localStorage.setItem(`driverDetails_${userId}`, JSON.stringify(details));
+};
+
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [user, setUser] = useState<User | null>(getStoredUser());
+  const [driverDetails, setDriverDetails] = useState<DriverDetails | null>(
+    user?.role === 'driver' ? getDriverDetails(user.id) : null
+  );
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
   
@@ -69,6 +95,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   useEffect(() => {
     saveCurrentUser(user);
   }, [user]);
+  
+  // Calculate isAdmin based on user role
+  const isAdmin = user?.role === "admin";
 
   const login = async (email: string, password: string): Promise<boolean> => {
     setIsLoading(true);
@@ -96,12 +125,20 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       const { password: _, ...userWithoutPassword } = foundUser;
       
       // Set the authenticated user
-      setUser({
+      const newUser = {
         ...userWithoutPassword,
         id: foundUser.email,
         isActive: true,
         createdAt: new Date()
-      } as User);
+      } as User;
+      
+      setUser(newUser);
+      
+      // Load driver details if applicable
+      if (newUser.role === 'driver') {
+        const details = getDriverDetails(newUser.id);
+        setDriverDetails(details);
+      }
       
       setIsLoading(false);
       return true;
@@ -140,12 +177,14 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       const { password: _, ...userWithoutPassword } = userData;
       
       // Auto-login the new user
-      setUser({
+      const newUser = {
         ...userWithoutPassword,
         id: userData.email,
         isActive: true,
         createdAt: new Date()
-      } as User);
+      } as User;
+      
+      setUser(newUser);
       
       setIsLoading(false);
       return true;
@@ -156,13 +195,82 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   };
 
+  const updateDriverDetails = async (details: DriverDetails): Promise<boolean> => {
+    setIsLoading(true);
+    setError(null);
+
+    try {
+      if (!user) {
+        setError("Not authorized to update driver details");
+        setIsLoading(false);
+        return false;
+      }
+
+      // Save details to localStorage
+      saveDriverDetails(user.id, details);
+      
+      // Update state
+      setDriverDetails(details);
+      
+      setIsLoading(false);
+      return true;
+    } catch (err) {
+      setError("Failed to update driver details.");
+      setIsLoading(false);
+      return false;
+    }
+  };
+
+  const resetPassword = async (email: string): Promise<boolean> => {
+    setIsLoading(true);
+    setError(null);
+
+    try {
+      // Simulate API call delay
+      await new Promise(resolve => setTimeout(resolve, 1000));
+
+      // Get registered users
+      const users = getRegisteredUsers();
+      
+      // Check if user exists
+      const userExists = users.some(user => user.email.toLowerCase() === email.toLowerCase());
+
+      if (!userExists) {
+        setError("No account found with this email address.");
+        setIsLoading(false);
+        return false;
+      }
+
+      // In a real app, this would send a password reset email
+      
+      setIsLoading(false);
+      return true;
+    } catch (err) {
+      setError("Failed to process password reset request.");
+      setIsLoading(false);
+      return false;
+    }
+  };
+
   const logout = () => {
     setUser(null);
+    setDriverDetails(null);
     saveCurrentUser(null);
   };
 
   return (
-    <AuthContext.Provider value={{ user, login, register, logout, isLoading, error }}>
+    <AuthContext.Provider value={{ 
+      user, 
+      login, 
+      register, 
+      logout, 
+      isLoading, 
+      error,
+      isAdmin,
+      driverDetails,
+      updateDriverDetails,
+      resetPassword
+    }}>
       {children}
     </AuthContext.Provider>
   );

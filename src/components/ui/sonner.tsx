@@ -28,7 +28,6 @@ const Toaster = ({ ...props }: ToasterProps) => {
             "group-[.toast]:bg-muted group-[.toast]:text-muted-foreground",
         },
         duration: 5000, // 5 seconds duration
-        dismissible: true, // Make all toasts dismissible by default
       }}
       closeButtonAriaLabel={closeText}
       {...props}

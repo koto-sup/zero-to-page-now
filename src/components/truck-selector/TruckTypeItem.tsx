@@ -1,110 +1,97 @@
 
-import React, { useRef } from "react";
-import { Label } from "@/components/ui/label";
-import { RadioGroupItem } from "@/components/ui/radio-group";
-import { TruckType } from "@/utils/truckUtils";
-import { Button } from "@/components/ui/button";
-import { Upload } from "lucide-react";
-import { useAuth } from "@/contexts/AuthContext";
-import { toast } from "sonner";
-import { useLanguage } from "@/contexts/LanguageContext";
+import React, { useState } from 'react';
+import { useAuth } from '@/contexts/AuthContext';
 
 interface TruckTypeItemProps {
-  type: TruckType;
-  isSelected: boolean;
-  discountText: string;
-  onImageChange?: (typeId: string, file: File) => void;
+  id: string;
+  name: string;
+  icon: string;
+  description: string;
+  selected: boolean;
+  onSelect: (id: string) => void;
+  capacity?: string;
+  refrigeration?: boolean;
 }
 
-export const TruckTypeItem: React.FC<TruckTypeItemProps> = ({ 
-  type, 
-  isSelected, 
-  discountText,
-  onImageChange 
+const TruckTypeItem: React.FC<TruckTypeItemProps> = ({ 
+  id, 
+  name, 
+  icon, 
+  description, 
+  selected, 
+  onSelect,
+  capacity,
+  refrigeration
 }) => {
-  const fileInputRef = useRef<HTMLInputElement>(null);
-  const { user, isAdmin } = useAuth();
-  const { language } = useLanguage();
+  const { isAdmin } = useAuth();
+  const [customIconUrl, setCustomIconUrl] = useState<string | null>(null);
   
-  // Check if the current user has admin privileges
-  const hasAdminPrivileges = user && (user.role === "admin" || isAdmin(user.id));
-
-  const handleImageClick = () => {
-    if (hasAdminPrivileges && fileInputRef.current) {
-      fileInputRef.current.click();
-    }
-  };
-
-  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
-    if (file && onImageChange) {
-      onImageChange(type.id, file);
-      toast.success(
-        language === "en" 
-          ? "Truck image updated successfully" 
-          : "تم تحديث صورة الشاحنة بنجاح"
-      );
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setCustomIconUrl(reader.result as string);
+      };
+      reader.readAsDataURL(file);
     }
   };
-
+  
+  const displayIcon = customIconUrl || icon;
+  
   return (
-    <div className="flex items-center">
-      <RadioGroupItem value={type.id} id={`truck-type-${type.id}`} />
-      <Label 
-        htmlFor={`truck-type-${type.id}`} 
-        className="flex items-center mr-2 p-4 cursor-pointer w-full hover:bg-muted/20 rounded-lg transition-colors"
-      >
-        <div 
-          className="relative ml-4 p-3 rounded-xl bg-blue-50 flex items-center justify-center dark:bg-blue-950/30" 
-          style={{ width: "160px", height: "160px" }}
-        >
-          {type.image ? (
-            <img 
-              src={type.image} 
-              alt={type.name} 
-              className="max-w-full max-h-full object-contain" 
-              onClick={handleImageClick}
-            />
-          ) : (
-            <div className="scale-[1.8]" onClick={handleImageClick}>
-              {type.icon}
-            </div>
-          )}
-          {hasAdminPrivileges && (
-            <>
+    <div 
+      className={`
+        border rounded-lg p-4 cursor-pointer transition-all
+        ${selected 
+          ? 'border-moprd-teal bg-moprd-teal/10' 
+          : 'border-gray-200 hover:border-moprd-teal/50 hover:bg-gray-50 dark:border-gray-700 dark:hover:border-moprd-teal/50 dark:hover:bg-gray-800'
+        }
+      `}
+      onClick={() => onSelect(id)}
+    >
+      <div className="flex items-center gap-4">
+        <div className="flex-shrink-0 w-16 h-16 relative">
+          <img 
+            src={displayIcon}
+            alt={name}
+            className="w-full h-full object-contain"
+          />
+          {isAdmin && (
+            <div className="mt-2">
               <input
                 type="file"
-                ref={fileInputRef}
-                onChange={handleFileChange}
                 accept="image/*"
+                onChange={handleImageUpload}
                 className="hidden"
+                id={`upload-${id}`}
+                onClick={(e) => e.stopPropagation()}
               />
-              <Button
-                variant="ghost"
-                size="icon"
-                className="absolute bottom-2 right-2 bg-background/80 hover:bg-background"
-                onClick={handleImageClick}
+              <label 
+                htmlFor={`upload-${id}`}
+                className="text-xs text-moprd-teal hover:underline cursor-pointer"
+                onClick={(e) => e.stopPropagation()}
               >
-                <Upload className="h-4 w-4" />
-              </Button>
-            </>
+                Change Icon
+              </label>
+            </div>
           )}
         </div>
-        <div className="ml-4">
-          <div className="font-medium text-xl mb-1">{type.name}</div>
-          <div className="text-sm text-muted-foreground">
-            {type.price}
-            {type.description && (
-              <div className="text-sm text-muted-foreground mt-2">{type.description}</div>
-            )}
-            {isSelected && !type.description && (
-              <span className="mr-2 text-green-600 font-semibold">
-                {discountText}
-              </span>
-            )}
-          </div>
+        <div className="flex-grow">
+          <h3 className="font-medium text-lg">{name}</h3>
+          <p className="text-sm text-gray-500 dark:text-gray-400">{description}</p>
+          {capacity && (
+            <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">Capacity: {capacity}</p>
+          )}
+          {refrigeration !== undefined && (
+            <p className="text-xs text-gray-500 dark:text-gray-400">
+              {refrigeration ? "Refrigerated" : "Non-refrigerated"}
+            </p>
+          )}
         </div>
-      </Label>
+      </div>
     </div>
   );
 };
+
+export default TruckTypeItem;
