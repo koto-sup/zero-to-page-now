@@ -13,6 +13,8 @@ interface TruckTypeItemProps {
   refrigeration?: boolean;
 }
 
+// This component was previously being used with a default export
+// but is now being imported as a named export, so let's fix that
 const TruckTypeItem: React.FC<TruckTypeItemProps> = ({ 
   id, 
   name, 
@@ -94,4 +96,6 @@ const TruckTypeItem: React.FC<TruckTypeItemProps> = ({
   );
 };
 
+// Export both as default and named export to support both import styles
+export { TruckTypeItem };
 export default TruckTypeItem;

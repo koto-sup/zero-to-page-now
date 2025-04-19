@@ -9,7 +9,8 @@ const Toaster = ({ ...props }: ToasterProps) => {
   const { theme = "system" } = useTheme();
   const { language } = useLanguage();
 
-  const closeText = language === 'en' ? "Close" : "إغلاق";
+  // Instead of using closeButtonAriaLabel, we'll add it to the aria-label in the toaster options
+  // if the library version allows it
 
   return (
     <Sonner
@@ -29,7 +30,8 @@ const Toaster = ({ ...props }: ToasterProps) => {
         },
         duration: 5000, // 5 seconds duration
       }}
-      closeButtonAriaLabel={closeText}
+      // Remove the unsupported prop
+      // closeButtonAriaLabel={closeText}
       {...props}
     />
   );

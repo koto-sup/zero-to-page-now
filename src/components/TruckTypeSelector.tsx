@@ -4,7 +4,8 @@ import { Card, CardContent } from "@/components/ui/card";
 import { RadioGroup } from "@/components/ui/radio-group";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { useTruckTypes } from "@/hooks/useTruckTypes";
-import { TruckTypeItem } from "./truck-selector/TruckTypeItem";
+// Fix import to use default import instead of named import
+import TruckTypeItem from "./truck-selector/TruckTypeItem";
 
 interface TruckTypeSelectorProps {
   selectedTruckType: string;
@@ -77,9 +78,14 @@ const TruckTypeSelector: React.FC<TruckTypeSelectorProps> = ({
           {getTruckTypes().map((type) => (
             <TruckTypeItem
               key={type.id}
-              type={type}
-              isSelected={type.id === selectedTruckType}
-              discountText={getDiscountText()}
+              id={type.id}
+              name={type.name}
+              icon={type.icon}
+              description={type.description}
+              selected={type.id === selectedTruckType}
+              onSelect={onTruckTypeChange}
+              capacity={type.capacity}
+              refrigeration={type.refrigeration}
             />
           ))}
         </RadioGroup>
