@@ -11,7 +11,8 @@ import {
   Menu, 
   Bell,
   MapPin,
-  Truck 
+  Truck,
+  Layout
 } from "lucide-react";
 import { useTheme } from "next-themes";
 
@@ -25,11 +26,11 @@ const AppNavbar = () => {
   ]);
 
   return (
-    <header className="fixed top-0 right-0 left-0 bg-background border-b border-border z-50">
+    <header className="fixed top-0 right-0 left-0 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 border-b border-border z-50">
       <div className="container mx-auto flex h-16 items-center justify-between px-4">
         <div className="flex items-center gap-2 md:gap-4">
           <Link to="/" className="flex items-center gap-2">
-            <div className="text-2xl font-bold text-primary">زكرت</div>
+            <div className="text-2xl font-bold text-foreground">زكرت</div>
           </Link>
           
           <nav className="hidden md:flex items-center gap-6">
@@ -46,6 +47,13 @@ const AppNavbar = () => {
             >
               <MapPin className="h-4 w-4" />
               تتبع الشحنة
+            </Link>
+            <Link
+              to="/dashboard"
+              className="flex items-center gap-2 text-foreground hover:text-primary transition-colors text-sm"
+            >
+              <Layout className="h-4 w-4" />
+              لوحة التحكم
             </Link>
           </nav>
         </div>
@@ -117,56 +125,6 @@ const AppNavbar = () => {
           </Button>
         </div>
       </div>
-
-      {/* Mobile menu */}
-      {isMobileMenuOpen && (
-        <div className="md:hidden bg-background border-b border-border">
-          <div className="container mx-auto px-4 py-3">
-            <nav className="flex flex-col space-y-3">
-              <Link
-                to="/find-trucks"
-                className="text-moprd-blue hover:text-moprd-teal dark:text-gray-300 dark:hover:text-white transition-colors py-2"
-                onClick={() => setIsMobileMenuOpen(false)}
-              >
-                البحث عن شاحنات
-              </Link>
-              {user?.role === "driver" ? (
-                <Link
-                  to="/dashboard"
-                  className="text-moprd-blue hover:text-moprd-teal dark:text-gray-300 dark:hover:text-white transition-colors py-2"
-                  onClick={() => setIsMobileMenuOpen(false)}
-                >
-                  لوحة التحكم
-                </Link>
-              ) : (
-                <Link
-                  to="/customer-dashboard"
-                  className="text-moprd-blue hover:text-moprd-teal dark:text-gray-300 dark:hover:text-white transition-colors py-2"
-                  onClick={() => setIsMobileMenuOpen(false)}
-                >
-                  لوحة التحكم
-                </Link>
-              )}
-              <Link
-                to="/invoices"
-                className="text-moprd-blue hover:text-moprd-teal dark:text-gray-300 dark:hover:text-white transition-colors py-2"
-                onClick={() => setIsMobileMenuOpen(false)}
-              >
-                الفواتير
-              </Link>
-              {!user && (
-                <Link
-                  to="/login"
-                  className="text-moprd-blue hover:text-moprd-teal dark:text-gray-300 dark:hover:text-white transition-colors py-2"
-                  onClick={() => setIsMobileMenuOpen(false)}
-                >
-                  تسجيل الدخول
-                </Link>
-              )}
-            </nav>
-          </div>
-        </div>
-      )}
     </header>
   );
 };
