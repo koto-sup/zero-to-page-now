@@ -1,5 +1,7 @@
+
 import React, { createContext, useContext, useState, useEffect } from "react";
 import { toast } from "sonner";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 export type UserRole = "customer" | "driver";
 
@@ -31,12 +33,13 @@ export interface AuthContextType {
   register: (name: string, email: string, password: string, role: UserRole) => Promise<void>;
   logout: () => void;
   updateDriverDetails: (details: Partial<DriverDetails>) => void;
-  resetPassword: (email: string) => Promise<void>; // Added resetPassword function
+  resetPassword: (email: string) => Promise<void>;
+  isAdmin: (userId: string) => boolean;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-// Mock data for demo purposes
+// Mock data for demo purposes - in a real app, this would be replaced with Supabase auth
 const MOCK_USERS = [
   {
     id: "driver-1",
@@ -45,6 +48,7 @@ const MOCK_USERS = [
     name: "John Driver",
     role: "driver" as UserRole,
     profileImage: "/placeholder.svg",
+    isAdmin: true,
   },
   {
     id: "customer-1",
@@ -52,6 +56,7 @@ const MOCK_USERS = [
     password: "password",
     name: "Customer User",
     role: "customer" as UserRole,
+    isAdmin: false,
   },
 ];
 
@@ -73,7 +78,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [user, setUser] = useState<User | null>(null);
   const [driverDetails, setDriverDetails] = useState<DriverDetails | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(true);
+  const { language } = useLanguage();
 
+  // In a real app, this would be replaced with a Supabase-authenticated user
+  const registeredUsers = JSON.parse(localStorage.getItem("moprd_registered_users") || "[]");
+  
   // Check for saved auth on mount
   useEffect(() => {
     const savedUser = localStorage.getItem("moprd_user");
@@ -100,12 +109,20 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       // Simulate API call
       await new Promise(resolve => setTimeout(resolve, 1000));
       
-      const foundUser = MOCK_USERS.find(
+      // Check mock users first
+      let foundUser = MOCK_USERS.find(
         u => u.email === email && u.password === password && u.role === role
       );
       
+      // If not found in mock users, check registered users
       if (!foundUser) {
-        throw new Error("Invalid credentials or user type");
+        foundUser = registeredUsers.find(
+          (u: any) => u.email === email && u.password === password && u.role === role
+        );
+      }
+      
+      if (!foundUser) {
+        throw new Error(language === "en" ? "Invalid credentials or user type" : "بيانات اعتماد غير صالحة أو نوع مستخدم غير صحيح");
       }
       
       // Remove password from user object
@@ -119,9 +136,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         setDriverDetails(MOCK_DRIVER_DETAILS[secureUser.id]);
       }
       
-      toast.success(`Welcome back, ${secureUser.name}!`);
+      toast.success(language === "en" ? `Welcome back, ${secureUser.name}!` : `مرحبًا بعودتك، ${secureUser.name}!`);
     } catch (error) {
-      toast.error(error.message || "Login failed");
+      toast.error(error.message || (language === "en" ? "Login failed" : "فشل تسجيل الدخول"));
       throw error;
     } finally {
       setIsLoading(false);
@@ -135,10 +152,14 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       // Simulate API call
       await new Promise(resolve => setTimeout(resolve, 1000));
       
-      // Check if user already exists
-      const userExists = MOCK_USERS.some(u => u.email === email);
-      if (userExists) {
-        throw new Error("User already exists with this email");
+      // Check if user already exists in mock users
+      const userExistsInMock = MOCK_USERS.some(u => u.email === email);
+      
+      // Check if user already exists in registered users
+      const userExistsInRegistered = registeredUsers.some((u: any) => u.email === email);
+      
+      if (userExistsInMock || userExistsInRegistered) {
+        throw new Error(language === "en" ? "User already exists with this email" : "مستخدم موجود بالفعل بهذا البريد الإلكتروني");
       }
       
       // Create new user
@@ -146,20 +167,27 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         id: `${role}-${Date.now()}`,
         name,
         email,
+        password, // This will be removed before storing in state
         role,
       };
       
-      setUser(newUser);
-      localStorage.setItem("moprd_user", JSON.stringify(newUser));
+      // Store user in registered users
+      const updatedRegisteredUsers = [...registeredUsers, newUser];
+      localStorage.setItem("moprd_registered_users", JSON.stringify(updatedRegisteredUsers));
+      
+      // Set user in state without password
+      const { password: _, ...secureUser } = newUser;
+      setUser(secureUser);
+      localStorage.setItem("moprd_user", JSON.stringify(secureUser));
       
       // Initialize empty driver details if driver
       if (role === "driver") {
         setDriverDetails({});
       }
       
-      toast.success("Account created successfully!");
+      toast.success(language === "en" ? "Account created successfully!" : "تم إنشاء الحساب بنجاح!");
     } catch (error) {
-      toast.error(error.message || "Registration failed");
+      toast.error(error.message || (language === "en" ? "Registration failed" : "فشل التسجيل"));
       throw error;
     } finally {
       setIsLoading(false);
@@ -170,17 +198,27 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     setUser(null);
     setDriverDetails(null);
     localStorage.removeItem("moprd_user");
-    toast.info("You've been logged out");
+    toast.info(language === "en" ? "You've been logged out" : "لقد تم تسجيل خروجك");
   };
 
   const updateDriverDetails = (details: Partial<DriverDetails>) => {
     if (user?.role !== "driver") return;
     
     setDriverDetails(prev => ({ ...prev, ...details }));
-    toast.success("Driver details updated");
+    toast.success(language === "en" ? "Driver details updated" : "تم تحديث تفاصيل السائق");
   };
 
-  // Add resetPassword function
+  const isAdmin = (userId: string) => {
+    // Check mock users for admin status
+    const mockUser = MOCK_USERS.find(u => u.id === userId);
+    if (mockUser && mockUser.isAdmin) {
+      return true;
+    }
+    
+    // In a real app, you would check admin status from your database
+    return userId === "driver-1"; // Temporary solution
+  };
+
   const resetPassword = async (email: string): Promise<void> => {
     setIsLoading(true);
     
@@ -189,8 +227,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       await new Promise(resolve => setTimeout(resolve, 1000));
       
       // Check if email exists in mock users
-      const userExists = MOCK_USERS.some(u => u.email === email);
-      if (!userExists) {
+      const userExistsInMock = MOCK_USERS.some(u => u.email === email);
+      
+      // Check if email exists in registered users
+      const userExistsInRegistered = registeredUsers.some((u: any) => u.email === email);
+      
+      if (!userExistsInMock && !userExistsInRegistered) {
         // Still return success to prevent email enumeration attacks
         console.log("User not found, but returning success for security");
       }
@@ -198,9 +240,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       // In a real app, this would send a reset email
       console.log(`Password reset link would be sent to: ${email}`);
       
-      toast.success("تم إرسال رابط إعادة تعيين كلمة المرور");
+      toast.success(language === "en" ? "Password reset link has been sent" : "تم إرسال رابط إعادة تعيين كلمة المرور");
     } catch (error) {
-      toast.error("فشل إرسال رابط إعادة تعيين كلمة المرور");
+      toast.error(language === "en" ? "Failed to send password reset link" : "فشل إرسال رابط إعادة تعيين كلمة المرور");
       throw error;
     } finally {
       setIsLoading(false);
@@ -217,7 +259,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         register,
         logout,
         updateDriverDetails,
-        resetPassword, // Add the new function to the context
+        resetPassword,
+        isAdmin,
       }}
     >
       {children}

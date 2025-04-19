@@ -10,6 +10,7 @@ import { UserTypeSelection } from "./UserTypeSelection";
 import { useAuth, UserRole } from "@/contexts/AuthContext";
 import { Link } from "react-router-dom";
 import { EyeIcon, EyeOffIcon, Loader2 } from "lucide-react";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 interface RegisterFormProps {
   initialRole?: UserRole;
@@ -18,6 +19,7 @@ interface RegisterFormProps {
 export const RegisterForm: React.FC<RegisterFormProps> = ({ initialRole = "customer" }) => {
   const navigate = useNavigate();
   const { register, isLoading } = useAuth();
+  const { language } = useLanguage();
   
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
@@ -43,28 +45,30 @@ export const RegisterForm: React.FC<RegisterFormProps> = ({ initialRole = "custo
     let isValid = true;
     
     if (!name) {
-      newErrors.name = "الاسم مطلوب";
+      newErrors.name = language === "en" ? "Name is required" : "الاسم مطلوب";
       isValid = false;
     }
     
     if (!email) {
-      newErrors.email = "البريد الإلكتروني مطلوب";
+      newErrors.email = language === "en" ? "Email is required" : "البريد الإلكتروني مطلوب";
       isValid = false;
     } else if (!/\S+@\S+\.\S+/.test(email)) {
-      newErrors.email = "البريد الإلكتروني غير صالح";
+      newErrors.email = language === "en" ? "Invalid email address" : "البريد الإلكتروني غير صالح";
       isValid = false;
     }
     
     if (!password) {
-      newErrors.password = "كلمة المرور مطلوبة";
+      newErrors.password = language === "en" ? "Password is required" : "كلمة المرور مطلوبة";
       isValid = false;
     } else if (password.length < 6) {
-      newErrors.password = "يجب أن تكون كلمة المرور 6 أحرف على الأقل";
+      newErrors.password = language === "en" 
+        ? "Password must be at least 6 characters" 
+        : "يجب أن تكون كلمة المرور 6 أحرف على الأقل";
       isValid = false;
     }
     
     if (password !== confirmPassword) {
-      newErrors.confirmPassword = "كلمات المرور غير متطابقة";
+      newErrors.confirmPassword = language === "en" ? "Passwords do not match" : "كلمات المرور غير متطابقة";
       isValid = false;
     }
     
@@ -94,10 +98,12 @@ export const RegisterForm: React.FC<RegisterFormProps> = ({ initialRole = "custo
     <form onSubmit={handleSubmit}>
       <CardContent className="space-y-4">
         <div className="space-y-2">
-          <Label htmlFor="name">الاسم الكامل</Label>
+          <Label htmlFor="name">
+            {language === "en" ? "Full Name" : "الاسم الكامل"}
+          </Label>
           <Input
             id="name"
-            placeholder="محمد علي"
+            placeholder={language === "en" ? "John Doe" : "محمد علي"}
             value={name}
             onChange={(e) => setName(e.target.value)}
           />
@@ -106,7 +112,9 @@ export const RegisterForm: React.FC<RegisterFormProps> = ({ initialRole = "custo
           )}
         </div>
         <div className="space-y-2">
-          <Label htmlFor="email">البريد الإلكتروني</Label>
+          <Label htmlFor="email">
+            {language === "en" ? "Email" : "البريد الإلكتروني"}
+          </Label>
           <Input
             id="email"
             type="email"
@@ -119,7 +127,9 @@ export const RegisterForm: React.FC<RegisterFormProps> = ({ initialRole = "custo
           )}
         </div>
         <div className="space-y-2">
-          <Label htmlFor="password">كلمة المرور</Label>
+          <Label htmlFor="password">
+            {language === "en" ? "Password" : "كلمة المرور"}
+          </Label>
           <div className="relative">
             <Input
               id="password"
@@ -146,7 +156,9 @@ export const RegisterForm: React.FC<RegisterFormProps> = ({ initialRole = "custo
           )}
         </div>
         <div className="space-y-2">
-          <Label htmlFor="confirmPassword">تأكيد كلمة المرور</Label>
+          <Label htmlFor="confirmPassword">
+            {language === "en" ? "Confirm Password" : "تأكيد كلمة المرور"}
+          </Label>
           <div className="relative">
             <Input
               id="confirmPassword"
@@ -186,15 +198,17 @@ export const RegisterForm: React.FC<RegisterFormProps> = ({ initialRole = "custo
           {isLoading ? (
             <>
               <Loader2 className="ml-2 h-4 w-4 animate-spin" />
-              جاري إنشاء الحساب...
+              {language === "en" ? "Creating account..." : "جاري إنشاء الحساب..."}
             </>
-          ) : "تسجيل"}
+          ) : (
+            language === "en" ? "Register" : "تسجيل"
+          )}
         </IceButtonV2>
         <div className="mt-4 text-center">
           <p className="text-sm text-muted-foreground">
-            لديك حساب بالفعل؟{" "}
+            {language === "en" ? "Already have an account? " : "لديك حساب بالفعل؟ "}
             <Link to="/login" className="text-moprd-teal hover:underline font-medium">
-              تسجيل الدخول
+              {language === "en" ? "Login" : "تسجيل الدخول"}
             </Link>
           </p>
         </div>

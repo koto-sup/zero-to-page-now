@@ -9,10 +9,12 @@ import { useAuth } from "@/contexts/AuthContext";
 import { ArrowLeft, LogOut, UserCircle, MapPin, Phone, Mail } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 const Profile = () => {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
+  const { language, t } = useLanguage();
   
   const [name, setName] = useState(user?.name || "");
   const [email, setEmail] = useState(user?.email || "");
@@ -22,26 +24,21 @@ const Profile = () => {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     console.log("Profile updated:", { name, email, phone, address });
-    toast.success("تم تحديث الملف الشخصي بنجاح");
+    toast.success(language === "en" ? "Profile updated successfully" : "تم تحديث الملف الشخصي بنجاح");
   };
 
   const handleLogout = async () => {
     await logout();
     navigate('/login');
-    toast.success("تم تسجيل الخروج بنجاح");
+    toast.success(language === "en" ? "Logged out successfully" : "تم تسجيل الخروج بنجاح");
   };
   
   return (
     <div className="container mx-auto py-8">
       <div className="flex items-center justify-between mb-6">
-        <Button 
-          variant="ghost" 
-          onClick={() => navigate(-1)}
-          className="flex items-center gap-2"
-        >
-          <ArrowLeft className="h-4 w-4" />
-          رجوع
-        </Button>
+        <h1 className="text-2xl font-bold">
+          {language === "en" ? "Profile" : "الملف الشخصي"}
+        </h1>
       </div>
 
       <div className="grid md:grid-cols-3 gap-6">
@@ -53,8 +50,12 @@ const Profile = () => {
                 <UserCircle className="w-20 h-20 text-primary" />
               </div>
             </div>
-            <h2 className="text-xl font-bold mb-2">{name || "المستخدم"}</h2>
-            <p className="text-muted-foreground mb-4">{user?.role === "driver" ? "سائق" : "عميل"}</p>
+            <h2 className="text-xl font-bold mb-2">{name || (language === "en" ? "User" : "المستخدم")}</h2>
+            <p className="text-muted-foreground mb-4">
+              {user?.role === "driver" 
+                ? (language === "en" ? "Driver" : "سائق") 
+                : (language === "en" ? "Customer" : "عميل")}
+            </p>
             <div className="space-y-2 text-right">
               <div className="flex items-center gap-2 text-muted-foreground">
                 <Mail className="h-4 w-4" />
@@ -79,7 +80,7 @@ const Profile = () => {
               className="w-full mt-6 flex items-center justify-center gap-2"
             >
               <LogOut className="h-4 w-4" />
-              تسجيل الخروج
+              {language === "en" ? "Logout" : "تسجيل الخروج"}
             </Button>
           </CardContent>
         </Card>
@@ -87,13 +88,15 @@ const Profile = () => {
         {/* Edit Profile Card */}
         <Card className="md:col-span-2">
           <CardHeader>
-            <CardTitle>تحديث الملف الشخصي</CardTitle>
-            <CardDescription>قم بتحديث معلومات ملفك الشخصي</CardDescription>
+            <CardTitle>{language === "en" ? "Update Profile" : "تحديث الملف الشخصي"}</CardTitle>
+            <CardDescription>
+              {language === "en" ? "Update your profile information" : "قم بتحديث معلومات ملفك الشخصي"}
+            </CardDescription>
           </CardHeader>
           <form onSubmit={handleSubmit}>
             <CardContent className="space-y-4">
               <div className="space-y-2">
-                <Label htmlFor="name">الاسم</Label>
+                <Label htmlFor="name">{language === "en" ? "Name" : "الاسم"}</Label>
                 <Input 
                   id="name"
                   value={name}
@@ -101,7 +104,7 @@ const Profile = () => {
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="email">البريد الإلكتروني</Label>
+                <Label htmlFor="email">{language === "en" ? "Email" : "البريد الإلكتروني"}</Label>
                 <Input 
                   id="email"
                   type="email"
@@ -111,27 +114,27 @@ const Profile = () => {
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="phone">رقم الهاتف</Label>
+                <Label htmlFor="phone">{language === "en" ? "Phone Number" : "رقم الهاتف"}</Label>
                 <Input 
                   id="phone"
                   value={phone}
                   onChange={(e) => setPhone(e.target.value)}
-                  placeholder="أدخل رقم هاتفك"
+                  placeholder={language === "en" ? "Enter your phone number" : "أدخل رقم هاتفك"}
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="address">العنوان</Label>
+                <Label htmlFor="address">{language === "en" ? "Address" : "العنوان"}</Label>
                 <Textarea 
                   id="address"
                   value={address}
                   onChange={(e) => setAddress(e.target.value)}
-                  placeholder="أدخل عنوانك"
+                  placeholder={language === "en" ? "Enter your address" : "أدخل عنوانك"}
                 />
               </div>
             </CardContent>
             <CardFooter>
               <Button type="submit" className="w-full">
-                حفظ التغييرات
+                {language === "en" ? "Save Changes" : "حفظ التغييرات"}
               </Button>
             </CardFooter>
           </form>

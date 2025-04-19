@@ -1,29 +1,37 @@
 
-import React from "react";
-import { Link } from "react-router-dom";
+import React, { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/contexts/AuthContext";
 import { 
   Moon, 
   Sun, 
   UserCircle, 
-  LogOut, 
-  Menu, 
   Bell,
   MapPin,
   Truck,
-  Layout
+  Layout,
+  Menu
 } from "lucide-react";
 import { useTheme } from "next-themes";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 const AppNavbar = () => {
-  const { user, logout } = useAuth();
+  const { user } = useAuth();
   const { theme, setTheme } = useTheme();
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = React.useState(false);
-  const [notifications] = React.useState([
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [notifications] = useState([
     { id: 1, text: "طلب جديد" },
     { id: 2, text: "تحديث حالة الشحنة" }
   ]);
+  const navigate = useNavigate();
+  const { language } = useLanguage();
 
   return (
     <header className="fixed top-0 right-0 left-0 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 border-b border-border z-50">
@@ -39,21 +47,21 @@ const AppNavbar = () => {
               className="flex items-center gap-2 text-foreground hover:text-primary transition-colors text-sm"
             >
               <Truck className="h-4 w-4" />
-              البحث عن شاحنات
+              {language === "en" ? "Find Trucks" : "البحث عن شاحنات"}
             </Link>
             <Link
               to="/truck-tracking"
               className="flex items-center gap-2 text-foreground hover:text-primary transition-colors text-sm"
             >
               <MapPin className="h-4 w-4" />
-              تتبع الشحنة
+              {language === "en" ? "Track" : "تتبع"}
             </Link>
             <Link
               to="/dashboard"
               className="flex items-center gap-2 text-foreground hover:text-primary transition-colors text-sm"
             >
               <Layout className="h-4 w-4" />
-              لوحة التحكم
+              {language === "en" ? "Dashboard" : "لوحة التحكم"}
             </Link>
           </nav>
         </div>
@@ -66,9 +74,9 @@ const AppNavbar = () => {
             className="rounded-full bg-background text-foreground"
           >
             {theme === "dark" ? (
-              <Moon className="h-5 w-5" />
-            ) : (
               <Sun className="h-5 w-5" />
+            ) : (
+              <Moon className="h-5 w-5" />
             )}
           </Button>
 
@@ -88,8 +96,8 @@ const AppNavbar = () => {
           </Link>
 
           {user ? (
-            <>
-              <Link to="/profile">
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
                 <Button
                   variant="ghost"
                   size="icon"
@@ -97,20 +105,20 @@ const AppNavbar = () => {
                 >
                   <UserCircle className="h-5 w-5" />
                 </Button>
-              </Link>
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={() => logout()}
-                className="rounded-full bg-background text-foreground"
-              >
-                <LogOut className="h-5 w-5" />
-              </Button>
-            </>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                <DropdownMenuItem onClick={() => navigate('/profile')}>
+                  {language === "en" ? "Profile" : "الملف الشخصي"}
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => navigate('/settings')}>
+                  {language === "en" ? "Settings" : "الإعدادات"}
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
           ) : (
             <Link to="/login">
               <Button variant="outline" size="sm">
-                تسجيل الدخول
+                {language === "en" ? "Login" : "تسجيل الدخول"}
               </Button>
             </Link>
           )}

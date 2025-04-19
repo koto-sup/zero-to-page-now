@@ -11,11 +11,13 @@ import { useAuth } from "@/contexts/AuthContext";
 import { EyeIcon, EyeOffIcon, UserIcon, LockIcon, Loader2 } from "lucide-react";
 import { IceCard, IceCardContent, IceCardHeader, IceCardTitle, IceCardDescription, IceCardFooter } from "@/components/ui/ice-card";
 import LanguageSelector from "@/components/LanguageSelector";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 const LoginForm = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
   const { login } = useAuth();
+  const { language } = useLanguage();
   
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -38,7 +40,9 @@ const LoginForm = () => {
     setError("");
     
     if (!email || !password) {
-      setError("يرجى إدخال البريد الإلكتروني وكلمة المرور");
+      setError(language === "en" 
+        ? "Please enter your email and password" 
+        : "يرجى إدخال البريد الإلكتروني وكلمة المرور");
       return;
     }
     
@@ -64,11 +68,13 @@ const LoginForm = () => {
       }
       
       toast({
-        title: "تم تسجيل الدخول بنجاح",
-        description: "مرحبًا بعودتك إلى زكرت",
+        title: language === "en" ? "Login successful" : "تم تسجيل الدخول بنجاح",
+        description: language === "en" ? "Welcome back to Zakrat" : "مرحبًا بعودتك إلى زكرت",
       });
     } catch (error) {
-      setError("فشل تسجيل الدخول. يرجى التحقق من بياناتك والمحاولة مرة أخرى.");
+      setError(language === "en" 
+        ? "Login failed. Please check your details and try again." 
+        : "فشل تسجيل الدخول. يرجى التحقق من بياناتك والمحاولة مرة أخرى.");
     } finally {
       setIsLoading(false);
     }
@@ -80,16 +86,22 @@ const LoginForm = () => {
         <div className="absolute top-4 right-4">
           <LanguageSelector />
         </div>
-        <IceCardTitle className="text-2xl mb-2">تسجيل الدخول</IceCardTitle>
+        <IceCardTitle className="text-2xl mb-2">
+          {language === "en" ? "Login" : "تسجيل الدخول"}
+        </IceCardTitle>
         <IceCardDescription>
-          أدخل بيانات حسابك للوصول إلى لوحة التحكم
+          {language === "en" 
+            ? "Enter your credentials to access your dashboard" 
+            : "أدخل بيانات حسابك للوصول إلى لوحة التحكم"}
         </IceCardDescription>
       </IceCardHeader>
       
       <IceCardContent>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="space-y-2">
-            <Label htmlFor="email">البريد الإلكتروني</Label>
+            <Label htmlFor="email">
+              {language === "en" ? "Email" : "البريد الإلكتروني"}
+            </Label>
             <div className="relative">
               <UserIcon className="absolute right-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
               <Input
@@ -106,12 +118,14 @@ const LoginForm = () => {
           
           <div className="space-y-2">
             <div className="flex justify-between items-center">
-              <Label htmlFor="password">كلمة المرور</Label>
+              <Label htmlFor="password">
+                {language === "en" ? "Password" : "كلمة المرور"}
+              </Label>
               <Link 
                 to="/forgot-password" 
                 className="text-xs text-cyan-600 hover:underline"
               >
-                نسيت كلمة المرور؟
+                {language === "en" ? "Forgot Password?" : "نسيت كلمة المرور؟"}
               </Link>
             </div>
             <div className="relative">
@@ -146,11 +160,13 @@ const LoginForm = () => {
               checked={rememberMe} 
               onCheckedChange={(checked) => setRememberMe(checked as boolean)} 
             />
-            <Label htmlFor="remember" className="text-sm cursor-pointer">تذكرني</Label>
+            <Label htmlFor="remember" className="text-sm cursor-pointer">
+              {language === "en" ? "Remember me" : "تذكرني"}
+            </Label>
           </div>
           
           {error && (
-            <div className="p-3 bg-red-50 text-red-700 text-sm rounded-md">
+            <div className="p-3 bg-red-50 text-red-700 text-sm rounded-md dark:bg-red-900/20 dark:text-red-300">
               {error}
             </div>
           )}
@@ -165,20 +181,20 @@ const LoginForm = () => {
             {isLoading ? (
               <>
                 <Loader2 className="ml-2 h-4 w-4 animate-spin" />
-                جاري تسجيل الدخول...
+                {language === "en" ? "Logging in..." : "جاري تسجيل الدخول..."}
               </>
             ) : (
-              "تسجيل الدخول"
+              language === "en" ? "Login" : "تسجيل الدخول"
             )}
           </IceButtonV2>
         </form>
       </IceCardContent>
       
       <IceCardFooter className="text-center">
-        <p className="text-sm text-gray-600">
-          ليس لديك حساب؟{" "}
-          <Link to="/register" className="text-cyan-600 hover:underline">
-            إنشاء حساب جديد
+        <p className="text-sm text-gray-600 dark:text-gray-400">
+          {language === "en" ? "Don't have an account? " : "ليس لديك حساب؟ "}
+          <Link to="/register" className="text-cyan-600 hover:underline font-medium">
+            {language === "en" ? "Create an account" : "إنشاء حساب جديد"}
           </Link>
         </p>
       </IceCardFooter>

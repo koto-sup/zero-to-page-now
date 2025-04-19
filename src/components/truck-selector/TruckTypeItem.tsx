@@ -6,6 +6,8 @@ import { TruckType } from "@/utils/truckUtils";
 import { Button } from "@/components/ui/button";
 import { Upload } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
+import { toast } from "sonner";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 interface TruckTypeItemProps {
   type: TruckType;
@@ -22,6 +24,8 @@ export const TruckTypeItem: React.FC<TruckTypeItemProps> = ({
 }) => {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { user } = useAuth();
+  const { language } = useLanguage();
+  
   // Since UserRole is only "customer" | "driver", we need to add a check for admin privileges
   // This could be determined by a special flag or property instead of role
   const isAdmin = user?.id === "driver-1"; // Temporary solution: checking if it's our mock admin user
@@ -36,6 +40,11 @@ export const TruckTypeItem: React.FC<TruckTypeItemProps> = ({
     const file = event.target.files?.[0];
     if (file && onImageChange) {
       onImageChange(type.id, file);
+      toast.success(
+        language === "en" 
+          ? "Truck image updated successfully" 
+          : "تم تحديث صورة الشاحنة بنجاح"
+      );
     }
   };
 
@@ -47,8 +56,8 @@ export const TruckTypeItem: React.FC<TruckTypeItemProps> = ({
         className="flex items-center mr-2 p-4 cursor-pointer w-full hover:bg-muted/20 rounded-lg transition-colors"
       >
         <div 
-          className="relative ml-4 p-3 rounded-xl bg-blue-50 flex items-center justify-center" 
-          style={{ width: "140px", height: "140px" }}
+          className="relative ml-4 p-3 rounded-xl bg-blue-50 flex items-center justify-center dark:bg-blue-950/30" 
+          style={{ width: "160px", height: "160px" }}
         >
           {type.image ? (
             <img 
@@ -58,7 +67,7 @@ export const TruckTypeItem: React.FC<TruckTypeItemProps> = ({
               onClick={handleImageClick}
             />
           ) : (
-            <div className="scale-150" onClick={handleImageClick}>
+            <div className="scale-[1.8]" onClick={handleImageClick}>
               {type.icon}
             </div>
           )}
