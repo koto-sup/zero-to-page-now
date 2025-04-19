@@ -3,7 +3,7 @@ import React, { createContext, useContext, useState, useEffect } from "react";
 import { toast } from "sonner";
 import { useLanguage } from "@/contexts/LanguageContext";
 
-export type UserRole = "customer" | "driver";
+export type UserRole = "customer" | "driver" | "admin";
 
 export interface User {
   id: string;
@@ -58,6 +58,14 @@ const MOCK_USERS = [
     role: "customer" as UserRole,
     isAdmin: false,
   },
+  {
+    id: "admin-1",
+    email: "admin@example.com",
+    password: "password",
+    name: "Admin User",
+    role: "admin" as UserRole,
+    isAdmin: true,
+  }
 ];
 
 const MOCK_DRIVER_DETAILS = {
@@ -81,7 +89,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const { language } = useLanguage();
 
   // In a real app, this would be replaced with a Supabase-authenticated user
-  const registeredUsers = JSON.parse(localStorage.getItem("moprd_registered_users") || "[]");
+  const getRegisteredUsers = () => {
+    const savedUsers = localStorage.getItem("moprd_registered_users");
+    return savedUsers ? JSON.parse(savedUsers) : [];
+  };
   
   // Check for saved auth on mount
   useEffect(() => {
@@ -111,18 +122,19 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       
       // Check mock users first
       let foundUser = MOCK_USERS.find(
-        u => u.email === email && u.password === password && u.role === role
+        u => u.email === email && u.password === password
       );
       
       // If not found in mock users, check registered users
       if (!foundUser) {
+        const registeredUsers = getRegisteredUsers();
         foundUser = registeredUsers.find(
-          (u: any) => u.email === email && u.password === password && u.role === role
+          (u: any) => u.email === email && u.password === password
         );
       }
       
       if (!foundUser) {
-        throw new Error(language === "en" ? "Invalid credentials or user type" : "بيانات اعتماد غير صالحة أو نوع مستخدم غير صحيح");
+        throw new Error(language === "en" ? "Invalid credentials" : "بيانات اعتماد غير صالحة");
       }
       
       // Remove password from user object
@@ -132,7 +144,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       localStorage.setItem("moprd_user", JSON.stringify(secureUser));
       
       // Load driver details if applicable
-      if (role === "driver" && MOCK_DRIVER_DETAILS[secureUser.id]) {
+      if (secureUser.role === "driver" && MOCK_DRIVER_DETAILS[secureUser.id]) {
         setDriverDetails(MOCK_DRIVER_DETAILS[secureUser.id]);
       }
       
@@ -156,6 +168,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       const userExistsInMock = MOCK_USERS.some(u => u.email === email);
       
       // Check if user already exists in registered users
+      const registeredUsers = getRegisteredUsers();
       const userExistsInRegistered = registeredUsers.some((u: any) => u.email === email);
       
       if (userExistsInMock || userExistsInRegistered) {
@@ -167,7 +180,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         id: `${role}-${Date.now()}`,
         name,
         email,
-        password, // This will be removed before storing in state
+        password,
         role,
       };
       
@@ -215,8 +228,13 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       return true;
     }
     
+    // Check if user role is admin
+    if (user && user.role === "admin") {
+      return true;
+    }
+    
     // In a real app, you would check admin status from your database
-    return userId === "driver-1"; // Temporary solution
+    return userId === "driver-1" || userId === "admin-1"; // Temporary solution
   };
 
   const resetPassword = async (email: string): Promise<void> => {

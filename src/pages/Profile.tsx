@@ -1,145 +1,148 @@
 
-import React, { useState } from "react";
-import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
+import React from "react";
 import { useAuth } from "@/contexts/AuthContext";
-import { ArrowLeft, LogOut, UserCircle, MapPin, Phone, Mail } from "lucide-react";
-import { useNavigate } from "react-router-dom";
-import { toast } from "sonner";
+import { useTheme } from "next-themes";
 import { useLanguage } from "@/contexts/LanguageContext";
+import { useNavigate } from "react-router-dom";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Separator } from "@/components/ui/separator";
+import { UserCircle, Settings, LogOut, FileEdit, Bell, Globe, HelpCircle, Shield } from "lucide-react";
+import LanguageSelector from "@/components/LanguageSelector";
 
 const Profile = () => {
   const { user, logout } = useAuth();
+  const { theme } = useTheme();
+  const { language } = useLanguage();
   const navigate = useNavigate();
-  const { language, t } = useLanguage();
-  
-  const [name, setName] = useState(user?.name || "");
-  const [email, setEmail] = useState(user?.email || "");
-  const [phone, setPhone] = useState("");
-  const [address, setAddress] = useState("");
-  
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    console.log("Profile updated:", { name, email, phone, address });
-    toast.success(language === "en" ? "Profile updated successfully" : "تم تحديث الملف الشخصي بنجاح");
+
+  const handleLogout = () => {
+    logout();
+    navigate("/login");
   };
 
-  const handleLogout = async () => {
-    await logout();
-    navigate('/login');
-    toast.success(language === "en" ? "Logged out successfully" : "تم تسجيل الخروج بنجاح");
-  };
-  
-  return (
-    <div className="container mx-auto py-8">
-      <div className="flex items-center justify-between mb-6">
-        <h1 className="text-2xl font-bold">
-          {language === "en" ? "Profile" : "الملف الشخصي"}
-        </h1>
-      </div>
-
-      <div className="grid md:grid-cols-3 gap-6">
-        {/* Profile Summary Card */}
-        <Card className="md:col-span-1">
-          <CardContent className="p-6 text-center">
-            <div className="mb-6">
-              <div className="w-32 h-32 mx-auto bg-primary/10 rounded-full flex items-center justify-center">
-                <UserCircle className="w-20 h-20 text-primary" />
-              </div>
+  if (!user) {
+    return (
+      <div className="flex items-center justify-center h-full">
+        <Card className="w-full max-w-md">
+          <CardContent className="p-6">
+            <div className="text-center">
+              <p className="text-lg">
+                {language === "en" 
+                  ? "Please login to view your profile" 
+                  : "الرجاء تسجيل الدخول لعرض ملفك الشخصي"
+                }
+              </p>
+              <Button className="mt-4" onClick={() => navigate("/login")}>
+                {language === "en" ? "Login" : "تسجيل الدخول"}
+              </Button>
             </div>
-            <h2 className="text-xl font-bold mb-2">{name || (language === "en" ? "User" : "المستخدم")}</h2>
-            <p className="text-muted-foreground mb-4">
-              {user?.role === "driver" 
-                ? (language === "en" ? "Driver" : "سائق") 
-                : (language === "en" ? "Customer" : "عميل")}
-            </p>
-            <div className="space-y-2 text-right">
-              <div className="flex items-center gap-2 text-muted-foreground">
-                <Mail className="h-4 w-4" />
-                <span>{email}</span>
-              </div>
-              {phone && (
-                <div className="flex items-center gap-2 text-muted-foreground">
-                  <Phone className="h-4 w-4" />
-                  <span>{phone}</span>
-                </div>
-              )}
-              {address && (
-                <div className="flex items-center gap-2 text-muted-foreground">
-                  <MapPin className="h-4 w-4" />
-                  <span>{address}</span>
-                </div>
-              )}
-            </div>
-            <Button
-              variant="destructive"
-              onClick={handleLogout}
-              className="w-full mt-6 flex items-center justify-center gap-2"
-            >
-              <LogOut className="h-4 w-4" />
-              {language === "en" ? "Logout" : "تسجيل الخروج"}
-            </Button>
           </CardContent>
         </Card>
-
-        {/* Edit Profile Card */}
-        <Card className="md:col-span-2">
-          <CardHeader>
-            <CardTitle>{language === "en" ? "Update Profile" : "تحديث الملف الشخصي"}</CardTitle>
-            <CardDescription>
-              {language === "en" ? "Update your profile information" : "قم بتحديث معلومات ملفك الشخصي"}
-            </CardDescription>
-          </CardHeader>
-          <form onSubmit={handleSubmit}>
-            <CardContent className="space-y-4">
-              <div className="space-y-2">
-                <Label htmlFor="name">{language === "en" ? "Name" : "الاسم"}</Label>
-                <Input 
-                  id="name"
-                  value={name}
-                  onChange={(e) => setName(e.target.value)}
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="email">{language === "en" ? "Email" : "البريد الإلكتروني"}</Label>
-                <Input 
-                  id="email"
-                  type="email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  disabled
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="phone">{language === "en" ? "Phone Number" : "رقم الهاتف"}</Label>
-                <Input 
-                  id="phone"
-                  value={phone}
-                  onChange={(e) => setPhone(e.target.value)}
-                  placeholder={language === "en" ? "Enter your phone number" : "أدخل رقم هاتفك"}
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="address">{language === "en" ? "Address" : "العنوان"}</Label>
-                <Textarea 
-                  id="address"
-                  value={address}
-                  onChange={(e) => setAddress(e.target.value)}
-                  placeholder={language === "en" ? "Enter your address" : "أدخل عنوانك"}
-                />
-              </div>
-            </CardContent>
-            <CardFooter>
-              <Button type="submit" className="w-full">
-                {language === "en" ? "Save Changes" : "حفظ التغييرات"}
-              </Button>
-            </CardFooter>
-          </form>
-        </Card>
       </div>
+    );
+  }
+
+  const menuItems = [
+    {
+      icon: <FileEdit className="h-5 w-5 mr-3" />,
+      title: language === "en" ? "Edit Profile" : "تعديل الملف الشخصي",
+      action: () => navigate("/profile/edit")
+    },
+    {
+      icon: <Settings className="h-5 w-5 mr-3" />,
+      title: language === "en" ? "Settings" : "الإعدادات",
+      action: () => navigate("/settings")
+    },
+    {
+      icon: <Bell className="h-5 w-5 mr-3" />,
+      title: language === "en" ? "Notifications" : "الإشعارات",
+      action: () => navigate("/notifications")
+    },
+    {
+      icon: <Globe className="h-5 w-5 mr-3" />,
+      title: language === "en" ? "Language" : "اللغة",
+      component: <LanguageSelector />
+    },
+    {
+      icon: <HelpCircle className="h-5 w-5 mr-3" />,
+      title: language === "en" ? "Help & Support" : "المساعدة والدعم",
+      action: () => navigate("/support")
+    },
+    {
+      icon: <LogOut className="h-5 w-5 mr-3 text-red-500" />,
+      title: language === "en" ? "Logout" : "تسجيل الخروج",
+      action: handleLogout,
+      className: "text-red-500"
+    }
+  ];
+
+  // Add admin panel link if user is admin
+  if (user.role === "admin") {
+    menuItems.unshift({
+      icon: <Shield className="h-5 w-5 mr-3 text-purple-500" />,
+      title: language === "en" ? "Admin Dashboard" : "لوحة تحكم المسؤول",
+      action: () => navigate("/admin-dashboard"),
+      className: "text-purple-500"
+    });
+  }
+
+  return (
+    <div className="container max-w-xl mx-auto px-4 py-8">
+      <Card className={`mb-8 overflow-hidden ${theme === 'dark' ? 'bg-gray-800' : ''}`}>
+        <div className="bg-gradient-to-b from-moprd-teal to-moprd-blue h-24"></div>
+        <CardContent className="pt-0 relative">
+          <div className="flex justify-center -mt-12">
+            <div className="rounded-full border-4 border-background dark:border-gray-800">
+              {user.profileImage ? (
+                <img 
+                  src={user.profileImage} 
+                  alt={user.name} 
+                  className="h-24 w-24 rounded-full object-cover"
+                />
+              ) : (
+                <div className="h-24 w-24 rounded-full bg-muted flex items-center justify-center">
+                  <UserCircle className="h-16 w-16 text-muted-foreground" />
+                </div>
+              )}
+            </div>
+          </div>
+          <div className="text-center mt-4">
+            <h2 className="text-xl font-bold">{user.name}</h2>
+            <p className="text-muted-foreground">{user.email}</p>
+            <div className="inline-block px-3 py-1 mt-2 rounded-full bg-moprd-teal/10 text-moprd-teal text-sm">
+              {user.role === "customer" 
+                ? (language === "en" ? "Customer" : "عميل") 
+                : user.role === "admin"
+                  ? (language === "en" ? "Administrator" : "مسؤول")
+                  : (language === "en" ? "Driver" : "سائق")}
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+
+      <Card className={`${theme === 'dark' ? 'bg-gray-800' : ''}`}>
+        <CardHeader>
+          <CardTitle>{language === "en" ? "Account Settings" : "إعدادات الحساب"}</CardTitle>
+        </CardHeader>
+        <CardContent className="p-0">
+          <div className="divide-y dark:divide-gray-700">
+            {menuItems.map((item, index) => (
+              <div 
+                key={index} 
+                className={`flex items-center justify-between p-4 hover:bg-muted/50 cursor-pointer transition-colors ${item.className || ''}`}
+                onClick={item.action}
+              >
+                <div className="flex items-center">
+                  {item.icon}
+                  <span>{item.title}</span>
+                </div>
+                {item.component}
+              </div>
+            ))}
+          </div>
+        </CardContent>
+      </Card>
     </div>
   );
 };

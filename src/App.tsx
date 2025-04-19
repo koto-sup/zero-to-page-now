@@ -39,6 +39,17 @@ import AppNavbar from "./components/AppNavbar";
 // Initialize CSS classes for our icy UI components
 import "./styles/icy-theme.css";
 
+// Create a Notifications page component for the temporary solution
+const Notifications = () => (
+  <div className="container mx-auto px-4 py-8">
+    <h1 className="text-3xl font-bold mb-4">الإشعارات</h1>
+    <p className="text-muted-foreground mb-6">ستظهر هنا إشعاراتك الجديدة.</p>
+    <div className="bg-secondary/20 p-6 rounded-lg text-center">
+      <p>ليس لديك إشعارات جديدة في الوقت الحالي.</p>
+    </div>
+  </div>
+);
+
 const queryClient = new QueryClient();
 
 // Create explicit TooltipProvider
@@ -71,7 +82,10 @@ const App = () => (
                   <Route path="/profile" element={<Profile />} />
                   <Route path="/bookings" element={<CustomerDashboard />} />
                   <Route path="/support" element={<CustomerSupport />} />
+                  <Route path="/track" element={<TruckTracking />} />
+                  <Route path="/truck-tracking" element={<TruckTracking />} />
                   <Route path="/truck-tracking/:driverId" element={<TruckTracking />} />
+                  <Route path="/notifications" element={<Notifications />} />
                   <Route path="/about" element={<AboutUs />} />
                   <Route path="/contact" element={<ContactUs />} />
                   <Route path="/privacy" element={<Privacy />} />

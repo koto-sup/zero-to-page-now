@@ -23,15 +23,14 @@ export const TruckTypeItem: React.FC<TruckTypeItemProps> = ({
   onImageChange 
 }) => {
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const { user } = useAuth();
+  const { user, isAdmin } = useAuth();
   const { language } = useLanguage();
   
-  // Since UserRole is only "customer" | "driver", we need to add a check for admin privileges
-  // This could be determined by a special flag or property instead of role
-  const isAdmin = user?.id === "driver-1"; // Temporary solution: checking if it's our mock admin user
+  // Check if the current user has admin privileges
+  const hasAdminPrivileges = user && (user.role === "admin" || isAdmin(user.id));
 
   const handleImageClick = () => {
-    if (isAdmin && fileInputRef.current) {
+    if (hasAdminPrivileges && fileInputRef.current) {
       fileInputRef.current.click();
     }
   };
@@ -71,7 +70,7 @@ export const TruckTypeItem: React.FC<TruckTypeItemProps> = ({
               {type.icon}
             </div>
           )}
-          {isAdmin && (
+          {hasAdminPrivileges && (
             <>
               <input
                 type="file"

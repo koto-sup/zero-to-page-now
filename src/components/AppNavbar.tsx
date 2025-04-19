@@ -50,7 +50,7 @@ const AppNavbar = () => {
               {language === "en" ? "Find Trucks" : "البحث عن شاحنات"}
             </Link>
             <Link
-              to="/truck-tracking"
+              to="/track"
               className="flex items-center gap-2 text-foreground hover:text-primary transition-colors text-sm"
             >
               <MapPin className="h-4 w-4" />
@@ -80,20 +80,22 @@ const AppNavbar = () => {
             )}
           </Button>
 
-          <Link to="/notifications">
-            <Button
-              variant="ghost"
-              size="icon"
-              className="rounded-full bg-background text-foreground relative"
-            >
-              <Bell className="h-5 w-5" />
-              {notifications.length > 0 && (
-                <span className="absolute -top-1 -right-1 bg-red-500 text-white rounded-full w-4 h-4 text-xs flex items-center justify-center">
-                  {notifications.length}
-                </span>
-              )}
-            </Button>
-          </Link>
+          {user && (
+            <Link to="/notifications">
+              <Button
+                variant="ghost"
+                size="icon"
+                className="rounded-full bg-background text-foreground relative"
+              >
+                <Bell className="h-5 w-5" />
+                {notifications.length > 0 && (
+                  <span className="absolute -top-1 -right-1 bg-red-500 text-white rounded-full w-4 h-4 text-xs flex items-center justify-center">
+                    {notifications.length}
+                  </span>
+                )}
+              </Button>
+            </Link>
+          )}
 
           {user ? (
             <DropdownMenu>
@@ -106,13 +108,18 @@ const AppNavbar = () => {
                   <UserCircle className="h-5 w-5" />
                 </Button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent align="end">
+              <DropdownMenuContent align="end" className="w-56">
                 <DropdownMenuItem onClick={() => navigate('/profile')}>
                   {language === "en" ? "Profile" : "الملف الشخصي"}
                 </DropdownMenuItem>
                 <DropdownMenuItem onClick={() => navigate('/settings')}>
                   {language === "en" ? "Settings" : "الإعدادات"}
                 </DropdownMenuItem>
+                {user.role === "admin" && (
+                  <DropdownMenuItem onClick={() => navigate('/admin-dashboard')}>
+                    {language === "en" ? "Admin Dashboard" : "لوحة تحكم المسؤول"}
+                  </DropdownMenuItem>
+                )}
               </DropdownMenuContent>
             </DropdownMenu>
           ) : (

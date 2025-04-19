@@ -49,8 +49,10 @@ const LoginForm = () => {
     setIsLoading(true);
     
     try {
-      // Use the login function from AuthContext, determine role based on email
-      const role = email.includes("driver") ? "driver" : "customer";
+      // Determine role based on email for demo
+      let role = email.includes("admin") ? "admin" : email.includes("driver") ? "driver" : "customer";
+      
+      // Use the login function from AuthContext
       await login(email, password, role);
       
       // If remember me is checked, save the email to localStorage
@@ -63,6 +65,8 @@ const LoginForm = () => {
       // Navigate based on user role
       if (role === "driver") {
         navigate("/dashboard");
+      } else if (role === "admin") {
+        navigate("/admin-dashboard");
       } else {
         navigate("/customer-dashboard");
       }
@@ -81,15 +85,15 @@ const LoginForm = () => {
   };
 
   return (
-    <IceCard className="w-full max-w-md">
+    <IceCard className="w-full max-w-md dark:bg-gray-900 dark:border-gray-800">
       <IceCardHeader className="text-center">
         <div className="absolute top-4 right-4">
           <LanguageSelector />
         </div>
-        <IceCardTitle className="text-2xl mb-2">
+        <IceCardTitle className="text-2xl mb-2 dark:text-white">
           {language === "en" ? "Login" : "تسجيل الدخول"}
         </IceCardTitle>
-        <IceCardDescription>
+        <IceCardDescription className="dark:text-gray-400">
           {language === "en" 
             ? "Enter your credentials to access your dashboard" 
             : "أدخل بيانات حسابك للوصول إلى لوحة التحكم"}
@@ -99,7 +103,7 @@ const LoginForm = () => {
       <IceCardContent>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="space-y-2">
-            <Label htmlFor="email">
+            <Label htmlFor="email" className="dark:text-gray-300">
               {language === "en" ? "Email" : "البريد الإلكتروني"}
             </Label>
             <div className="relative">
@@ -110,7 +114,7 @@ const LoginForm = () => {
                 placeholder="your@email.com"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className="pr-10 ice-input"
+                className="pr-10 ice-input dark:bg-gray-800 dark:border-gray-700 dark:text-white"
                 dir="ltr"
               />
             </div>
@@ -118,12 +122,12 @@ const LoginForm = () => {
           
           <div className="space-y-2">
             <div className="flex justify-between items-center">
-              <Label htmlFor="password">
+              <Label htmlFor="password" className="dark:text-gray-300">
                 {language === "en" ? "Password" : "كلمة المرور"}
               </Label>
               <Link 
                 to="/forgot-password" 
-                className="text-xs text-cyan-600 hover:underline"
+                className="text-xs text-cyan-600 hover:underline dark:text-cyan-400"
               >
                 {language === "en" ? "Forgot Password?" : "نسيت كلمة المرور؟"}
               </Link>
@@ -136,19 +140,19 @@ const LoginForm = () => {
                 placeholder="••••••••"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="pr-10 ice-input"
+                className="pr-10 ice-input dark:bg-gray-800 dark:border-gray-700 dark:text-white"
                 dir="ltr"
               />
               <button
                 type="button"
                 onClick={() => setShowPassword(!showPassword)}
-                className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 p-1"
+                className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 p-1 dark:hover:text-gray-200"
                 aria-label={showPassword ? "Hide password" : "Show password"}
               >
                 {showPassword ? (
-                  <EyeOffIcon size={18} className="text-cyan-600" />
+                  <EyeOffIcon size={18} className="text-cyan-600 dark:text-cyan-400" />
                 ) : (
-                  <EyeIcon size={18} className="text-cyan-600" />
+                  <EyeIcon size={18} className="text-cyan-600 dark:text-cyan-400" />
                 )}
               </button>
             </div>
@@ -159,8 +163,9 @@ const LoginForm = () => {
               id="remember" 
               checked={rememberMe} 
               onCheckedChange={(checked) => setRememberMe(checked as boolean)} 
+              className="dark:border-gray-600"
             />
-            <Label htmlFor="remember" className="text-sm cursor-pointer">
+            <Label htmlFor="remember" className="text-sm cursor-pointer dark:text-gray-300">
               {language === "en" ? "Remember me" : "تذكرني"}
             </Label>
           </div>
@@ -193,7 +198,7 @@ const LoginForm = () => {
       <IceCardFooter className="text-center">
         <p className="text-sm text-gray-600 dark:text-gray-400">
           {language === "en" ? "Don't have an account? " : "ليس لديك حساب؟ "}
-          <Link to="/register" className="text-cyan-600 hover:underline font-medium">
+          <Link to="/register" className="text-cyan-600 hover:underline font-medium dark:text-cyan-400">
             {language === "en" ? "Create an account" : "إنشاء حساب جديد"}
           </Link>
         </p>

@@ -85,6 +85,8 @@ export const RegisterForm: React.FC<RegisterFormProps> = ({ initialRole = "custo
       await register(name, email, password, role);
       if (role === "driver") {
         navigate("/truck-details");
+      } else if (role === "admin") {
+        navigate("/admin-dashboard");
       } else {
         navigate("/customer-dashboard");
       }
@@ -95,10 +97,10 @@ export const RegisterForm: React.FC<RegisterFormProps> = ({ initialRole = "custo
   };
 
   return (
-    <form onSubmit={handleSubmit}>
+    <form onSubmit={handleSubmit} className="dark:bg-background">
       <CardContent className="space-y-4">
         <div className="space-y-2">
-          <Label htmlFor="name">
+          <Label htmlFor="name" className="dark:text-foreground">
             {language === "en" ? "Full Name" : "الاسم الكامل"}
           </Label>
           <Input
@@ -106,13 +108,14 @@ export const RegisterForm: React.FC<RegisterFormProps> = ({ initialRole = "custo
             placeholder={language === "en" ? "John Doe" : "محمد علي"}
             value={name}
             onChange={(e) => setName(e.target.value)}
+            className="dark:bg-gray-800 dark:border-gray-700 dark:text-white"
           />
           {errors.name && (
             <p className="text-sm text-red-500">{errors.name}</p>
           )}
         </div>
         <div className="space-y-2">
-          <Label htmlFor="email">
+          <Label htmlFor="email" className="dark:text-foreground">
             {language === "en" ? "Email" : "البريد الإلكتروني"}
           </Label>
           <Input
@@ -121,13 +124,14 @@ export const RegisterForm: React.FC<RegisterFormProps> = ({ initialRole = "custo
             placeholder="email@example.com"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
+            className="dark:bg-gray-800 dark:border-gray-700 dark:text-white"
           />
           {errors.email && (
             <p className="text-sm text-red-500">{errors.email}</p>
           )}
         </div>
         <div className="space-y-2">
-          <Label htmlFor="password">
+          <Label htmlFor="password" className="dark:text-foreground">
             {language === "en" ? "Password" : "كلمة المرور"}
           </Label>
           <div className="relative">
@@ -137,11 +141,12 @@ export const RegisterForm: React.FC<RegisterFormProps> = ({ initialRole = "custo
               placeholder="••••••••"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
+              className="dark:bg-gray-800 dark:border-gray-700 dark:text-white"
             />
             <button
               type="button"
               onClick={() => setShowPassword(!showPassword)}
-              className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 p-1"
+              className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 p-1 dark:hover:text-gray-300"
               aria-label={showPassword ? "Hide password" : "Show password"}
             >
               {showPassword ? (
@@ -156,7 +161,7 @@ export const RegisterForm: React.FC<RegisterFormProps> = ({ initialRole = "custo
           )}
         </div>
         <div className="space-y-2">
-          <Label htmlFor="confirmPassword">
+          <Label htmlFor="confirmPassword" className="dark:text-foreground">
             {language === "en" ? "Confirm Password" : "تأكيد كلمة المرور"}
           </Label>
           <div className="relative">
@@ -166,11 +171,12 @@ export const RegisterForm: React.FC<RegisterFormProps> = ({ initialRole = "custo
               placeholder="••••••••"
               value={confirmPassword}
               onChange={(e) => setConfirmPassword(e.target.value)}
+              className="dark:bg-gray-800 dark:border-gray-700 dark:text-white"
             />
             <button
               type="button"
               onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-              className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 p-1"
+              className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 p-1 dark:hover:text-gray-300"
               aria-label={showConfirmPassword ? "Hide password" : "Show password"}
             >
               {showConfirmPassword ? (
@@ -185,7 +191,7 @@ export const RegisterForm: React.FC<RegisterFormProps> = ({ initialRole = "custo
           )}
         </div>
         
-        <UserTypeSelection role={role} onRoleChange={setRole} />
+        <UserTypeSelection role={role} onRoleChange={setRole} showAdmin={true} />
       </CardContent>
       <CardFooter className="flex flex-col">
         <IceButtonV2 
@@ -205,7 +211,7 @@ export const RegisterForm: React.FC<RegisterFormProps> = ({ initialRole = "custo
           )}
         </IceButtonV2>
         <div className="mt-4 text-center">
-          <p className="text-sm text-muted-foreground">
+          <p className="text-sm text-muted-foreground dark:text-gray-400">
             {language === "en" ? "Already have an account? " : "لديك حساب بالفعل؟ "}
             <Link to="/login" className="text-moprd-teal hover:underline font-medium">
               {language === "en" ? "Login" : "تسجيل الدخول"}
