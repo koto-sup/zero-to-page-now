@@ -1,5 +1,5 @@
-
 import React from "react";
+import Layout from "@/components/Layout";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/contexts/AuthContext";
@@ -20,8 +20,7 @@ const Index = () => {
   const { user } = useAuth();
 
   return (
-    <div className="min-h-screen">
-      {/* Hero Section with Video Background */}
+    <Layout>
       <section className="relative bg-gradient-to-br from-moprd-blue to-moprd-teal text-white overflow-hidden">
         <div className="absolute inset-0 z-0">
           <video
@@ -116,7 +115,6 @@ const Index = () => {
         <div className="absolute bottom-0 left-0 right-0 h-16 bg-gradient-to-t from-white to-transparent"></div>
       </section>
 
-      {/* How It Works */}
       <section className="py-16">
         <div className="container mx-auto px-4">
           <h2 className="text-3xl font-bold text-center mb-12">كيف تعمل زكرت</h2>
@@ -158,7 +156,6 @@ const Index = () => {
         </div>
       </section>
 
-      {/* Features */}
       <section className="py-16 bg-gray-50">
         <div className="container mx-auto px-4">
           <h2 className="text-3xl font-bold text-center mb-12">لماذا تختار زكرت</h2>
@@ -218,7 +215,6 @@ const Index = () => {
         </div>
       </section>
 
-      {/* CTA Section */}
       <section className="py-16 bg-moprd-blue text-white">
         <div className="container mx-auto px-4 text-center">
           <div className="max-w-3xl mx-auto">
@@ -265,7 +261,7 @@ const Index = () => {
           </div>
         </div>
       </section>
-    </div>
+    </Layout>
   );
 };
 

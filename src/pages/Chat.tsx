@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { Card, CardContent } from "@/components/ui/card";
+import { Card } from "@/components/ui/card";
 import { MessageSquare } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { useLanguage } from "@/contexts/LanguageContext";
@@ -10,27 +10,7 @@ import ChatList from "@/components/chat/ChatList";
 import ChatSearch from "@/components/chat/ChatSearch";
 import { useChatMessages } from '@/components/chat/SaveTrackingMessages';
 import Layout from "@/components/Layout";
-
-interface ChatPreview {
-  id: string;
-  recipientId: string;
-  recipientName: string;
-  recipientAvatar?: string;
-  lastMessage: string;
-  timestamp: Date;
-  unread: boolean;
-}
-
-interface TrackedConversation {
-  id: string;
-  recipientId: string;
-  recipientName: string;
-  recipientAvatar?: string;
-  lastMessage: string;
-  timestamp: Date;
-  unread: boolean;
-  messages: { id: string; text: string; timestamp: Date; sender: string; }[];
-}
+import { ChatPreview, TrackedConversation, ChatDetailProps } from "@/types/chat";
 
 const MOCK_CHATS: { [key: string]: ChatPreview[] } = {
   "customer-1": [
@@ -99,7 +79,7 @@ const getMockMessages = (senderId: string, recipientId: string) => [
   },
 ];
 
-const ChatDetail: React.FC<{ chatId: string; recipientId: string }> = ({ chatId, recipientId }) => {
+const ChatDetail: React.FC<ChatDetailProps> = ({ chatId, recipientId }) => {
   const { user } = useAuth();
   const { getChatContent } = useLanguageContent();
   const chatContent = getChatContent();

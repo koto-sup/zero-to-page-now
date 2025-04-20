@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import { useTheme } from "next-themes";
@@ -8,7 +7,11 @@ import UserMenu from "@/components/navigation/UserMenu";
 import MobileMenu from "@/components/navigation/MobileMenu";
 import { useLanguage } from "@/contexts/LanguageContext";
 
-const AppNavbar = () => {
+interface AppNavbarProps {
+  className?: string;
+}
+
+const AppNavbar: React.FC<AppNavbarProps> = ({ className }) => {
   const { theme } = useTheme();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const { language } = useLanguage();

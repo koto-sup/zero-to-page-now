@@ -1,10 +1,10 @@
-
 import React from "react";
 import { Link, useLocation } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { useLanguage } from "@/contexts/LanguageContext";
+import { NavigationLinksProps, NavigationLink } from "@/types/navigation";
 
-const NavigationLinks = () => {
+const NavigationLinks: React.FC<NavigationLinksProps> = ({ className }) => {
   const { user } = useAuth();
   const { language } = useLanguage();
   const location = useLocation();
@@ -48,7 +48,7 @@ const NavigationLinks = () => {
   };
 
   return (
-    <nav className="hidden md:flex space-x-4 md:space-x-8">
+    <nav className={`hidden md:flex space-x-4 md:space-x-8 ${className}`}>
       {getNavigationLinks().map((link) => (
         <Link
           key={link.href}
