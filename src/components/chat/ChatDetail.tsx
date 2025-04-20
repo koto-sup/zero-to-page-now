@@ -1,9 +1,13 @@
 
 import React from 'react';
-import { ChatBox } from '@/components/ChatBox';
+import ChatBox from '@/components/ChatBox';
+import { useAuth } from '@/contexts/AuthContext';
 import { ChatDetailProps } from '@/types/chat';
+import { getMockMessages } from '@/utils/mockMessages';
 
 const ChatDetail: React.FC<ChatDetailProps> = ({ chatId, recipientId }) => {
+  const { user } = useAuth();
+  
   const getRecipientName = (id: string) => {
     if (id === "customer-1") return "Customer User";
     if (id === "customer-2") return "Jane Doe";

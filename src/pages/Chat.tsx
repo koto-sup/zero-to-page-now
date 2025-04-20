@@ -1,18 +1,15 @@
 
 import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { Card } from "@/components/ui/card";
-import { MessageSquare } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { useLanguageContent } from "@/hooks/useLanguageContent";
-import ChatList from "@/components/chat/ChatList";
-import ChatSearch from "@/components/chat/ChatSearch";
-import ChatDetail from "@/components/chat/ChatDetail";
-import { useChatMessages } from '@/components/chat/SaveTrackingMessages';
 import Layout from "@/components/Layout";
 import { ChatPreview } from "@/types/chat";
 import { MOCK_CHATS } from "@/utils/mockChats";
+import ChatSearchBar from "@/components/chat/ChatSearchBar";
+import ChatWelcome from "@/components/chat/ChatWelcome";
+import ChatDetail from "@/components/chat/ChatDetail";
 
 const Chat = () => {
   const { user } = useAuth();
@@ -78,36 +75,24 @@ const Chat = () => {
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 h-[70vh]">
           <div className="md:col-span-1">
-            <Card className="h-full flex flex-col">
-              <ChatSearch 
-                searchQuery={searchQuery}
-                onSearchChange={setSearchQuery}
-              />
-              <div className="flex-1 overflow-y-auto">
-                <ChatList
-                  chats={filteredChats}
-                  selectedChatId={selectedChatId}
-                  onChatSelect={handleChatSelect}
-                />
-              </div>
-            </Card>
+            <ChatSearchBar
+              searchQuery={searchQuery}
+              onSearchChange={setSearchQuery}
+              filteredChats={filteredChats}
+              selectedChatId={selectedChatId}
+              onChatSelect={handleChatSelect}
+            />
           </div>
 
           <div className="md:col-span-2">
-            <Card className="h-full overflow-hidden">
-              {selectedChatId && selectedRecipientId ? (
-                <ChatDetail 
-                  chatId={selectedChatId} 
-                  recipientId={selectedRecipientId}
-                />
-              ) : (
-                <div className="flex flex-col items-center justify-center h-full text-center p-8">
-                  <MessageSquare className="h-16 w-16 text-gray-300 mb-4" />
-                  <h3 className="text-2xl font-medium mb-2">{chatContent.selectConversation}</h3>
-                  <p className="text-gray-500">{chatContent.selectPrompt}</p>
-                </div>
-              )}
-            </Card>
+            {selectedChatId && selectedRecipientId ? (
+              <ChatDetail 
+                chatId={selectedChatId} 
+                recipientId={selectedRecipientId}
+              />
+            ) : (
+              <ChatWelcome />
+            )}
           </div>
         </div>
       </div>
