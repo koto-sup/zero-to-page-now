@@ -1,15 +1,15 @@
 import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { Card, CardContent } from "@/components/ui/card";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { MessageSquare } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { useLanguageContent } from "@/hooks/useLanguageContent";
-import { MessageSquare, Search } from "lucide-react";
 import ChatBox from "@/components/ChatBox";
+import ChatList from "@/components/chat/ChatList";
+import ChatSearch from "@/components/chat/ChatSearch";
 import { useChatMessages } from '@/components/chat/SaveTrackingMessages';
+import Layout from "@/components/Layout";
 
 interface ChatPreview {
   id: string;
@@ -139,7 +139,7 @@ const Chat = () => {
   const [selectedRecipientId, setSelectedRecipientId] = useState<string | null>(null);
   const [conversations, setConversations] = useState<TrackedConversation[]>([]);
   const { messages: trackedMessages } = useChatMessages();
-  
+
   useEffect(() => {
     if (user) {
       setChats(MOCK_CHATS[user.id] || []);
@@ -250,114 +250,53 @@ const Chat = () => {
   };
 
   return (
-    <div className="container mx-auto px-4 py-8">
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold mb-4">{chatContent.title}</h1>
-        <p className="text-gray-600">
-          {chatContent.subtitle}
-        </p>
-      </div>
+    <Layout>
+      <div className="container mx-auto px-4 py-8">
+        <div className="mb-8">
+          <h1 className="text-3xl font-bold mb-4">{chatContent.title}</h1>
+          <p className="text-gray-600">
+            {chatContent.subtitle}
+          </p>
+        </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-8 h-[70vh]">
-        <div className="md:col-span-1">
-          <Card className="h-full flex flex-col">
-            <div className="p-4 border-b">
-              <div className="relative">
-                <Input
-                  placeholder={chatContent.searchPlaceholder}
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  className="pl-10"
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 h-[70vh]">
+          <div className="md:col-span-1">
+            <Card className="h-full flex flex-col">
+              <ChatSearch 
+                searchQuery={searchQuery}
+                onSearchChange={setSearchQuery}
+              />
+              <div className="flex-1 overflow-y-auto">
+                <ChatList
+                  chats={filteredChats}
+                  selectedChatId={selectedChatId}
+                  onChatSelect={handleChatSelect}
                 />
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
               </div>
-            </div>
-            <div className="flex-1 overflow-y-auto">
-              {filteredChats.length > 0 ? (
-                <div className="divide-y">
-                  {filteredChats.map((chat) => (
-                    <Button
-                      key={chat.id}
-                      variant="ghost"
-                      className={`w-full justify-start rounded-none py-3 px-4 h-auto ${
-                        selectedChatId === chat.id
-                          ? "bg-moprd-teal/10 border-l-4 border-moprd-teal"
-                          : ""
-                      }`}
-                      onClick={() => handleChatSelect(chat)}
-                    >
-                      <div className="flex items-center w-full">
-                        <div className="relative">
-                          <img
-                            src={chat.recipientAvatar || "/placeholder.svg"}
-                            alt={chat.recipientName}
-                            className="w-10 h-10 rounded-full mr-3"
-                          />
-                          {chat.unread && (
-                            <div className="absolute -top-1 -right-1 w-3 h-3 bg-moprd-teal rounded-full"></div>
-                          )}
-                        </div>
-                        <div className="flex-1 text-left">
-                          <div className="flex justify-between">
-                            <span className="font-medium">{chat.recipientName}</span>
-                            <span className="text-xs text-gray-500">
-                              {new Date(chat.timestamp).toLocaleTimeString([], {
-                                hour: "2-digit",
-                                minute: "2-digit",
-                              })}
-                            </span>
-                          </div>
-                          <p className="text-sm text-gray-600 truncate">
-                            {chat.lastMessage}
-                          </p>
-                        </div>
-                      </div>
-                    </Button>
-                  ))}
-                </div>
+            </Card>
+          </div>
+
+          <div className="md:col-span-2">
+            <Card className="h-full overflow-hidden">
+              {selectedChatId && selectedRecipientId ? (
+                <ChatBox 
+                  chatId={selectedChatId} 
+                  recipientId={selectedRecipientId}
+                />
               ) : (
-                <div className="flex flex-col items-center justify-center h-full text-center p-4">
-                  <MessageSquare className="h-12 w-12 text-gray-300 mb-4" />
-                  <h3 className="text-xl font-medium mb-2">{chatContent.noConversations}</h3>
+                <div className="flex flex-col items-center justify-center h-full text-center p-8">
+                  <MessageSquare className="h-16 w-16 text-gray-300 mb-4" />
+                  <h3 className="text-2xl font-medium mb-2">{chatContent.selectConversation}</h3>
                   <p className="text-gray-500">
-                    {user?.role === "customer"
-                      ? chatContent.findTrucksPrompt
-                      : chatContent.waitCustomers}
+                    {chatContent.selectPrompt}
                   </p>
-                  {user?.role === "customer" && (
-                    <Button 
-                      className="mt-4 bg-moprd-teal hover:bg-moprd-blue"
-                      onClick={() => navigate("/find-trucks")}
-                    >
-                      {chatContent.title}
-                    </Button>
-                  )}
                 </div>
               )}
-            </div>
-          </Card>
-        </div>
-
-        <div className="md:col-span-2">
-          <Card className="h-full overflow-hidden">
-            {selectedChatId && selectedRecipientId ? (
-              <ChatDetail 
-                chatId={selectedChatId} 
-                recipientId={selectedRecipientId}
-              />
-            ) : (
-              <div className="flex flex-col items-center justify-center h-full text-center p-8">
-                <MessageSquare className="h-16 w-16 text-gray-300 mb-4" />
-                <h3 className="text-2xl font-medium mb-2">{chatContent.selectConversation}</h3>
-                <p className="text-gray-500">
-                  {chatContent.selectPrompt}
-                </p>
-              </div>
-            )}
-          </Card>
+            </Card>
+          </div>
         </div>
       </div>
-    </div>
+    </Layout>
   );
 };
 
