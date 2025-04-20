@@ -14,6 +14,8 @@ export interface TruckRequestFormState {
   excavatorHeadType?: string;
   flatbedDeliveryOption?: string;
   refrigeratedOption?: string;
+  mapSelectionMode: boolean;
+  selectedMapLocation?: { lat: number; lng: number };
 }
 
 interface UseTruckRequestFormProps {
@@ -33,7 +35,8 @@ export const useTruckRequestForm = ({ discountApplied = false, onRequestSubmitte
     truckSize: "3ton",
     excavatorHeadType: "buckets",
     flatbedDeliveryOption: "none",
-    refrigeratedOption: "standard"
+    refrigeratedOption: "standard",
+    mapSelectionMode: false,
   });
 
   // Update price when truck type changes
@@ -137,12 +140,33 @@ export const useTruckRequestForm = ({ discountApplied = false, onRequestSubmitte
     setFormState(prev => ({ ...prev, refrigeratedOption: value }));
   };
 
+  const setMapSelectionMode = (value: boolean) => {
+    setFormState(prev => ({ ...prev, mapSelectionMode: value }));
+  };
+
+  const handleMapLocationSelect = (lat: number, lng: number) => {
+    setFormState(prev => ({ 
+      ...prev, 
+      selectedMapLocation: { lat, lng },
+      startLocation: `Location (${lat.toFixed(4)}, ${lng.toFixed(4)})` 
+    }));
+  };
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (!formState.startLocation || !formState.destination) {
-      // In a real app, we'd show validation errors
-      return;
+    if (formState.mapSelectionMode) {
+      // For map-selection mode, we only need a valid map location
+      if (!formState.selectedMapLocation) {
+        alert("Please select a location on the map");
+        return;
+      }
+    } else {
+      // For standard mode, we need both start and destination
+      if (!formState.startLocation || !formState.destination) {
+        // In a real app, we'd show validation errors
+        return;
+      }
     }
     
     setFormState(prev => ({ ...prev, loading: true }));
@@ -162,7 +186,8 @@ export const useTruckRequestForm = ({ discountApplied = false, onRequestSubmitte
         truckSize: formState.truckSize,
         excavatorHeadType: formState.excavatorHeadType,
         flatbedDeliveryOption: formState.flatbedDeliveryOption,
-        refrigeratedOption: formState.refrigeratedOption
+        refrigeratedOption: formState.refrigeratedOption,
+        useMapSelection: formState.mapSelectionMode
       });
     }, 1500);
   };
@@ -177,6 +202,8 @@ export const useTruckRequestForm = ({ discountApplied = false, onRequestSubmitte
     handleExcavatorHeadChange,
     handleFlatbedDeliveryOptionChange,
     handleRefrigeratedOptionChange,
+    handleMapLocationSelect,
+    setMapSelectionMode,
     handleSubmit
   };
 };

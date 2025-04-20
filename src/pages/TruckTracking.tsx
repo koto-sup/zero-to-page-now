@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect, useRef } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -18,6 +17,7 @@ import {
   X,
   MessageCircle
 } from "lucide-react";
+import SaveTrackingMessages from '@/components/chat/SaveTrackingMessages';
 
 const TruckTracking = () => {
   const { driverId } = useParams<{ driverId: string }>();
@@ -31,11 +31,9 @@ const TruckTracking = () => {
   const [timeLeft, setTimeLeft] = useState(14 * 60); // 14 minutes in seconds
   const [currentStatus, setCurrentStatus] = useState(language === 'en' ? "Moving to your location" : "جاري التحرك نحو موقعك");
   
-  // Get stable order number from localStorage or generate a new one if it doesn't exist
   const orderNumber = localStorage.getItem('lastOrderNumber') || 
     "ORD-" + Math.floor(100000 + Math.random() * 900000);
   
-  // Mock data
   const orderDetails = {
     orderId: orderNumber,
     driverName: language === 'en' ? "Khalid Driver" : "خالد السائق",
@@ -50,7 +48,6 @@ const TruckTracking = () => {
     price: language === 'en' ? "105 SAR" : "105 ريال",
   };
 
-  // Mock messages for chat
   const initialMessages = [
     {
       id: "msg-1",
@@ -72,13 +69,9 @@ const TruckTracking = () => {
   ];
 
   useEffect(() => {
-    // Save the order number to localStorage to keep it stable
     localStorage.setItem('lastOrderNumber', orderNumber);
-    
-    // Set the order start time to the current time
     setOrderStartTime(new Date());
     
-    // Timer to update the cancellation window
     const timer = setInterval(() => {
       setTimeLeft(prev => {
         const newTime = prev - 1;
@@ -90,7 +83,7 @@ const TruckTracking = () => {
             {
               description: language === 'en' 
                 ? "You can no longer cancel this order" 
-                : "لم يعد بإمكانك إلغاء الطلب بعد الآن",
+                : "لم يعد ��إمكانك إلغاء الطلب بعد الآن",
               dismissible: true
             }
           );
@@ -100,7 +93,6 @@ const TruckTracking = () => {
       });
     }, 1000);
     
-    // Simulating status updates
     const statusTimer = setTimeout(() => {
       setCurrentStatus(language === 'en' ? "On the way to you" : "في الطريق إليك");
       
@@ -149,7 +141,6 @@ const TruckTracking = () => {
       return;
     }
     
-    // In a real app, we'd send a request to the server
     toast.success(
       language === 'en' ? "Order cancelled" : "تم إلغاء الطلب", 
       {
@@ -185,6 +176,8 @@ const TruckTracking = () => {
 
   return (
     <div className="container mx-auto px-4 py-8">
+      <SaveTrackingMessages messages={initialMessages} />
+      
       <div className="flex justify-between items-center mb-6">
         <div>
           <h1 className="text-3xl font-bold">{language === 'en' ? 'Track Order' : 'تتبع الطلب'}</h1>

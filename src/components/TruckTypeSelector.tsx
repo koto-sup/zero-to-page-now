@@ -4,6 +4,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { RadioGroup } from "@/components/ui/radio-group";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { useTruckTypes } from "@/hooks/useTruckTypes";
+import { useAuth } from "@/contexts/AuthContext";
 // Fix import to use default import instead of named import
 import TruckTypeItem from "./truck-selector/TruckTypeItem";
 
@@ -18,6 +19,7 @@ const TruckTypeSelector: React.FC<TruckTypeSelectorProps> = ({
 }) => {
   const { language } = useLanguage();
   const { getTruckTypes } = useTruckTypes();
+  const { user } = useAuth();
 
   const getDiscountText = () => {
     switch(language) {
@@ -58,18 +60,33 @@ const TruckTypeSelector: React.FC<TruckTypeSelectorProps> = ({
     }
   };
 
+  // Determine if we should show the message based on user role
+  const shouldShowInfoBox = !user || user.role === "customer" || user.role === "admin";
+
+  // Check if we should use map-only selection for this truck type
+  const isMapOnlySelectionType = (truckTypeId: string) => {
+    return ["jcp", "water-truck", "wheel-excavator", "crawler-excavator", 
+            "loader-lowbed", "jcb-forklift", "asphalt-paving-small", 
+            "asphalt-paving-big", "generator-repair", "hydraulic-crane", 
+            "basket-winch"].includes(truckTypeId);
+  };
+
   return (
     <Card>
       <CardContent className="pt-6">
         <h3 className="text-lg font-medium mb-4">{getVehicleTypeLabel()}</h3>
-        <div className="mb-3 p-2 bg-blue-50 rounded-lg text-sm text-blue-700 border border-blue-200">
-          <p className="flex items-center">
-            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="mr-2">
-              <path d="M14 9a2 2 0 0 1-2 2H6l-4 4V4c0-1.1.9-2 2-2h8a2 2 0 0 1 2 2v5Z"></path>
-            </svg>
-            {getInfoBoxText()}
-          </p>
-        </div>
+        
+        {shouldShowInfoBox && (
+          <div className="mb-3 p-2 bg-blue-50 rounded-lg text-sm text-blue-700 border border-blue-200">
+            <p className="flex items-center">
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="mr-2">
+                <path d="M14 9a2 2 0 0 1-2 2H6l-4 4V4c0-1.1.9-2 2-2h8a2 2 0 0 1 2 2v5Z"></path>
+              </svg>
+              {getInfoBoxText()}
+            </p>
+          </div>
+        )}
+        
         <RadioGroup 
           value={selectedTruckType} 
           onValueChange={onTruckTypeChange} 
@@ -86,6 +103,7 @@ const TruckTypeSelector: React.FC<TruckTypeSelectorProps> = ({
               onSelect={onTruckTypeChange}
               capacity={type.capacity}
               refrigeration={type.refrigeration}
+              useMapOnly={isMapOnlySelectionType(type.id)}
             />
           ))}
         </RadioGroup>

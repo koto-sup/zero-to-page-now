@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -10,6 +9,7 @@ import { useLanguage } from "@/contexts/LanguageContext";
 import { useLanguageContent } from "@/hooks/useLanguageContent";
 import { MessageSquare, Search } from "lucide-react";
 import ChatBox from "@/components/ChatBox";
+import { useChatMessages } from '@/components/chat/SaveTrackingMessages';
 
 interface ChatPreview {
   id: string;
@@ -134,7 +134,9 @@ const Chat = () => {
   const [chats, setChats] = useState<ChatPreview[]>([]);
   const [selectedChatId, setSelectedChatId] = useState<string | null>(null);
   const [selectedRecipientId, setSelectedRecipientId] = useState<string | null>(null);
-
+  const [conversations, setConversations] = useState<ChatPreview[]>([]);
+  const { messages: trackedMessages } = useChatMessages();
+  
   useEffect(() => {
     // In a real app, fetch chats from API
     if (user) {
@@ -170,6 +172,78 @@ const Chat = () => {
       }
     }
   }, [driverId, user, chats]);
+
+  useEffect(() => {
+    if (trackedMessages && trackedMessages.length > 0) {
+      // Find conversations that may already contain tracked messages
+      const driverIdsWithTrackingMessages = new Set(
+        trackedMessages.map(msg => msg.senderId || msg.receiverId)
+      );
+      
+      // Add tracked messages to existing conversations or create new ones
+      driverIdsWithTrackingMessages.forEach(driverId => {
+        if (driverId) {
+          const existingConversation = conversations.find(
+            conv => conv.id === driverId || conv.participantId === driverId
+          );
+          
+          if (existingConversation) {
+            // Add messages to existing conversation if not already there
+            const existingMessageIds = new Set(
+              existingConversation.messages.map(msg => msg.id)
+            );
+            
+            const newMessages = trackedMessages
+              .filter(msg => 
+                (msg.senderId === driverId || msg.receiverId === driverId) &&
+                !existingMessageIds.has(msg.id)
+              )
+              .map(msg => ({
+                id: msg.id,
+                text: msg.text || msg.content || msg.message,
+                timestamp: msg.timestamp || new Date(),
+                sender: msg.sender || (msg.senderId === user?.id ? 'user' : 'other'),
+              }));
+              
+            if (newMessages.length > 0) {
+              existingConversation.messages = [
+                ...existingConversation.messages,
+                ...newMessages
+              ];
+            }
+          } else {
+            // Create a new conversation for this driver
+            const driverMessages = trackedMessages.filter(
+              msg => msg.senderId === driverId || msg.receiverId === driverId
+            );
+            
+            if (driverMessages.length > 0) {
+              const newConversation = {
+                id: `conv-${Date.now()}-${driverId}`,
+                participantId: driverId as string,
+                participantName: driverMessages[0].senderName || "Driver",
+                participantImage: "/placeholder.svg",
+                lastMessage: driverMessages[driverMessages.length - 1].text || 
+                             driverMessages[driverMessages.length - 1].content || 
+                             driverMessages[driverMessages.length - 1].message,
+                timestamp: new Date(),
+                online: false,
+                unread: true,
+                messages: driverMessages.map(msg => ({
+                  id: msg.id,
+                  text: msg.text || msg.content || msg.message,
+                  timestamp: msg.timestamp || new Date(),
+                  sender: msg.sender || (msg.senderId === user?.id ? 'user' : 'other'),
+                }))
+              };
+              
+              setConversations(prev => [...prev, newConversation]);
+            }
+          }
+        }
+      });
+    }
+  }, [trackedMessages, conversations, user?.id]);
 
   const filteredChats = chats.filter((chat) =>
     chat.recipientName.toLowerCase().includes(searchQuery.toLowerCase())

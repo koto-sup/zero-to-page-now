@@ -1,106 +1,96 @@
-
-import React from "react";
-import { Toaster } from "@/components/ui/toaster";
-import { Toaster as Sonner } from "@/components/ui/sonner";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
-import { AuthProvider } from "./contexts/AuthContext";
-import { LanguageProvider } from "./contexts/LanguageContext";
-import Layout from "./components/Layout";
-import { ThemeProvider } from 'next-themes';
-
-// Import all pages
+import React, { useEffect } from "react";
+import {
+  BrowserRouter,
+  Routes,
+  Route,
+  useLocation,
+} from "react-router-dom";
 import Index from "./pages/Index";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
 import ForgotPassword from "./pages/ForgotPassword";
-import FindTrucks from "./pages/FindTrucks";
-import TruckDetails from "./pages/TruckDetails";
+import Profile from "./pages/Profile";
+import Settings from "./pages/Settings";
 import Dashboard from "./pages/Dashboard";
-import AdminDashboard from "./pages/AdminDashboard";
-import CustomerDashboard from "./pages/CustomerDashboard";
+import FindTrucks from "./pages/FindTrucks";
+import TruckTracking from "./pages/TruckTracking";
+import TruckDetails from "./pages/TruckDetails";
+import Activity from "./pages/Activity";
+import Help from "./pages/Help";
+import ContactUs from "./pages/ContactUs";
+import AboutUs from "./pages/AboutUs";
+import Privacy from "./pages/Privacy";
+import CustomerSupport from "./pages/CustomerSupport";
 import Chat from "./pages/Chat";
-import NotFound from "./pages/NotFound";
 import Invoices from "./pages/Invoices";
 import InvoiceDetail from "./pages/InvoiceDetail";
-import Profile from "./pages/Profile";
-import CustomerSupport from "./pages/CustomerSupport";
-import TruckTracking from "./pages/TruckTracking";
-import AboutUs from "./pages/AboutUs";
-import ContactUs from "./pages/ContactUs";
-import Privacy from "./pages/Privacy";
-import Help from "./pages/Help";
-import Settings from "./pages/Settings";
-import Activity from "./pages/Activity";
+import AdminDashboard from "./pages/AdminDashboard";
+import NotFound from "./pages/NotFound";
+import { ThemeProvider } from "next-themes";
+import { Toaster } from "sonner";
+import { LanguageProvider } from "./contexts/LanguageContext";
+import { AuthProvider } from "./contexts/AuthContext";
+import EditProfile from "./pages/EditProfile";
+import { ChatMessagesProvider } from "./components/chat/SaveTrackingMessages";
 
-// Import custom navbar
-import AppNavbar from "./components/AppNavbar";
+interface Props {
+  children: React.ReactNode;
+}
 
-// Initialize CSS classes for our icy UI components
-import "./styles/icy-theme.css";
+const LayoutWrapper: React.FC<Props> = ({ children }) => {
+  const location = useLocation();
 
-// Create a Notifications page component for the temporary solution
-const Notifications = () => (
-  <div className="container mx-auto px-4 py-8">
-    <h1 className="text-3xl font-bold mb-4">الإشعارات</h1>
-    <p className="text-muted-foreground mb-6">ستظهر هنا إشعاراتك الجديدة.</p>
-    <div className="bg-secondary/20 p-6 rounded-lg text-center">
-      <p>ليس لديك إشعارات جديدة في الوقت الحالي.</p>
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [location.pathname]);
+
+  return (
+    <div className="min-h-screen flex flex-col">
+      <main className="flex-grow">{children}</main>
     </div>
-  </div>
-);
+  );
+};
 
-const queryClient = new QueryClient();
-
-// Create explicit TooltipProvider
-import { TooltipProvider } from "@/components/ui/tooltip";
-
-const App = () => (
-  <QueryClientProvider client={queryClient}>
-    <ThemeProvider attribute="class" defaultTheme="light">
-      <TooltipProvider>
-        <LanguageProvider>
-          <AuthProvider>
-            <Toaster />
-            <Sonner />
-            <BrowserRouter>
-              <Layout>
+function App() {
+  return (
+    <LanguageProvider>
+      <AuthProvider>
+        <ThemeProvider attribute="class" defaultTheme="light">
+          <BrowserRouter>
+            <ChatMessagesProvider>
+              <LayoutWrapper>
                 <Routes>
                   <Route path="/" element={<Index />} />
                   <Route path="/login" element={<Login />} />
                   <Route path="/register" element={<Register />} />
                   <Route path="/forgot-password" element={<ForgotPassword />} />
-                  <Route path="/find-trucks" element={<FindTrucks />} />
-                  <Route path="/truck-details" element={<TruckDetails />} />
-                  <Route path="/dashboard" element={<Dashboard />} />
-                  <Route path="/admin-dashboard" element={<AdminDashboard />} />
-                  <Route path="/customer-dashboard" element={<CustomerDashboard />} />
-                  <Route path="/chat" element={<Chat />} />
-                  <Route path="/chat/:driverId" element={<Chat />} />
-                  <Route path="/invoices" element={<Invoices />} />
-                  <Route path="/invoice-details/:id" element={<InvoiceDetail />} />
                   <Route path="/profile" element={<Profile />} />
-                  <Route path="/bookings" element={<CustomerDashboard />} />
-                  <Route path="/support" element={<CustomerSupport />} />
-                  <Route path="/track" element={<TruckTracking />} />
-                  <Route path="/truck-tracking" element={<TruckTracking />} />
-                  <Route path="/truck-tracking/:driverId" element={<TruckTracking />} />
-                  <Route path="/notifications" element={<Notifications />} />
-                  <Route path="/about" element={<AboutUs />} />
-                  <Route path="/contact" element={<ContactUs />} />
-                  <Route path="/privacy" element={<Privacy />} />
-                  <Route path="/help" element={<Help />} />
+                  <Route path="/profile/edit" element={<EditProfile />} />
                   <Route path="/settings" element={<Settings />} />
+                  <Route path="/dashboard" element={<Dashboard />} />
+                  <Route path="/find-trucks" element={<FindTrucks />} />
+                  <Route path="/truck-tracking/:driverId" element={<TruckTracking />} />
+                  <Route path="/truck-details" element={<TruckDetails />} />
                   <Route path="/activity" element={<Activity />} />
+                  <Route path="/help" element={<Help />} />
+                  <Route path="/contact-us" element={<ContactUs />} />
+                  <Route path="/about-us" element={<AboutUs />} />
+                  <Route path="/privacy" element={<Privacy />} />
+                  <Route path="/customer-support" element={<CustomerSupport />} />
+                  <Route path="/chat" element={<Chat />} />
+                  <Route path="/invoices" element={<Invoices />} />
+                  <Route path="/invoice/:id" element={<InvoiceDetail />} />
+                  <Route path="/admin-dashboard" element={<AdminDashboard />} />
                   <Route path="*" element={<NotFound />} />
                 </Routes>
-              </Layout>
-            </BrowserRouter>
-          </AuthProvider>
-        </LanguageProvider>
-      </TooltipProvider>
-    </ThemeProvider>
-  </QueryClientProvider>
-);
+                <Toaster />
+              </LayoutWrapper>
+            </ChatMessagesProvider>
+          </BrowserRouter>
+        </ThemeProvider>
+      </AuthProvider>
+    </LanguageProvider>
+  );
+}
 
 export default App;

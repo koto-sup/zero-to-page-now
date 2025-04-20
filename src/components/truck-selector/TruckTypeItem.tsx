@@ -1,6 +1,7 @@
 
 import React, { useState } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
+import { MapPin } from 'lucide-react';
 
 interface TruckTypeItemProps {
   id: string;
@@ -11,6 +12,7 @@ interface TruckTypeItemProps {
   onSelect: (id: string) => void;
   capacity?: string;
   refrigeration?: boolean;
+  useMapOnly?: boolean;
 }
 
 // This component was previously being used with a default export
@@ -23,7 +25,8 @@ const TruckTypeItem: React.FC<TruckTypeItemProps> = ({
   selected, 
   onSelect,
   capacity,
-  refrigeration
+  refrigeration,
+  useMapOnly = false
 }) => {
   const { isAdmin } = useAuth();
   const [customIconUrl, setCustomIconUrl] = useState<string | null>(null);
@@ -36,6 +39,9 @@ const TruckTypeItem: React.FC<TruckTypeItemProps> = ({
         setCustomIconUrl(reader.result as string);
       };
       reader.readAsDataURL(file);
+      
+      // In a real app with Supabase integration, we would upload the image to storage
+      // and update the database with the new URL
     }
   };
   
@@ -82,6 +88,12 @@ const TruckTypeItem: React.FC<TruckTypeItemProps> = ({
         <div className="flex-grow">
           <h3 className="font-medium text-lg">{name}</h3>
           <p className="text-sm text-gray-500 dark:text-gray-400">{description}</p>
+          {useMapOnly && (
+            <div className="flex items-center mt-1 text-xs text-blue-600">
+              <MapPin size={12} className="mr-1" />
+              <span>Map selection only</span>
+            </div>
+          )}
           {capacity && (
             <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">Capacity: {capacity}</p>
           )}

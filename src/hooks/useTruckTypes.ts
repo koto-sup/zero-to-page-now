@@ -54,7 +54,7 @@ export const useTruckTypes = () => {
       },
       { 
         id: "wheel-excavator", 
-        name: language === "en" ? "Wheel Excavator" : "حفارة بعجلات", 
+        name: language === "en" ? "Wheel Excavator" : "حفارة بوكلين بكفرات", 
         icon: TruckIcons.renderExcavatorIcon(),
         image: getTruckIcon("wheel-excavator"),
         price: language === "en" ? "1180 SAR/day" : "1180 ريال/يوم",
@@ -63,7 +63,7 @@ export const useTruckTypes = () => {
       },
       { 
         id: "crawler-excavator", 
-        name: language === "en" ? "Crawler Excavator" : "حفارة زاحفة", 
+        name: language === "en" ? "Crawler Excavator" : "حفارة بوكلين جنزير", 
         icon: TruckIcons.renderExcavatorIcon(),
         image: getTruckIcon("crawler-excavator"),
         price: language === "en" ? "687 SAR/day" : "687 ريال/يوم",
