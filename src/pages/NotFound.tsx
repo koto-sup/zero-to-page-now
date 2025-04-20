@@ -1,7 +1,9 @@
 
-import { useLocation } from "react-router-dom";
+import { useLocation, Link } from "react-router-dom";
 import { useEffect } from "react";
 import { useLanguage } from "@/contexts/LanguageContext";
+import { Button } from "@/components/ui/button";
+import Layout from "@/components/Layout";
 
 const NotFound = () => {
   const location = useLocation();
@@ -15,21 +17,25 @@ const NotFound = () => {
   }, [location.pathname]);
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100">
-      <div className="text-center">
-        <h1 className="text-4xl font-bold mb-4">404</h1>
-        <p className="text-xl text-gray-600 mb-4">
-          {language === "en" 
-            ? "Sorry! Page not found" 
-            : "عفواً! الصفحة غير موجودة"}
-        </p>
-        <a href="/" className="text-blue-500 hover:text-blue-700 underline">
-          {language === "en" 
-            ? "Return to Home Page" 
-            : "العودة إلى الصفحة الرئيسية"}
-        </a>
+    <Layout>
+      <div className="min-h-screen flex items-center justify-center bg-gray-100 dark:bg-gray-900">
+        <div className="text-center">
+          <h1 className="text-6xl font-bold mb-4 text-moprd-teal">404</h1>
+          <p className="text-xl text-gray-600 dark:text-gray-300 mb-6">
+            {language === "en" 
+              ? "Sorry! The page you are looking for cannot be found." 
+              : "عفواً! الصفحة التي تبحث عنها غير موجودة."}
+          </p>
+          <Button asChild className="bg-moprd-teal hover:bg-moprd-blue">
+            <Link to="/">
+              {language === "en" 
+                ? "Return to Home Page" 
+                : "العودة إلى الصفحة الرئيسية"}
+            </Link>
+          </Button>
+        </div>
       </div>
-    </div>
+    </Layout>
   );
 };
 

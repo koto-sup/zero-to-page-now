@@ -1,6 +1,6 @@
 
 import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
@@ -10,6 +10,7 @@ import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
 import { ChevronLeft, Camera } from "lucide-react";
 import { useLanguage } from "@/contexts/LanguageContext";
+import Layout from "@/components/Layout";
 
 const EditProfile = () => {
   const { user, updateUserProfile } = useAuth();
@@ -93,105 +94,107 @@ const EditProfile = () => {
   };
 
   return (
-    <div className="container max-w-xl mx-auto px-4 py-8">
-      <Button 
-        variant="ghost" 
-        className="flex items-center mb-4"
-        onClick={handleGoBack}
-      >
-        <ChevronLeft className="ml-2 h-4 w-4" />
-        {translations.back}
-      </Button>
-      
-      <Card>
-        <CardHeader>
-          <CardTitle>{translations.editProfile}</CardTitle>
-        </CardHeader>
+    <Layout>
+      <div className="container max-w-xl mx-auto px-4 py-8">
+        <Button 
+          variant="ghost" 
+          className="flex items-center mb-4"
+          onClick={handleGoBack}
+        >
+          <ChevronLeft className="ml-2 h-4 w-4" />
+          {translations.back}
+        </Button>
         
-        <CardContent>
-          <form onSubmit={handleSubmit} className="space-y-6">
-            <div className="flex flex-col items-center">
-              <div className="relative w-24 h-24 mb-4">
-                {profilePreview ? (
-                  <img 
-                    src={profilePreview} 
-                    alt={name}
-                    className="w-24 h-24 rounded-full object-cover border-2 border-moprd-teal" 
-                  />
-                ) : (
-                  <div className="w-24 h-24 rounded-full bg-muted flex items-center justify-center border-2 border-moprd-teal">
-                    <Camera className="h-10 w-10 text-muted-foreground" />
+        <Card>
+          <CardHeader>
+            <CardTitle>{translations.editProfile}</CardTitle>
+          </CardHeader>
+          
+          <CardContent>
+            <form onSubmit={handleSubmit} className="space-y-6">
+              <div className="flex flex-col items-center">
+                <div className="relative w-24 h-24 mb-4">
+                  {profilePreview ? (
+                    <img 
+                      src={profilePreview} 
+                      alt={name}
+                      className="w-24 h-24 rounded-full object-cover border-2 border-moprd-teal" 
+                    />
+                  ) : (
+                    <div className="w-24 h-24 rounded-full bg-muted flex items-center justify-center border-2 border-moprd-teal">
+                      <Camera className="h-10 w-10 text-muted-foreground" />
+                    </div>
+                  )}
+                  <div className="absolute bottom-0 right-0">
+                    <Button 
+                      type="button" 
+                      size="sm" 
+                      className="rounded-full w-8 h-8 p-0"
+                      onClick={() => document.getElementById('profile-picture')?.click()}
+                    >
+                      <Camera className="h-4 w-4" />
+                    </Button>
+                    <input 
+                      type="file" 
+                      id="profile-picture" 
+                      className="hidden" 
+                      accept="image/*"
+                      onChange={handleFileChange}
+                    />
                   </div>
-                )}
-                <div className="absolute bottom-0 right-0">
-                  <Button 
-                    type="button" 
-                    size="sm" 
-                    className="rounded-full w-8 h-8 p-0"
-                    onClick={() => document.getElementById('profile-picture')?.click()}
-                  >
-                    <Camera className="h-4 w-4" />
-                  </Button>
-                  <input 
-                    type="file" 
-                    id="profile-picture" 
-                    className="hidden" 
-                    accept="image/*"
-                    onChange={handleFileChange}
+                </div>
+                <p className="text-sm text-muted-foreground">{translations.profilePicture}</p>
+              </div>
+              
+              <Separator />
+              
+              <div className="space-y-4">
+                <h3 className="text-lg font-medium">{translations.personalInformation}</h3>
+                
+                <div className="space-y-2">
+                  <Label htmlFor="name">{translations.name}</Label>
+                  <Input 
+                    id="name"
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
+                    disabled={isLoading}
+                  />
+                </div>
+                
+                <div className="space-y-2">
+                  <Label htmlFor="email">{translations.email}</Label>
+                  <Input 
+                    id="email"
+                    type="email"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    disabled={isLoading || user.provider === "oauth"}
+                  />
+                </div>
+                
+                <div className="space-y-2">
+                  <Label htmlFor="phoneNumber">{translations.phoneNumber}</Label>
+                  <Input 
+                    id="phoneNumber"
+                    value={phoneNumber}
+                    onChange={(e) => setPhoneNumber(e.target.value)}
+                    disabled={isLoading}
                   />
                 </div>
               </div>
-              <p className="text-sm text-muted-foreground">{translations.profilePicture}</p>
-            </div>
-            
-            <Separator />
-            
-            <div className="space-y-4">
-              <h3 className="text-lg font-medium">{translations.personalInformation}</h3>
               
-              <div className="space-y-2">
-                <Label htmlFor="name">{translations.name}</Label>
-                <Input 
-                  id="name"
-                  value={name}
-                  onChange={(e) => setName(e.target.value)}
-                  disabled={isLoading}
-                />
-              </div>
-              
-              <div className="space-y-2">
-                <Label htmlFor="email">{translations.email}</Label>
-                <Input 
-                  id="email"
-                  type="email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  disabled={isLoading || user.provider === "oauth"}
-                />
-              </div>
-              
-              <div className="space-y-2">
-                <Label htmlFor="phoneNumber">{translations.phoneNumber}</Label>
-                <Input 
-                  id="phoneNumber"
-                  value={phoneNumber}
-                  onChange={(e) => setPhoneNumber(e.target.value)}
-                  disabled={isLoading}
-                />
-              </div>
-            </div>
-            
-            <Button 
-              type="submit" 
-              className="w-full"
-              disabled={isLoading}
-            >
-              {isLoading ? translations.saving : translations.save}
-            </Button>
-          </form>
-        </CardContent>
-      </Card>
-    </div>
+              <Button 
+                type="submit" 
+                className="w-full"
+                disabled={isLoading}
+              >
+                {isLoading ? translations.saving : translations.save}
+              </Button>
+            </form>
+          </CardContent>
+        </Card>
+      </div>
+    </Layout>
   );
 };
 

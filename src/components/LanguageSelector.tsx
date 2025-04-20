@@ -15,7 +15,15 @@ const languages = [
   { code: 'zh', name: '中文', flag: '🇨🇳' },
 ];
 
-const LanguageSelector = () => {
+interface LanguageSelectorProps {
+  variant?: "ghost" | "default" | "outline";
+  showFlag?: boolean;
+}
+
+const LanguageSelector: React.FC<LanguageSelectorProps> = ({ 
+  variant = "ghost", 
+  showFlag = true 
+}) => {
   const { language, changeLanguage } = useLanguage();
 
   const getCurrentLanguage = () => {
@@ -27,7 +35,6 @@ const LanguageSelector = () => {
     // Ensure we're only accepting valid language codes
     if (languages.some(lang => lang.code === code)) {
       changeLanguage(code as any);
-      // No page reload - the context will update the UI
     }
   };
 
@@ -36,9 +43,11 @@ const LanguageSelector = () => {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant="ghost" size="icon" className="relative">
+        <Button variant={variant} size="icon" className="relative">
           <Globe className="h-5 w-5" />
-          <span className="absolute -top-1 -right-1 text-xs">{current.flag}</span>
+          {showFlag && (
+            <span className="absolute -top-1 -right-1 text-xs">{current.flag}</span>
+          )}
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end">

@@ -1,3 +1,4 @@
+
 import React, { useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
@@ -13,18 +14,16 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { ThemeToggle } from "@/components/ThemeToggle";
-import LanguageSelector from "@/components/LanguageSelector";
 import { Menu, X } from "lucide-react";
 import { useLanguage } from "@/contexts/LanguageContext";
 
 const AppNavbar = () => {
   const { user, logout } = useAuth();
-  const { language, changeLanguage } = useLanguage();
-  const { theme, setTheme } = useTheme();
+  const { language } = useLanguage();
+  const { theme } = useTheme();
   const location = useLocation();
   const navigate = useNavigate();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const { t } = useLanguage();
 
   // Custom navigation links based on user role
   const getNavigationLinks = () => {
@@ -132,9 +131,6 @@ const AppNavbar = () => {
           <div className="flex items-center">
             {/* Theme toggle */}
             <ThemeToggle />
-  
-            {/* Language selector */}
-            <LanguageSelector />
   
             {/* User menu */}
             {user ? (
