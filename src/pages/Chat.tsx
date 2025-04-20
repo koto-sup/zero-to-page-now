@@ -32,11 +32,6 @@ interface TrackedConversation {
   messages: { id: string; text: string; timestamp: Date; sender: string; }[];
 }
 
-interface ChatDetailProps {
-  chatId: string;
-  recipientId: string;
-}
-
 const MOCK_CHATS: { [key: string]: ChatPreview[] } = {
   "customer-1": [
     {
@@ -104,11 +99,19 @@ const getMockMessages = (senderId: string, recipientId: string) => [
   },
 ];
 
-const ChatDetail: React.FC<ChatDetailProps> = ({ chatId, recipientId }) => {
+const ChatDetail: React.FC<{ chatId: string; recipientId: string }> = ({ chatId, recipientId }) => {
   const { user } = useAuth();
   const { getChatContent } = useLanguageContent();
   const chatContent = getChatContent();
   
+  const getRecipientName = (id: string) => {
+    if (id === "customer-1") return "Customer User";
+    if (id === "customer-2") return "Jane Doe";
+    if (id === "driver-1") return "John Driver";
+    return "Sarah Smith";
+  };
+  
+  const recipientName = getRecipientName(recipientId);
   const initialMessages = getMockMessages(user?.id || "unknown", recipientId);
 
   return (
@@ -116,9 +119,7 @@ const ChatDetail: React.FC<ChatDetailProps> = ({ chatId, recipientId }) => {
       <ChatBox
         chatId={chatId}
         recipientId={recipientId}
-        recipientName={recipientId === "customer-1" ? "Customer User" : 
-                      recipientId === "customer-2" ? "Jane Doe" : 
-                      recipientId === "driver-1" ? "John Driver" : "Sarah Smith"}
+        recipientName={recipientName}
         recipientAvatar="/placeholder.svg"
         initialMessages={initialMessages}
       />
@@ -279,7 +280,7 @@ const Chat = () => {
           <div className="md:col-span-2">
             <Card className="h-full overflow-hidden">
               {selectedChatId && selectedRecipientId ? (
-                <ChatBox 
+                <ChatDetail 
                   chatId={selectedChatId} 
                   recipientId={selectedRecipientId}
                 />
