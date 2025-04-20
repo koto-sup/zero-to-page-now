@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import { toast } from "sonner";
@@ -8,12 +7,13 @@ export interface RequestDetails {
   destination: string;
   distance: number;
   estimatedPrice: number;
-  truckType?: string;
+  truckType: string;
   daysSelected?: number;
   truckSize?: string;
   excavatorHeadType?: string;
   flatbedDeliveryOption?: string;
   refrigeratedOption?: string;
+  useMapSelection?: boolean;
 }
 
 export interface TruckOffer {
@@ -38,19 +38,15 @@ export const useTruckFinderState = () => {
   const [completedOrders, setCompletedOrders] = useState(0);
 
   useEffect(() => {
-    // Check if user has made at least 7 orders for discount eligibility
     if (user) {
-      // In a real app, this would be fetched from the backend
-      // Simulated previous orders count based on user ID
       const previousOrders = user.id ? (parseInt(user.id.substring(0, 2), 16) % 10) : 0;
       setCompletedOrders(previousOrders);
-      setHasDiscount(previousOrders >= 7); // Changed from 2 to 7 for discount eligibility
+      setHasDiscount(previousOrders >= 7);
     }
   }, [user]);
 
   useEffect(() => {
     if (requestSubmitted && requestDetails) {
-      // محاكاة استلام عروض من السائقين
       const timer = setTimeout(() => {
         let mockOffers: TruckOffer[] = [];
         

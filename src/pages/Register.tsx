@@ -12,8 +12,8 @@ const Register = () => {
   
   useEffect(() => {
     const roleParam = searchParams.get("role");
-    if (roleParam === "customer" || roleParam === "driver") {
-      setInitialRole(roleParam);
+    if (roleParam === "customer" || roleParam === "driver" || roleParam === "admin") {
+      setInitialRole(roleParam as UserRole);
     }
   }, [searchParams]);
   

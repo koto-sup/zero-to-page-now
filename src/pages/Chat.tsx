@@ -21,54 +21,22 @@ interface ChatPreview {
   unread: boolean;
 }
 
+interface TrackedConversation {
+  id: string;
+  recipientId: string;
+  recipientName: string;
+  recipientAvatar?: string;
+  lastMessage: string;
+  timestamp: Date;
+  unread: boolean;
+  messages: { id: string; text: string; timestamp: Date; sender: string; }[];
+}
+
 interface ChatDetailProps {
   chatId: string;
   recipientId: string;
 }
 
-// Mock data
-const MOCK_CHATS: Record<string, ChatPreview[]> = {
-  "customer-1": [
-    {
-      id: "chat-1",
-      recipientId: "driver-1",
-      recipientName: "John Driver",
-      recipientAvatar: "/placeholder.svg",
-      lastMessage: "Yes, I can pick up your goods at 3pm",
-      timestamp: new Date(),
-      unread: true,
-    },
-    {
-      id: "chat-2",
-      recipientId: "driver-2",
-      recipientName: "Sarah Smith",
-      recipientAvatar: "/placeholder.svg",
-      lastMessage: "The price would be $120 for that distance",
-      timestamp: new Date(Date.now() - 3600000),
-      unread: false,
-    },
-  ],
-  "driver-1": [
-    {
-      id: "chat-1",
-      recipientId: "customer-1",
-      recipientName: "Customer User",
-      lastMessage: "Yes, I can pick up your goods at 3pm",
-      timestamp: new Date(),
-      unread: true,
-    },
-    {
-      id: "chat-2",
-      recipientId: "customer-2",
-      recipientName: "Jane Doe",
-      lastMessage: "When will you arrive?",
-      timestamp: new Date(Date.now() - 3600000),
-      unread: false,
-    },
-  ],
-};
-
-// Mock messages for any chat
 const getMockMessages = (senderId: string, recipientId: string) => [
   {
     id: "msg-1",
@@ -105,7 +73,6 @@ const ChatDetail: React.FC<ChatDetailProps> = ({ chatId, recipientId }) => {
   const { getChatContent } = useLanguageContent();
   const chatContent = getChatContent();
   
-  // Generate mock messages based on current user and recipient
   const initialMessages = getMockMessages(user?.id || "unknown", recipientId);
 
   return (
@@ -134,30 +101,26 @@ const Chat = () => {
   const [chats, setChats] = useState<ChatPreview[]>([]);
   const [selectedChatId, setSelectedChatId] = useState<string | null>(null);
   const [selectedRecipientId, setSelectedRecipientId] = useState<string | null>(null);
-  const [conversations, setConversations] = useState<ChatPreview[]>([]);
+  const [conversations, setConversations] = useState<TrackedConversation[]>([]);
   const { messages: trackedMessages } = useChatMessages();
   
   useEffect(() => {
-    // In a real app, fetch chats from API
     if (user) {
       setChats(MOCK_CHATS[user.id] || []);
     }
   }, [user]);
 
   useEffect(() => {
-    // If driverId is provided, find or create a chat for this driver
     if (driverId && user) {
       const existingChat = chats.find(chat => chat.recipientId === driverId);
       if (existingChat) {
         setSelectedChatId(existingChat.id);
         setSelectedRecipientId(driverId);
       } else {
-        // In a real app, we'd create a new chat in the database
         const newChatId = `chat-${Date.now()}`;
         setSelectedChatId(newChatId);
         setSelectedRecipientId(driverId);
         
-        // Add the new chat to the list
         const newChat: ChatPreview = {
           id: newChatId,
           recipientId: driverId,
@@ -175,20 +138,17 @@ const Chat = () => {
 
   useEffect(() => {
     if (trackedMessages && trackedMessages.length > 0) {
-      // Find conversations that may already contain tracked messages
       const driverIdsWithTrackingMessages = new Set(
         trackedMessages.map(msg => msg.senderId || msg.receiverId)
       );
       
-      // Add tracked messages to existing conversations or create new ones
       driverIdsWithTrackingMessages.forEach(driverId => {
         if (driverId) {
           const existingConversation = conversations.find(
-            conv => conv.id === driverId || conv.participantId === driverId
+            conv => conv.id === driverId || conv.recipientId === driverId
           );
           
           if (existingConversation) {
-            // Add messages to existing conversation if not already there
             const existingMessageIds = new Set(
               existingConversation.messages.map(msg => msg.id)
             );
@@ -212,22 +172,20 @@ const Chat = () => {
               ];
             }
           } else {
-            // Create a new conversation for this driver
             const driverMessages = trackedMessages.filter(
               msg => msg.senderId === driverId || msg.receiverId === driverId
             );
             
             if (driverMessages.length > 0) {
-              const newConversation = {
+              const newConversation: TrackedConversation = {
                 id: `conv-${Date.now()}-${driverId}`,
-                participantId: driverId as string,
-                participantName: driverMessages[0].senderName || "Driver",
-                participantImage: "/placeholder.svg",
+                recipientId: driverId as string,
+                recipientName: driverMessages[0].senderName || "Driver",
+                recipientAvatar: "/placeholder.svg",
                 lastMessage: driverMessages[driverMessages.length - 1].text || 
                              driverMessages[driverMessages.length - 1].content || 
                              driverMessages[driverMessages.length - 1].message,
                 timestamp: new Date(),
-                online: false,
                 unread: true,
                 messages: driverMessages.map(msg => ({
                   id: msg.id,
@@ -252,7 +210,6 @@ const Chat = () => {
   const handleChatSelect = (chat: ChatPreview) => {
     setSelectedChatId(chat.id);
     setSelectedRecipientId(chat.recipientId);
-    // Update URL to include the recipient ID
     navigate(`/chat/${chat.recipientId}`);
   };
 

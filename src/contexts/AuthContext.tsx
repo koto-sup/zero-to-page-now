@@ -1,11 +1,14 @@
 
 import React, { createContext, useContext, useState, ReactNode } from "react";
 
-interface User {
+// Define UserRole type
+export type UserRole = "customer" | "driver" | "admin";
+
+export interface User {
   id: string;
   name: string;
   email: string;
-  role: "customer" | "driver" | "admin";
+  role: UserRole;
   profileImage?: string;
   phoneNumber?: string;
   provider?: "email" | "oauth";
@@ -21,10 +24,13 @@ interface ProfileUpdateData {
 
 interface AuthContextType {
   user: User | null;
-  login: (email: string, password: string) => Promise<void>;
-  register: (email: string, password: string, name: string, role: "customer" | "driver") => Promise<void>;
+  login: (email: string, password: string) => Promise<boolean>;
+  register: (data: { name: string, email: string, password: string, role: UserRole }) => Promise<void>;
   logout: () => void;
+  resetPassword: (email: string) => Promise<boolean>;
   isAdmin: boolean;
+  isLoading: boolean;
+  error: string | null;
   updateUserProfile?: (data: ProfileUpdateData) => void;
 }
 
@@ -32,6 +38,8 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [user, setUser] = useState<User | null>(getUserFromLocalStorage());
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [error, setError] = useState<string | null>(null);
 
   // Get user from localStorage during initialization
   function getUserFromLocalStorage(): User | null {
@@ -51,51 +59,85 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   // Check if user is admin
   const isAdmin = !!user && user.role === "admin";
 
-  const login = async (email: string, password: string) => {
+  const login = async (email: string, password: string): Promise<boolean> => {
     // This is a mock implementation
-    return new Promise<void>((resolve) => {
+    setIsLoading(true);
+    setError(null);
+    
+    return new Promise<boolean>((resolve) => {
       setTimeout(() => {
-        // Determine role based on email
-        let role: "customer" | "driver" | "admin" = "customer";
-        
-        if (email.includes("driver")) {
-          role = "driver";
-        } else if (email.includes("admin")) {
-          role = "admin";
+        try {
+          // Determine role based on email
+          let role: UserRole = "customer";
+          
+          if (email.includes("driver")) {
+            role = "driver";
+          } else if (email.includes("admin")) {
+            role = "admin";
+          }
+          
+          const newUser: User = {
+            id: Math.random().toString(36).substring(2),
+            name: email.split("@")[0],
+            email,
+            role,
+            provider: "email",
+            isAdmin: role === "admin"
+          };
+          
+          setUser(newUser);
+          saveUserToLocalStorage(newUser);
+          setIsLoading(false);
+          resolve(true);
+        } catch (err) {
+          setError("Login failed. Please try again.");
+          setIsLoading(false);
+          resolve(false);
         }
-        
-        const newUser: User = {
-          id: Math.random().toString(36).substring(2),
-          name: email.split("@")[0],
-          email,
-          role,
-          provider: "email",
-          isAdmin: role === "admin"
-        };
-        
-        setUser(newUser);
-        saveUserToLocalStorage(newUser);
-        resolve();
       }, 1000);
     });
   };
 
-  const register = async (email: string, password: string, name: string, role: "customer" | "driver") => {
-    // This is a mock implementation
-    return new Promise<void>((resolve) => {
+  const resetPassword = async (email: string): Promise<boolean> => {
+    setIsLoading(true);
+    setError(null);
+    
+    return new Promise<boolean>((resolve) => {
       setTimeout(() => {
-        const newUser: User = {
-          id: Math.random().toString(36).substring(2),
-          name,
-          email,
-          role,
-          provider: "email",
-          isAdmin: false
-        };
-        
-        setUser(newUser);
-        saveUserToLocalStorage(newUser);
-        resolve();
+        // Mock password reset process
+        setIsLoading(false);
+        // Simulate success
+        resolve(true);
+      }, 1500);
+    });
+  };
+
+  const register = async (data: { name: string, email: string, password: string, role: UserRole }): Promise<void> => {
+    // This is a mock implementation
+    setIsLoading(true);
+    setError(null);
+    
+    return new Promise<void>((resolve, reject) => {
+      setTimeout(() => {
+        try {
+          const newUser: User = {
+            id: Math.random().toString(36).substring(2),
+            name: data.name,
+            email: data.email,
+            role: data.role,
+            provider: "email",
+            isAdmin: data.role === "admin"
+          };
+          
+          setUser(newUser);
+          saveUserToLocalStorage(newUser);
+          setIsLoading(false);
+          resolve();
+        } catch (err) {
+          setError("Registration failed. Please try again.");
+          setIsLoading(false);
+          reject(err);
+        }
       }, 1000);
     });
   };
@@ -117,7 +159,17 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   };
 
   return (
-    <AuthContext.Provider value={{ user, login, register, logout, isAdmin, updateUserProfile }}>
+    <AuthContext.Provider value={{ 
+      user, 
+      login, 
+      register, 
+      logout, 
+      resetPassword,
+      isAdmin, 
+      isLoading,
+      error,
+      updateUserProfile 
+    }}>
       {children}
     </AuthContext.Provider>
   );
