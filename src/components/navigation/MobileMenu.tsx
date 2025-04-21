@@ -3,7 +3,7 @@ import React from "react";
 import { Link, useLocation } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { useLanguage } from "@/contexts/LanguageContext";
-import { Menu, X, Map } from "lucide-react";
+import { Menu, X, Map, Truck, Home, MessageSquare, LayoutDashboard } from "lucide-react";
 
 interface MobileMenuProps {
   isOpen: boolean;
@@ -20,15 +20,18 @@ const MobileMenu: React.FC<MobileMenuProps> = ({ isOpen, onToggle, theme }) => {
     const commonLinks = [
       { 
         name: language === 'en' ? "Home" : "الرئيسية", 
-        href: "/" 
+        href: "/",
+        icon: Home
       },
       { 
         name: language === 'en' ? "Find Trucks" : "البحث عن شاحنات", 
-        href: "/find-trucks" 
+        href: "/find-trucks",
+        icon: Truck
       },
       { 
         name: language === 'en' ? "Track" : "تتبع", 
-        href: user ? "/truck-tracking/driver-1" : "/login" 
+        href: user ? "/truck-tracking/driver-1" : "/login",
+        icon: Truck
       },
       {
         name: language === 'en' ? "Map" : "خريطة",
@@ -40,18 +43,21 @@ const MobileMenu: React.FC<MobileMenuProps> = ({ isOpen, onToggle, theme }) => {
     if (user) {
       commonLinks.push({ 
         name: language === 'en' ? "Messages" : "الرسائل", 
-        href: "/chat" 
+        href: "/chat",
+        icon: MessageSquare 
       });
       
       if (user.role === "driver") {
         commonLinks.push({ 
           name: language === 'en' ? "Dashboard" : "لوحة التحكم", 
-          href: "/dashboard" 
+          href: "/dashboard",
+          icon: LayoutDashboard
         });
       } else if (user.role === "admin") {
         commonLinks.push({ 
           name: language === 'en' ? "Admin" : "المشرف", 
-          href: "/admin-dashboard" 
+          href: "/admin-dashboard",
+          icon: LayoutDashboard
         });
       }
     }

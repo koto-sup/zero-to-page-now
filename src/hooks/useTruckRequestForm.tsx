@@ -187,7 +187,8 @@ export const useTruckRequestForm = ({ discountApplied = false, onRequestSubmitte
         excavatorHeadType: formState.excavatorHeadType,
         flatbedDeliveryOption: formState.flatbedDeliveryOption,
         refrigeratedOption: formState.refrigeratedOption,
-        useMapSelection: formState.mapSelectionMode
+        useMapSelection: formState.mapSelectionMode,
+        selectedMapLocation: formState.selectedMapLocation
       });
     }, 1500);
   };

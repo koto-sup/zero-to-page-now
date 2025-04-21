@@ -14,6 +14,7 @@ export interface RequestDetails {
   flatbedDeliveryOption?: string;
   refrigeratedOption?: string;
   useMapSelection?: boolean;
+  selectedMapLocation?: { lat: number; lng: number };
 }
 
 export interface TruckOffer {

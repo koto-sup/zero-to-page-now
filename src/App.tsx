@@ -1,3 +1,4 @@
+
 import React, { useEffect } from "react";
 import {
   BrowserRouter,
@@ -32,6 +33,7 @@ import { LanguageProvider } from "./contexts/LanguageContext";
 import { AuthProvider } from "./contexts/AuthContext";
 import EditProfile from "./pages/EditProfile";
 import { ChatMessagesProvider } from "./components/chat/SaveTrackingMessages";
+import Map from "./pages/Map"; // We'll create this page
 
 interface Props {
   children: React.ReactNode;
@@ -78,9 +80,12 @@ function App() {
                   <Route path="/privacy" element={<Privacy />} />
                   <Route path="/customer-support" element={<CustomerSupport />} />
                   <Route path="/chat" element={<Chat />} />
+                  <Route path="/chat/:driverId" element={<Chat />} />
+                  <Route path="/notifications" element={<Activity />} /> {/* Redirect notifications to Activity page */}
                   <Route path="/invoices" element={<Invoices />} />
                   <Route path="/invoice/:id" element={<InvoiceDetail />} />
                   <Route path="/admin-dashboard" element={<AdminDashboard />} />
+                  <Route path="/map" element={<Map />} />
                   <Route path="*" element={<NotFound />} />
                 </Routes>
                 <Toaster />

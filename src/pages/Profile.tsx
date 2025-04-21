@@ -59,7 +59,7 @@ const Profile = () => {
     {
       icon: <Bell className="h-5 w-5 mr-3" />,
       title: language === "en" ? "Notifications" : "الإشعارات",
-      action: () => navigate("/notifications")
+      action: () => navigate("/notifications") // This path didn't exist in routes
     },
     {
       icon: <Globe className="h-5 w-5 mr-3" />,
@@ -69,7 +69,7 @@ const Profile = () => {
     {
       icon: <HelpCircle className="h-5 w-5 mr-3" />,
       title: language === "en" ? "Help & Support" : "المساعدة والدعم",
-      action: () => navigate("/support")
+      action: () => navigate("/help") // Was pointing to /support which didn't exist
     },
     {
       icon: <LogOut className="h-5 w-5 mr-3 text-red-500" />,

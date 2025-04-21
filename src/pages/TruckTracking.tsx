@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect, useRef } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -15,7 +16,8 @@ import {
   ChevronDown, 
   ChevronUp, 
   X,
-  MessageCircle
+  MessageCircle,
+  ArrowLeft
 } from "lucide-react";
 import SaveTrackingMessages from '@/components/chat/SaveTrackingMessages';
 
@@ -83,7 +85,7 @@ const TruckTracking = () => {
             {
               description: language === 'en' 
                 ? "You can no longer cancel this order" 
-                : "لم يعد ��إمكانك إلغاء الطلب بعد الآن",
+                : "لم يعد بإمكانك إلغاء الطلب بعد الآن",
               dismissible: true
             }
           );
@@ -167,11 +169,19 @@ const TruckTracking = () => {
   };
   
   const handleChatWithDriver = () => {
-    navigate(`/chat/${orderDetails.driverId}`);
+    if (driverId) {
+      navigate(`/chat/${driverId}`);
+    } else {
+      navigate(`/chat/driver-1`);
+    }
   };
   
   const toggleChat = () => {
     setShowChat(prev => !prev);
+  };
+
+  const handleBackButton = () => {
+    navigate(-1);
   };
 
   return (
@@ -179,9 +189,20 @@ const TruckTracking = () => {
       <SaveTrackingMessages messages={initialMessages} />
       
       <div className="flex justify-between items-center mb-6">
-        <div>
-          <h1 className="text-3xl font-bold">{language === 'en' ? 'Track Order' : 'تتبع الطلب'}</h1>
-          <p className="text-gray-600">{language === 'en' ? 'Order ID:' : 'رقم الطلب:'} {orderDetails.orderId}</p>
+        <div className="flex items-center">
+          <Button 
+            variant="ghost" 
+            className="mr-2" 
+            onClick={handleBackButton}
+          >
+            <ArrowLeft className="mr-1 h-4 w-4" />
+            {language === "en" ? "Back" : "رجوع"}
+          </Button>
+          
+          <div>
+            <h1 className="text-3xl font-bold">{language === 'en' ? 'Track Order' : 'تتبع الطلب'}</h1>
+            <p className="text-gray-600">{language === 'en' ? 'Order ID:' : 'رقم الطلب:'} {orderDetails.orderId}</p>
+          </div>
         </div>
         
         <div>

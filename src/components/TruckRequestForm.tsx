@@ -9,6 +9,7 @@ import { useTruckTypes } from "@/hooks/useTruckTypes";
 import { Button } from "@/components/ui/button";
 import { MapPin, Check } from "lucide-react";
 import { useLanguage } from "@/contexts/LanguageContext";
+import TruckMap from "@/components/TruckMap";
 
 interface TruckRequestFormProps {
   onRequestSubmitted: (details: RequestDetails) => void;
@@ -30,6 +31,7 @@ const TruckRequestForm: React.FC<TruckRequestFormProps> = ({
     handleFlatbedDeliveryOptionChange,
     handleRefrigeratedOptionChange,
     handleSubmit,
+    handleMapLocationSelect,
     setMapSelectionMode
   } = useTruckRequestForm({
     discountApplied,
@@ -41,6 +43,7 @@ const TruckRequestForm: React.FC<TruckRequestFormProps> = ({
   const selectedTruckType = getTruckTypes().find(truck => truck.id === formState.truckType);
   const hasKmPricing = selectedTruckType?.hasKmPricing || false;
   const [currentStep, setCurrentStep] = useState(1);
+  const [showLocationMap, setShowLocationMap] = useState(false);
 
   // Check if the selected truck type requires map-only selection
   const isMapOnlySelectionType = (truckTypeId: string) => {
@@ -56,8 +59,10 @@ const TruckRequestForm: React.FC<TruckRequestFormProps> = ({
   }, [formState.truckType, setMapSelectionMode]);
 
   // Determine if current section is complete
-  const isLocationComplete = formState.mapSelectionMode || (formState.startLocation && formState.destination);
   const isTruckTypeSelected = formState.truckType !== "";
+  const isLocationComplete = formState.mapSelectionMode 
+    ? formState.selectedMapLocation !== undefined 
+    : (formState.startLocation && formState.destination);
 
   // Progress to next step
   const goToNextStep = () => {
@@ -71,6 +76,12 @@ const TruckRequestForm: React.FC<TruckRequestFormProps> = ({
     if (currentStep > 1) {
       setCurrentStep(currentStep - 1);
     }
+  };
+
+  // Handle map location selection
+  const onMapLocationSelect = (lat: number, lng: number) => {
+    handleMapLocationSelect(lat, lng);
+    setShowLocationMap(false);
   };
 
   // Translation helper
@@ -88,30 +99,30 @@ const TruckRequestForm: React.FC<TruckRequestFormProps> = ({
             <div className={`w-10 h-10 rounded-full flex items-center justify-center ${
               currentStep >= 1 ? 'bg-moprd-teal text-white shadow-[0_0_10px_rgba(0,200,200,0.5)]' : 'bg-gray-200 text-gray-600'
             }`}>
-              {isLocationComplete ? <Check size={20} /> : 1}
+              {isTruckTypeSelected ? <Check size={20} /> : 1}
             </div>
-            <span className="mt-2 text-sm">{t("Location", "الموقع")}</span>
+            <span className="mt-2 text-sm">{t("Vehicle", "المركبة")}</span>
           </div>
           
           <div className={`flex-grow h-0.5 mx-2 ${currentStep >= 2 ? 'bg-moprd-teal' : 'bg-gray-200'}`}></div>
           
           <div 
             className={`flex flex-col items-center ${currentStep >= 2 ? 'text-moprd-teal' : 'text-gray-400'}`}
-            onClick={() => isLocationComplete && setCurrentStep(2)}
+            onClick={() => isTruckTypeSelected && setCurrentStep(2)}
           >
             <div className={`w-10 h-10 rounded-full flex items-center justify-center ${
               currentStep >= 2 ? 'bg-moprd-teal text-white shadow-[0_0_10px_rgba(0,200,200,0.5)]' : 'bg-gray-200 text-gray-600'
             }`}>
-              {isTruckTypeSelected && currentStep > 2 ? <Check size={20} /> : 2}
+              {isLocationComplete && currentStep > 2 ? <Check size={20} /> : 2}
             </div>
-            <span className="mt-2 text-sm">{t("Vehicle", "المركبة")}</span>
+            <span className="mt-2 text-sm">{t("Location", "الموقع")}</span>
           </div>
           
           <div className={`flex-grow h-0.5 mx-2 ${currentStep >= 3 ? 'bg-moprd-teal' : 'bg-gray-200'}`}></div>
           
           <div 
             className={`flex flex-col items-center ${currentStep >= 3 ? 'text-moprd-teal' : 'text-gray-400'}`}
-            onClick={() => isTruckTypeSelected && setCurrentStep(3)}
+            onClick={() => isLocationComplete && setCurrentStep(3)}
           >
             <div className={`w-10 h-10 rounded-full flex items-center justify-center ${
               currentStep >= 3 ? 'bg-moprd-teal text-white shadow-[0_0_10px_rgba(0,200,200,0.5)]' : 'bg-gray-200 text-gray-600'
@@ -125,16 +136,43 @@ const TruckRequestForm: React.FC<TruckRequestFormProps> = ({
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div className="space-y-6">
-          {/* Step 1: Location */}
+          {/* Step 1: Vehicle Type Selection */}
           <div className={currentStep === 1 ? 'block' : 'hidden'}>
-            {!formState.mapSelectionMode ? (
-              <LocationInputs 
-                startLocation={formState.startLocation}
-                destination={formState.destination}
-                onStartLocationChange={handleStartLocationChange}
-                onDestinationChange={handleDestinationChange}
-              />
-            ) : (
+            <TruckTypeSelector 
+              selectedTruckType={formState.truckType}
+              onTruckTypeChange={(value) => {
+                handleTruckTypeChange(value);
+              }}
+            />
+            
+            <div className="mt-6 flex justify-end">
+              <Button 
+                type="button" 
+                onClick={goToNextStep}
+                disabled={!isTruckTypeSelected} 
+                className="bg-moprd-teal hover:bg-moprd-blue"
+              >
+                {t("Continue", "استمرار")} →
+              </Button>
+            </div>
+          </div>
+          
+          {/* Step 2: Location Selection */}
+          <div className={currentStep === 2 ? 'block' : 'hidden'}>
+            {showLocationMap ? (
+              <div className="bg-white p-4 rounded-lg border">
+                <div className="h-[400px] mb-4 rounded-lg overflow-hidden">
+                  <TruckMap interactive={true} onLocationSelect={onMapLocationSelect} />
+                </div>
+                <Button 
+                  variant="outline"
+                  onClick={() => setShowLocationMap(false)}
+                  className="w-full mb-2"
+                >
+                  {t("Close Map", "إغلاق الخريطة")}
+                </Button>
+              </div>
+            ) : formState.mapSelectionMode ? (
               <div className="bg-blue-50 p-4 rounded-lg border border-blue-200 flex items-center">
                 <MapPin className="text-blue-500 mr-3" size={24} />
                 <div>
@@ -146,37 +184,39 @@ const TruckRequestForm: React.FC<TruckRequestFormProps> = ({
                       "الرجاء وضع علامة على الخريطة لتحديد موقعك"
                     )}
                   </p>
+                  {formState.selectedMapLocation ? (
+                    <div className="mt-2 p-2 bg-white rounded-md">
+                      <p className="font-medium">{t("Selected Location", "الموقع المحدد")}</p>
+                      <p className="text-sm">{formState.startLocation}</p>
+                    </div>
+                  ) : null}
                   <Button 
                     variant="outline"
                     className="mt-2 bg-white hover:bg-white"
-                    onClick={() => window.alert("Map selection feature would open here")}
+                    onClick={() => setShowLocationMap(true)}
                   >
                     {t("Open Map", "فتح الخريطة")}
                   </Button>
                 </div>
               </div>
+            ) : (
+              <div>
+                <LocationInputs 
+                  startLocation={formState.startLocation}
+                  destination={formState.destination}
+                  onStartLocationChange={handleStartLocationChange}
+                  onDestinationChange={handleDestinationChange}
+                />
+                <Button 
+                  variant="outline"
+                  className="mt-4 w-full"
+                  onClick={() => setShowLocationMap(true)}
+                >
+                  <MapPin className="mr-2 h-4 w-4" />
+                  {t("Select on Map", "حدد على الخريطة")}
+                </Button>
+              </div>
             )}
-            
-            <div className="mt-6 flex justify-end">
-              <Button 
-                type="button" 
-                onClick={goToNextStep}
-                disabled={!isLocationComplete} 
-                className="bg-moprd-teal hover:bg-moprd-blue"
-              >
-                {t("Continue", "استمرار")} →
-              </Button>
-            </div>
-          </div>
-          
-          {/* Step 2: Vehicle Selection */}
-          <div className={currentStep === 2 ? 'block' : 'hidden'}>
-            <TruckTypeSelector 
-              selectedTruckType={formState.truckType}
-              onTruckTypeChange={(value) => {
-                handleTruckTypeChange(value);
-              }}
-            />
             
             <div className="mt-6 flex justify-between">
               <Button 
@@ -189,7 +229,7 @@ const TruckRequestForm: React.FC<TruckRequestFormProps> = ({
               <Button 
                 type="button" 
                 onClick={goToNextStep}
-                disabled={!isTruckTypeSelected} 
+                disabled={!isLocationComplete} 
                 className="bg-moprd-teal hover:bg-moprd-blue"
               >
                 {t("Continue", "استمرار")} →
