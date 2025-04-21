@@ -3,7 +3,7 @@ import React from "react";
 import { Link, useLocation } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { useLanguage } from "@/contexts/LanguageContext";
-import { Menu, X } from "lucide-react";
+import { Menu, X, Map } from "lucide-react";
 
 interface MobileMenuProps {
   isOpen: boolean;
@@ -29,6 +29,11 @@ const MobileMenu: React.FC<MobileMenuProps> = ({ isOpen, onToggle, theme }) => {
       { 
         name: language === 'en' ? "Track" : "تتبع", 
         href: user ? "/truck-tracking/driver-1" : "/login" 
+      },
+      {
+        name: language === 'en' ? "Map" : "خريطة",
+        href: "/map",
+        icon: Map
       }
     ];
     
@@ -72,26 +77,30 @@ const MobileMenu: React.FC<MobileMenuProps> = ({ isOpen, onToggle, theme }) => {
       </div>
 
       {isOpen && (
-        <div className="md:hidden">
-          <div className={`px-2 pt-2 pb-3 space-y-1 ${
+        <div className="md:hidden absolute top-16 left-0 right-0 z-50">
+          <div className={`px-2 pt-2 pb-3 space-y-1 shadow-lg ${
             theme === 'dark' 
               ? 'bg-gray-900 text-white' 
               : 'bg-white text-black'
           }`}>
-            {getNavigationLinks().map((link) => (
-              <Link
-                key={link.href}
-                to={link.href}
-                className={`block px-3 py-2 rounded-md text-base font-medium ${
-                  location.pathname === link.href
-                    ? "text-moprd-teal"
-                    : "text-gray-600 hover:text-moprd-teal dark:text-gray-300 dark:hover:text-moprd-teal"
-                }`}
-                onClick={onToggle}
-              >
-                {link.name}
-              </Link>
-            ))}
+            {getNavigationLinks().map((link) => {
+              const isActive = location.pathname === link.href;
+              return (
+                <Link
+                  key={link.href}
+                  to={link.href}
+                  className={`block px-3 py-2 rounded-md text-base font-medium ${
+                    isActive
+                      ? "text-moprd-teal relative shadow-glow-sm"
+                      : "text-gray-600 hover:text-moprd-teal dark:text-gray-300 dark:hover:text-moprd-teal"
+                  }`}
+                  onClick={onToggle}
+                >
+                  {link.icon && <link.icon className="inline mr-2 h-4 w-4" />}
+                  {link.name}
+                </Link>
+              );
+            })}
             {!user && (
               <Link
                 to="/login"

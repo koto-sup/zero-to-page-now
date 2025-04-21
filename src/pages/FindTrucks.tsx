@@ -9,6 +9,9 @@ import TruckDiscountInfo from "@/components/truck-finder/TruckDiscountInfo";
 import { useTruckFinderState, RequestDetails, TruckOffer } from "@/hooks/useTruckFinderState";
 import { useLanguageContent } from "@/hooks/useLanguageContent";
 import { useLanguage } from "@/contexts/LanguageContext";
+import TruckMap from "@/components/TruckMap";
+import { MapPin } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 const FindTrucks = () => {
   const navigate = useNavigate();
@@ -25,6 +28,8 @@ const FindTrucks = () => {
   
   const { getPageTitle, getTruckTypesDescription } = useLanguageContent();
   const [acceptedOfferId, setAcceptedOfferId] = useState<string | undefined>();
+  const [showFullMap, setShowFullMap] = useState(false);
+  const [mapSelectionMode, setMapSelectionMode] = useState(false);
 
   const handleAcceptOffer = (offerId: string, rentalDuration: string = "day") => {
     // In a real app, we would send the offer acceptance to the server
@@ -69,6 +74,19 @@ const FindTrucks = () => {
     }
   };
 
+  const toggleFullMap = () => {
+    setShowFullMap(!showFullMap);
+  };
+
+  const handleMapSelection = () => {
+    setMapSelectionMode(true);
+    setShowFullMap(true);
+    toast.info(
+      language === 'en' ? "Map Selection Mode" : "وضع اختيار الموقع من الخريطة",
+      { description: language === 'en' ? "Click on the map to set your location" : "انقر على الخريطة لتحديد موقعك" }
+    );
+  };
+
   // Hide language selector in this page
   const hideLanguageButton = requestSubmitted;
 
@@ -76,7 +94,10 @@ const FindTrucks = () => {
     pageTitle: language === 'en' ? "Find Available Trucks" : getPageTitle(),
     description: language === 'en' 
       ? "Find refrigerated trucks, flatbeds, and other specialized vehicles." 
-      : getTruckTypesDescription()
+      : getTruckTypesDescription(),
+    selectOnMap: language === 'en' ? "Select Location on Map" : "اختر الموقع من الخريطة",
+    fullMap: language === 'en' ? "Full Map View" : "عرض الخريطة كاملة",
+    closeMap: language === 'en' ? "Close Map View" : "إغلاق عرض الخريطة",
   };
 
   return (
@@ -91,11 +112,49 @@ const FindTrucks = () => {
         hideLanguageButton={hideLanguageButton}
       />
 
+      {/* Map toggle button */}
+      <div className="flex justify-center mb-4">
+        <Button
+          variant="outline"
+          className="flex items-center gap-2 border-moprd-teal text-moprd-teal hover:bg-moprd-teal/10"
+          onClick={toggleFullMap}
+        >
+          <MapPin size={16} />
+          {showFullMap ? translations.closeMap : translations.fullMap}
+        </Button>
+      </div>
+      
+      {/* Full map view */}
+      {showFullMap && (
+        <div className="mb-6">
+          <div className="bg-blue-50 rounded-lg overflow-hidden" style={{ height: '500px' }}>
+            <TruckMap />
+          </div>
+          {mapSelectionMode && (
+            <div className="mt-2 text-center text-sm text-moprd-teal">
+              <p>{language === 'en' ? 'Click on the map to set your location' : 'انقر على الخريطة لتحديد موقعك'}</p>
+            </div>
+          )}
+        </div>
+      )}
+
       {!requestSubmitted ? (
-        <TruckRequestForm 
-          onRequestSubmitted={handleRequestSubmitted} 
-          discountApplied={couponApplied} 
-        />
+        <>
+          <div className="flex justify-center mb-4">
+            <Button
+              variant="outline"
+              className="flex items-center gap-2 border-moprd-teal text-moprd-teal hover:bg-moprd-teal/10"
+              onClick={handleMapSelection}
+            >
+              <MapPin size={16} />
+              {translations.selectOnMap}
+            </Button>
+          </div>
+          <TruckRequestForm 
+            onRequestSubmitted={handleRequestSubmitted} 
+            discountApplied={couponApplied} 
+          />
+        </>
       ) : (
         <TruckOffersList 
           offers={offers} 

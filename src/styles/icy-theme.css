@@ -220,3 +220,37 @@
   border-bottom-left-radius: 0;
   border-bottom-right-radius: 0;
 }
+
+/* Neon glow effects for navigation */
+.glow-teal {
+  box-shadow: 0 0 8px #14b8a6, 0 0 12px rgba(20, 184, 166, 0.5);
+}
+
+.shadow-glow-sm {
+  box-shadow: 0 0 5px #14b8a6, 0 0 8px rgba(20, 184, 166, 0.3);
+}
+
+.shadow-glow-md {
+  box-shadow: 0 0 10px #14b8a6, 0 0 15px rgba(20, 184, 166, 0.4);
+}
+
+.shadow-glow-lg {
+  box-shadow: 0 0 15px #14b8a6, 0 0 25px rgba(20, 184, 166, 0.5);
+}
+
+/* Animation for active navigation */
+.nav-active-pulse {
+  animation: nav-pulse 2s infinite;
+}
+
+@keyframes nav-pulse {
+  0% {
+    box-shadow: 0 0 0 0 rgba(20, 184, 166, 0.7);
+  }
+  70% {
+    box-shadow: 0 0 0 10px rgba(20, 184, 166, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(20, 184, 166, 0);
+  }
+}

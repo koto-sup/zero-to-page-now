@@ -2,6 +2,7 @@
 import React, { useEffect, useState } from "react";
 import { Truck, MapPin } from "lucide-react";
 import { useLanguage } from "@/contexts/LanguageContext";
+import { toast } from "sonner";
 
 // Mock truck positions
 const mockTrucks = [
@@ -9,6 +10,11 @@ const mockTrucks = [
   { id: "truck-2", lat: 24.7255, lng: 46.6468, distance: 2.4, type: "jcp" },
   { id: "truck-3", lat: 24.6949, lng: 46.7081, distance: 3.7, type: "dump-truck" },
 ];
+
+interface TruckMapProps {
+  onLocationSelect?: (lat: number, lng: number) => void;
+  interactive?: boolean;
+}
 
 // Component for showing a truck on the map with its icon
 const TruckMarker = ({ 
@@ -47,9 +53,67 @@ const TruckMarker = ({
   );
 };
 
-const TruckMap = () => {
+// User selected location marker
+const LocationMarker = ({ 
+  top, 
+  left 
+}: { 
+  top: string; 
+  left: string;
+}) => {
+  return (
+    <div className="absolute" style={{ top, left }}>
+      <div className="relative">
+        <div className="w-6 h-6 bg-red-500 rounded-full border-2 border-white shadow-lg flex items-center justify-center">
+          <MapPin className="w-4 h-4 text-white" />
+        </div>
+        <div className="absolute top-0 left-0 w-6 h-6 bg-red-500 rounded-full -z-10 animate-ping opacity-10"></div>
+      </div>
+    </div>
+  );
+};
+
+const TruckMap: React.FC<TruckMapProps> = ({ onLocationSelect, interactive = false }) => {
   const { language } = useLanguage();
   const [mapLoaded, setMapLoaded] = useState(false);
+  const [userLocation, setUserLocation] = useState<{top: string, left: string} | null>(null);
+  
+  // Handle map click for location selection
+  const handleMapClick = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (!interactive) return;
+    
+    const mapElem = e.currentTarget;
+    const rect = mapElem.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+    
+    // Calculate percentage position
+    const topPercent = (y / rect.height) * 100;
+    const leftPercent = (x / rect.width) * 100;
+    
+    setUserLocation({ 
+      top: `${topPercent}%`, 
+      left: `${leftPercent}%` 
+    });
+    
+    // Simulate coordinates calculation (would be real coordinates in a real map)
+    // For demo purposes, we're just simulating around Riyadh coordinates
+    const simulatedLat = 24.7 + ((topPercent - 50) / 500);
+    const simulatedLng = 46.7 + ((leftPercent - 50) / 500);
+    
+    if (onLocationSelect) {
+      onLocationSelect(simulatedLat, simulatedLng);
+    }
+    
+    toast.success(
+      language === 'en' ? "Location selected!" : "تم اختيار الموقع!",
+      {
+        description: language === 'en' 
+          ? "You can now proceed with your truck request" 
+          : "يمكنك الآن المتابعة في طلب الشاحنة"
+      }
+    );
+  };
 
   // Simulate map loading
   useEffect(() => {
@@ -62,19 +126,21 @@ const TruckMap = () => {
 
   const getMapMessage = () => {
     switch(language) {
-      case 'en': return "To display a real map, connect a map service";
-      case 'fr': return "Pour afficher une carte réelle, connectez un service de cartographie";
-      case 'es': return "Para mostrar un mapa real, conecte un servicio de mapas";
-      case 'ur': return "حقیقی نقشہ دکھانے کے لیے، نقشہ سروس کو منسلک کریں";
-      case 'hi': return "वास्तविक मानचित्र प्रदर्शित करने के लिए, एक मानचित्र सेवा से जुड़ें";
-      case 'zh': return "要显示真实地图，请连接地图服务";
+      case 'en': return interactive 
+                ? "Click on the map to select your location" 
+                : "To display a real map, connect a map service";
       case 'ar': 
-      default: return "لعرض خريطة حقيقية، يتوجب ربط خدمة خرائط";
+      default: return interactive
+              ? "انقر على الخريطة لاختيار موقعك"
+              : "لعرض خريطة حقيقية، يتوجب ربط خدمة خرائط";
     }
   };
 
   return (
-    <div className="w-full h-full bg-blue-50 relative flex items-center justify-center">
+    <div 
+      className={`w-full h-full bg-blue-50 relative flex items-center justify-center ${interactive ? 'cursor-crosshair' : ''}`}
+      onClick={interactive ? handleMapClick : undefined}
+    >
       <div className="absolute inset-0" style={{ 
         backgroundImage: "url('https://api.mapbox.com/styles/v1/mapbox/light-v10/static/46.7,24.7,12/1280x400?access_token=placeholder')", 
         backgroundSize: "cover",
@@ -85,14 +151,19 @@ const TruckMap = () => {
       </div>
       
       {/* Current location marker */}
-      <div className="absolute top-1/2 right-1/2 z-10">
-        <div className="w-4 h-4 bg-red-500 rounded-full border-2 border-white shadow-lg"></div>
-        <div className="absolute top-0 right-0 w-12 h-12 bg-red-500 rounded-full -z-10 animate-ping opacity-10"></div>
-        <div className="absolute -bottom-8 -right-16 bg-white px-2 py-1 rounded-md shadow-sm text-xs whitespace-nowrap">
-          <MapPin className="h-3 w-3 inline mr-1" />
-          {language === 'en' ? 'Your Location' : 'موقعك الحالي'}
+      {!userLocation && (
+        <div className="absolute top-1/2 right-1/2 z-10">
+          <div className="w-4 h-4 bg-red-500 rounded-full border-2 border-white shadow-lg"></div>
+          <div className="absolute top-0 right-0 w-12 h-12 bg-red-500 rounded-full -z-10 animate-ping opacity-10"></div>
+          <div className="absolute -bottom-8 -right-16 bg-white px-2 py-1 rounded-md shadow-sm text-xs whitespace-nowrap">
+            <MapPin className="h-3 w-3 inline mr-1" />
+            {language === 'en' ? 'Your Location' : 'موقعك الحالي'}
+          </div>
         </div>
-      </div>
+      )}
+      
+      {/* User selected location */}
+      {userLocation && <LocationMarker top={userLocation.top} left={userLocation.left} />}
       
       {/* Simulated truck positions */}
       {mockTrucks.map((truck, index) => {

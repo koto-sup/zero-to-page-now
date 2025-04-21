@@ -1,5 +1,5 @@
 
-import { useLocation, Link } from "react-router-dom";
+import { useLocation, Link, useNavigate } from "react-router-dom";
 import { useEffect } from "react";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { Button } from "@/components/ui/button";
@@ -7,14 +7,21 @@ import Layout from "@/components/Layout";
 
 const NotFound = () => {
   const location = useLocation();
+  const navigate = useNavigate();
   const { language } = useLanguage();
 
   useEffect(() => {
+    // If the user arrived at 404 via history navigation, try to go back to the home page
+    if (window.history.state && window.history.state.idx > 0) {
+      navigate('/', { replace: true });
+      return;
+    }
+    
     console.error(
       "404 Error: User attempted to access non-existent route:",
       location.pathname
     );
-  }, [location.pathname]);
+  }, [location.pathname, navigate]);
 
   return (
     <Layout>

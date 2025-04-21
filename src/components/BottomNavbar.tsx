@@ -7,7 +7,7 @@ import {
   Home, 
   Truck, 
   MessageSquare, 
-  User,
+  Map,
 } from "lucide-react";
 
 const BottomNavbar = () => {
@@ -29,7 +29,7 @@ const BottomNavbar = () => {
     trucks: language === 'en' ? "Trucks" : "شاحنات",
     trips: language === 'en' ? "Trips" : "رحلات",
     messages: language === 'en' ? "Messages" : "الرسائل",
-    profile: language === 'en' ? "Profile" : "حسابي"
+    map: language === 'en' ? "Map" : "خريطة"
   };
 
   return (
@@ -39,7 +39,7 @@ const BottomNavbar = () => {
           to="/"
           className={`flex flex-col items-center justify-center w-full h-full ${
             isActive("/") 
-              ? "text-moprd-teal" 
+              ? "text-moprd-teal shadow-glow-sm" 
               : "text-gray-600 hover:text-moprd-teal dark:text-gray-300 dark:hover:text-moprd-teal"
           }`}
         >
@@ -51,7 +51,7 @@ const BottomNavbar = () => {
           to={user.role === "customer" ? "/find-trucks" : "/dashboard"}
           className={`flex flex-col items-center justify-center w-full h-full ${
             isActive(user.role === "customer" ? "/find-trucks" : "/dashboard")
-              ? "text-moprd-teal" 
+              ? "text-moprd-teal shadow-glow-sm" 
               : "text-gray-600 hover:text-moprd-teal dark:text-gray-300 dark:hover:text-moprd-teal"
           }`}
         >
@@ -63,7 +63,7 @@ const BottomNavbar = () => {
           to="/chat"
           className={`flex flex-col items-center justify-center w-full h-full ${
             location.pathname.includes("/chat")
-              ? "text-moprd-teal" 
+              ? "text-moprd-teal shadow-glow-sm" 
               : "text-gray-600 hover:text-moprd-teal dark:text-gray-300 dark:hover:text-moprd-teal"
           }`}
         >
@@ -72,15 +72,15 @@ const BottomNavbar = () => {
         </Link>
         
         <Link
-          to="/profile"
+          to="/map"
           className={`flex flex-col items-center justify-center w-full h-full ${
-            location.pathname === "/profile" || location.pathname === "/settings"
-              ? "text-moprd-teal" 
+            location.pathname === "/map"
+              ? "text-moprd-teal shadow-glow-sm" 
               : "text-gray-600 hover:text-moprd-teal dark:text-gray-300 dark:hover:text-moprd-teal"
           }`}
         >
-          <User size={20} />
-          <span className="text-xs mt-1">{translations.profile}</span>
+          <Map size={20} />
+          <span className="text-xs mt-1">{translations.map}</span>
         </Link>
       </nav>
     </div>
