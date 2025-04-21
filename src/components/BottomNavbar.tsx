@@ -39,11 +39,11 @@ const BottomNavbar = () => {
           to="/"
           className={`flex flex-col items-center justify-center w-full h-full ${
             isActive("/") 
-              ? "text-moprd-teal shadow-glow-sm" 
+              ? "text-moprd-teal shadow-[0_-2px_8px_rgba(0,200,200,0.4)] font-bold" 
               : "text-gray-600 hover:text-moprd-teal dark:text-gray-300 dark:hover:text-moprd-teal"
           }`}
         >
-          <Home size={20} />
+          <Home size={20} className={isActive("/") ? "filter drop-shadow-[0_0_2px_rgba(0,200,200,0.8)]" : ""} />
           <span className="text-xs mt-1">{translations.home}</span>
         </Link>
         
@@ -51,11 +51,11 @@ const BottomNavbar = () => {
           to={user.role === "customer" ? "/find-trucks" : "/dashboard"}
           className={`flex flex-col items-center justify-center w-full h-full ${
             isActive(user.role === "customer" ? "/find-trucks" : "/dashboard")
-              ? "text-moprd-teal shadow-glow-sm" 
+              ? "text-moprd-teal shadow-[0_-2px_8px_rgba(0,200,200,0.4)] font-bold" 
               : "text-gray-600 hover:text-moprd-teal dark:text-gray-300 dark:hover:text-moprd-teal"
           }`}
         >
-          <Truck size={20} />
+          <Truck size={20} className={isActive(user.role === "customer" ? "/find-trucks" : "/dashboard") ? "filter drop-shadow-[0_0_2px_rgba(0,200,200,0.8)]" : ""} />
           <span className="text-xs mt-1">{user.role === "customer" ? translations.trucks : translations.trips}</span>
         </Link>
         
@@ -63,11 +63,11 @@ const BottomNavbar = () => {
           to="/chat"
           className={`flex flex-col items-center justify-center w-full h-full ${
             location.pathname.includes("/chat")
-              ? "text-moprd-teal shadow-glow-sm" 
+              ? "text-moprd-teal shadow-[0_-2px_8px_rgba(0,200,200,0.4)] font-bold" 
               : "text-gray-600 hover:text-moprd-teal dark:text-gray-300 dark:hover:text-moprd-teal"
           }`}
         >
-          <MessageSquare size={20} />
+          <MessageSquare size={20} className={location.pathname.includes("/chat") ? "filter drop-shadow-[0_0_2px_rgba(0,200,200,0.8)]" : ""} />
           <span className="text-xs mt-1">{translations.messages}</span>
         </Link>
         
@@ -75,11 +75,11 @@ const BottomNavbar = () => {
           to="/map"
           className={`flex flex-col items-center justify-center w-full h-full ${
             location.pathname === "/map"
-              ? "text-moprd-teal shadow-glow-sm" 
+              ? "text-moprd-teal shadow-[0_-2px_8px_rgba(0,200,200,0.4)] font-bold" 
               : "text-gray-600 hover:text-moprd-teal dark:text-gray-300 dark:hover:text-moprd-teal"
           }`}
         >
-          <Map size={20} />
+          <Map size={20} className={location.pathname === "/map" ? "filter drop-shadow-[0_0_2px_rgba(0,200,200,0.8)]" : ""} />
           <span className="text-xs mt-1">{translations.map}</span>
         </Link>
       </nav>

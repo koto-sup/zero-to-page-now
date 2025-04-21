@@ -1,7 +1,7 @@
 
 import React, { useState } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
-import { MapPin } from 'lucide-react';
+import { MapPin, Snowflake, Truck, Package, Construction, Weight, Droplets } from 'lucide-react';
 
 interface TruckTypeItemProps {
   id: string;
@@ -13,6 +13,7 @@ interface TruckTypeItemProps {
   capacity?: string;
   refrigeration?: boolean;
   useMapOnly?: boolean;
+  features?: string[];
 }
 
 // This component was previously being used with a default export
@@ -26,7 +27,8 @@ const TruckTypeItem: React.FC<TruckTypeItemProps> = ({
   onSelect,
   capacity,
   refrigeration,
-  useMapOnly = false
+  useMapOnly = false,
+  features = []
 }) => {
   const { isAdmin } = useAuth();
   const [customIconUrl, setCustomIconUrl] = useState<string | null>(null);
@@ -46,6 +48,24 @@ const TruckTypeItem: React.FC<TruckTypeItemProps> = ({
   };
   
   const displayIcon = customIconUrl || icon;
+
+  // Function to render feature icons
+  const renderFeatureIcon = (feature: string) => {
+    switch (feature.toLowerCase()) {
+      case 'refrigerated':
+        return <Snowflake size={16} className="text-blue-500" title="Refrigerated" />;
+      case 'heavy':
+        return <Weight size={16} className="text-red-600" title="Heavy Load" />;
+      case 'construction':
+        return <Construction size={16} className="text-yellow-600" title="Construction Equipment" />;
+      case 'water':
+        return <Droplets size={16} className="text-cyan-500" title="Water Transport" />;
+      case 'delivery':
+        return <Package size={16} className="text-green-500" title="Delivery Options" />;
+      default:
+        return <Truck size={16} className="text-gray-500" title="Standard Truck" />;
+    }
+  };
   
   return (
     <div 
@@ -88,6 +108,19 @@ const TruckTypeItem: React.FC<TruckTypeItemProps> = ({
         <div className="flex-grow">
           <h3 className="font-medium text-lg">{name}</h3>
           <p className="text-sm text-gray-500 dark:text-gray-400">{description}</p>
+          
+          {/* Feature Icons Row */}
+          {(refrigeration || features.length > 0) && (
+            <div className="flex flex-wrap gap-2 mt-2">
+              {refrigeration && <Snowflake size={16} className="text-blue-500" title="Refrigerated" />}
+              {features.map((feature, index) => (
+                <span key={`${id}-feature-${index}`} className="inline-flex items-center">
+                  {renderFeatureIcon(feature)}
+                </span>
+              ))}
+            </div>
+          )}
+          
           {useMapOnly && (
             <div className="flex items-center mt-1 text-xs text-blue-600">
               <MapPin size={12} className="mr-1" />
@@ -96,11 +129,6 @@ const TruckTypeItem: React.FC<TruckTypeItemProps> = ({
           )}
           {capacity && (
             <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">Capacity: {capacity}</p>
-          )}
-          {refrigeration !== undefined && (
-            <p className="text-xs text-gray-500 dark:text-gray-400">
-              {refrigeration ? "Refrigerated" : "Non-refrigerated"}
-            </p>
           )}
         </div>
       </div>

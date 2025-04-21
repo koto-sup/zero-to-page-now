@@ -1,5 +1,5 @@
 
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import LocationInputs from "@/components/truck-request/LocationInputs";
 import TruckTypeSelector from "@/components/TruckTypeSelector";
 import TripDetails from "@/components/truck-request/TripDetails";
@@ -7,7 +7,7 @@ import { useTruckRequestForm } from "@/hooks/useTruckRequestForm";
 import { RequestDetails } from "@/hooks/useTruckFinderState";
 import { useTruckTypes } from "@/hooks/useTruckTypes";
 import { Button } from "@/components/ui/button";
-import { MapPin } from "lucide-react";
+import { MapPin, Check } from "lucide-react";
 import { useLanguage } from "@/contexts/LanguageContext";
 
 interface TruckRequestFormProps {
@@ -40,6 +40,7 @@ const TruckRequestForm: React.FC<TruckRequestFormProps> = ({
   const { getTruckTypes } = useTruckTypes();
   const selectedTruckType = getTruckTypes().find(truck => truck.id === formState.truckType);
   const hasKmPricing = selectedTruckType?.hasKmPricing || false;
+  const [currentStep, setCurrentStep] = useState(1);
 
   // Check if the selected truck type requires map-only selection
   const isMapOnlySelectionType = (truckTypeId: string) => {
@@ -54,61 +55,178 @@ const TruckRequestForm: React.FC<TruckRequestFormProps> = ({
     setMapSelectionMode(isMapOnlySelectionType(formState.truckType));
   }, [formState.truckType, setMapSelectionMode]);
 
+  // Determine if current section is complete
+  const isLocationComplete = formState.mapSelectionMode || (formState.startLocation && formState.destination);
+  const isTruckTypeSelected = formState.truckType !== "";
+
+  // Progress to next step
+  const goToNextStep = () => {
+    if (currentStep < 3) {
+      setCurrentStep(currentStep + 1);
+    }
+  };
+
+  // Go back to previous step
+  const goToPrevStep = () => {
+    if (currentStep > 1) {
+      setCurrentStep(currentStep - 1);
+    }
+  };
+
+  // Translation helper
+  const t = (en: string, ar: string) => language === 'en' ? en : ar;
+
   return (
     <form onSubmit={handleSubmit}>
+      {/* Progress Steps Indicator */}
+      <div className="mb-8">
+        <div className="flex items-center justify-between">
+          <div 
+            className={`flex flex-col items-center ${currentStep >= 1 ? 'text-moprd-teal' : 'text-gray-400'}`}
+            onClick={() => setCurrentStep(1)}
+          >
+            <div className={`w-10 h-10 rounded-full flex items-center justify-center ${
+              currentStep >= 1 ? 'bg-moprd-teal text-white shadow-[0_0_10px_rgba(0,200,200,0.5)]' : 'bg-gray-200 text-gray-600'
+            }`}>
+              {isLocationComplete ? <Check size={20} /> : 1}
+            </div>
+            <span className="mt-2 text-sm">{t("Location", "الموقع")}</span>
+          </div>
+          
+          <div className={`flex-grow h-0.5 mx-2 ${currentStep >= 2 ? 'bg-moprd-teal' : 'bg-gray-200'}`}></div>
+          
+          <div 
+            className={`flex flex-col items-center ${currentStep >= 2 ? 'text-moprd-teal' : 'text-gray-400'}`}
+            onClick={() => isLocationComplete && setCurrentStep(2)}
+          >
+            <div className={`w-10 h-10 rounded-full flex items-center justify-center ${
+              currentStep >= 2 ? 'bg-moprd-teal text-white shadow-[0_0_10px_rgba(0,200,200,0.5)]' : 'bg-gray-200 text-gray-600'
+            }`}>
+              {isTruckTypeSelected && currentStep > 2 ? <Check size={20} /> : 2}
+            </div>
+            <span className="mt-2 text-sm">{t("Vehicle", "المركبة")}</span>
+          </div>
+          
+          <div className={`flex-grow h-0.5 mx-2 ${currentStep >= 3 ? 'bg-moprd-teal' : 'bg-gray-200'}`}></div>
+          
+          <div 
+            className={`flex flex-col items-center ${currentStep >= 3 ? 'text-moprd-teal' : 'text-gray-400'}`}
+            onClick={() => isTruckTypeSelected && setCurrentStep(3)}
+          >
+            <div className={`w-10 h-10 rounded-full flex items-center justify-center ${
+              currentStep >= 3 ? 'bg-moprd-teal text-white shadow-[0_0_10px_rgba(0,200,200,0.5)]' : 'bg-gray-200 text-gray-600'
+            }`}>
+              3
+            </div>
+            <span className="mt-2 text-sm">{t("Details", "التفاصيل")}</span>
+          </div>
+        </div>
+      </div>
+
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div className="space-y-6">
-          {!formState.mapSelectionMode ? (
-            <LocationInputs 
-              startLocation={formState.startLocation}
-              destination={formState.destination}
-              onStartLocationChange={handleStartLocationChange}
-              onDestinationChange={handleDestinationChange}
-            />
-          ) : (
-            <div className="bg-blue-50 p-4 rounded-lg border border-blue-200 flex items-center">
-              <MapPin className="text-blue-500 mr-3" size={24} />
-              <div>
-                <h3 className="font-medium">
-                  {language === 'en' ? "Map Selection Required" : "اختيار من الخريطة مطلوب"}
-                </h3>
-                <p className="text-sm text-blue-700">
-                  {language === 'en' 
-                    ? "Please drop a pin on the map to select your location" 
-                    : "الرجاء وضع علامة على الخريطة لتحديد موقعك"
-                  }
-                </p>
-                <Button 
-                  variant="outline"
-                  className="mt-2 bg-white hover:bg-white"
-                  onClick={() => window.alert("Map selection feature would open here")}
-                >
-                  {language === 'en' ? "Open Map" : "فتح الخريطة"}
-                </Button>
+          {/* Step 1: Location */}
+          <div className={currentStep === 1 ? 'block' : 'hidden'}>
+            {!formState.mapSelectionMode ? (
+              <LocationInputs 
+                startLocation={formState.startLocation}
+                destination={formState.destination}
+                onStartLocationChange={handleStartLocationChange}
+                onDestinationChange={handleDestinationChange}
+              />
+            ) : (
+              <div className="bg-blue-50 p-4 rounded-lg border border-blue-200 flex items-center">
+                <MapPin className="text-blue-500 mr-3" size={24} />
+                <div>
+                  <h3 className="font-medium">
+                    {t("Map Selection Required", "اختيار من الخريطة مطلوب")}
+                  </h3>
+                  <p className="text-sm text-blue-700">
+                    {t("Please drop a pin on the map to select your location", 
+                      "الرجاء وضع علامة على الخريطة لتحديد موقعك"
+                    )}
+                  </p>
+                  <Button 
+                    variant="outline"
+                    className="mt-2 bg-white hover:bg-white"
+                    onClick={() => window.alert("Map selection feature would open here")}
+                  >
+                    {t("Open Map", "فتح الخريطة")}
+                  </Button>
+                </div>
               </div>
+            )}
+            
+            <div className="mt-6 flex justify-end">
+              <Button 
+                type="button" 
+                onClick={goToNextStep}
+                disabled={!isLocationComplete} 
+                className="bg-moprd-teal hover:bg-moprd-blue"
+              >
+                {t("Continue", "استمرار")} →
+              </Button>
             </div>
-          )}
-
-          <TruckTypeSelector 
-            selectedTruckType={formState.truckType}
-            onTruckTypeChange={handleTruckTypeChange}
-          />
+          </div>
+          
+          {/* Step 2: Vehicle Selection */}
+          <div className={currentStep === 2 ? 'block' : 'hidden'}>
+            <TruckTypeSelector 
+              selectedTruckType={formState.truckType}
+              onTruckTypeChange={(value) => {
+                handleTruckTypeChange(value);
+              }}
+            />
+            
+            <div className="mt-6 flex justify-between">
+              <Button 
+                type="button" 
+                onClick={goToPrevStep}
+                variant="outline"
+              >
+                ← {t("Back", "رجوع")}
+              </Button>
+              <Button 
+                type="button" 
+                onClick={goToNextStep}
+                disabled={!isTruckTypeSelected} 
+                className="bg-moprd-teal hover:bg-moprd-blue"
+              >
+                {t("Continue", "استمرار")} →
+              </Button>
+            </div>
+          </div>
         </div>
 
-        <TripDetails
-          distance={formState.distance}
-          truckType={formState.truckType}
-          estimatedPrice={formState.estimatedPrice}
-          discountApplied={discountApplied}
-          loading={formState.loading}
-          hasKmPricing={hasKmPricing}
-          onSubmit={handleSubmit}
-          onDaysChange={handleDaysChange}
-          onTruckSizeChange={handleTruckSizeChange}
-          onExcavatorHeadChange={handleExcavatorHeadChange}
-          onFlatbedDeliveryOptionChange={handleFlatbedDeliveryOptionChange}
-          onRefrigeratedOptionChange={handleRefrigeratedOptionChange}
-        />
+        {/* Step 3: Trip Details - Always visible on desktop, only visible on step 3 on mobile */}
+        <div className={`space-y-6 ${currentStep === 3 ? 'block' : 'hidden md:block'}`}>
+          <TripDetails
+            distance={formState.distance}
+            truckType={formState.truckType}
+            estimatedPrice={formState.estimatedPrice}
+            discountApplied={discountApplied}
+            loading={formState.loading}
+            hasKmPricing={hasKmPricing}
+            onSubmit={handleSubmit}
+            onDaysChange={handleDaysChange}
+            onTruckSizeChange={handleTruckSizeChange}
+            onExcavatorHeadChange={handleExcavatorHeadChange}
+            onFlatbedDeliveryOptionChange={handleFlatbedDeliveryOptionChange}
+            onRefrigeratedOptionChange={handleRefrigeratedOptionChange}
+          />
+          
+          {currentStep === 3 && (
+            <div className="md:hidden mt-6 flex justify-start">
+              <Button 
+                type="button" 
+                onClick={goToPrevStep}
+                variant="outline"
+              >
+                ← {t("Back", "رجوع")}
+              </Button>
+            </div>
+          )}
+        </div>
       </div>
     </form>
   );

@@ -21,6 +21,36 @@ const TruckTypeSelector: React.FC<TruckTypeSelectorProps> = ({
   const { getTruckTypes } = useTruckTypes();
   const { user } = useAuth();
 
+  // Function to get features for each truck type
+  const getTruckFeatures = (truckType: string) => {
+    switch(truckType) {
+      case 'refrigerated':
+        return ['refrigerated'];
+      case 'jcp':
+        return ['construction', 'heavy'];
+      case 'dump-truck':
+        return ['heavy'];
+      case 'dump-loader':
+        return ['heavy'];
+      case 'water-truck':
+        return ['water'];
+      case 'wheel-excavator':
+        return ['construction', 'heavy'];
+      case 'crawler-excavator':
+        return ['construction', 'heavy'];
+      case 'crane-loader':
+        return ['construction', 'heavy'];
+      case 'loader-lowbed':
+        return ['heavy', 'delivery'];
+      case 'jcb-forklift':
+        return ['construction'];
+      case 'hydraulic-crane':
+        return ['construction', 'heavy'];
+      default:
+        return [];
+    }
+  };
+
   const getDiscountText = () => {
     switch(language) {
       case 'en': return "(18% discount for customers)";
@@ -104,6 +134,7 @@ const TruckTypeSelector: React.FC<TruckTypeSelectorProps> = ({
               capacity={type.capacity}
               refrigeration={type.refrigeration}
               useMapOnly={isMapOnlySelectionType(type.id)}
+              features={getTruckFeatures(type.id)}
             />
           ))}
         </RadioGroup>

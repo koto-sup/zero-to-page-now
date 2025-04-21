@@ -11,9 +11,30 @@ const NotFound = () => {
   const { language } = useLanguage();
 
   useEffect(() => {
-    // If the user arrived at 404 via history navigation, try to go back to the home page
+    // If the user arrived at 404 via history navigation (like back button), 
+    // try to go to the home page instead
     if (window.history.state && window.history.state.idx > 0) {
       navigate('/', { replace: true });
+      return;
+    }
+    
+    // If the path starts with a known route but might be a sub-path 404,
+    // try to redirect to the parent route
+    const path = location.pathname;
+    if (path.startsWith('/find-trucks/')) {
+      navigate('/find-trucks', { replace: true });
+      return;
+    }
+    if (path.startsWith('/map/')) {
+      navigate('/map', { replace: true });
+      return;
+    }
+    if (path.startsWith('/truck-tracking/')) {
+      navigate('/truck-tracking/driver-1', { replace: true });
+      return;
+    }
+    if (path.startsWith('/chat/')) {
+      navigate('/chat', { replace: true });
       return;
     }
     

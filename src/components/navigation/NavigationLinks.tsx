@@ -4,7 +4,7 @@ import { Link, useLocation } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { NavigationLinksProps, NavigationLink } from "@/types/navigation";
-import { Map } from "lucide-react";
+import { Map, Truck, Home, MessageSquare } from "lucide-react";
 
 const NavigationLinks: React.FC<NavigationLinksProps> = ({ className }) => {
   const { user } = useAuth();
@@ -15,15 +15,18 @@ const NavigationLinks: React.FC<NavigationLinksProps> = ({ className }) => {
     const commonLinks = [
       { 
         name: language === 'en' ? "Home" : "الرئيسية", 
-        href: "/" 
+        href: "/",
+        icon: Home
       },
       { 
         name: language === 'en' ? "Find Trucks" : "البحث عن شاحنات", 
-        href: "/find-trucks" 
+        href: "/find-trucks",
+        icon: Truck
       },
       { 
         name: language === 'en' ? "Track" : "تتبع", 
-        href: user ? "/truck-tracking/driver-1" : "/login" 
+        href: user ? "/truck-tracking/driver-1" : "/login",
+        icon: Truck
       },
       {
         name: language === 'en' ? "Map" : "خريطة",
@@ -35,7 +38,8 @@ const NavigationLinks: React.FC<NavigationLinksProps> = ({ className }) => {
     if (user) {
       commonLinks.push({ 
         name: language === 'en' ? "Messages" : "الرسائل", 
-        href: "/chat" 
+        href: "/chat",
+        icon: MessageSquare
       });
       
       if (user.role === "driver") {
@@ -62,7 +66,7 @@ const NavigationLinks: React.FC<NavigationLinksProps> = ({ className }) => {
           to={link.href}
           className={`px-3 py-2 text-sm font-medium transition-all duration-300 ${
             location.pathname === link.href
-              ? "text-moprd-teal relative after:content-[''] after:absolute after:bottom-0 after:left-0 after:w-full after:h-0.5 after:bg-moprd-teal after:glow-teal"
+              ? "text-moprd-teal relative font-bold after:content-[''] after:absolute after:bottom-0 after:left-0 after:w-full after:h-0.5 after:bg-moprd-teal after:glow-teal after:shadow-[0_0_8px_1px_rgba(0,200,200,0.8)]"
               : "text-gray-600 hover:text-moprd-teal dark:text-gray-300 dark:hover:text-moprd-teal"
           }`}
         >
