@@ -1,4 +1,3 @@
-
 import React from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -24,6 +23,7 @@ interface InvoiceProps {
     unitPrice: number;
     total: number;
   }[];
+  discountApplied?: boolean;
 }
 
 const Invoice: React.FC<InvoiceProps> = ({
@@ -41,6 +41,7 @@ const Invoice: React.FC<InvoiceProps> = ({
   taxAmount,
   totalAmount,
   items,
+  discountApplied = false,
 }) => {
   const handlePrint = () => {
     window.print();
@@ -120,6 +121,12 @@ const Invoice: React.FC<InvoiceProps> = ({
                 <td className="py-2 px-4">{item.total.toFixed(2)} ريال</td>
               </tr>
             ))}
+            {discountApplied && (
+              <tr className="bg-green-50 border-b text-green-700 font-bold">
+                <td colSpan={3} className="py-2 px-4">خصم نقاط زكرت</td>
+                <td className="py-2 px-4">-٤٨ ريال</td>
+              </tr>
+            )}
           </tbody>
         </table>
 

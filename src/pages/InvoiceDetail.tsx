@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -15,6 +14,8 @@ const InvoiceDetail = () => {
   const [loading, setLoading] = useState(true);
   const [showPayment, setShowPayment] = useState(false);
   const [invoiceData, setInvoiceData] = useState<any>(null);
+  const [customerPoints, setCustomerPoints] = useState<number>(225); // For demo, should fetch from user/profile
+  const [discountClaimed, setDiscountClaimed] = useState(false);
 
   useEffect(() => {
     // Simulate loading invoice from API
@@ -87,6 +88,20 @@ const InvoiceDetail = () => {
     navigate("/invoices");
   };
 
+  const handleClaimDiscount = () => {
+    if (customerPoints >= 180 && !discountClaimed && !invoiceData?.discountApplied) {
+      setDiscountClaimed(true);
+      setCustomerPoints(customerPoints - 180);
+      // Deduct 48 SAR from invoice totals
+      setInvoiceData((prev: any) => ({
+        ...prev,
+        totalAmount: (prev?.totalAmount ?? 0) - 48,
+        discountApplied: true,
+      }));
+      toast.success("تم تطبيق خصم 48 ريال! سيتم خصم المبلغ مباشرة.");
+    }
+  };
+
   if (loading) {
     return (
       <div className="container mx-auto px-4 py-8 text-center">
@@ -140,16 +155,18 @@ const InvoiceDetail = () => {
             taxAmount={invoiceData.taxAmount}
             totalAmount={invoiceData.totalAmount}
             items={invoiceData.items}
+            discountApplied={invoiceData?.discountApplied}
           />
           
-          {!invoiceData.isPaid && (
-            <div className="flex justify-center mt-6 mb-12">
-              <IceButtonV2 
-                className="px-8 py-6 text-lg flex items-center justify-center"
-                onClick={() => setShowPayment(true)}
+          {!discountClaimed && customerPoints >= 180 && !invoiceData?.discountApplied && (
+            <div className="text-center mb-6">
+              <Button
+                variant="secondary"
+                size="lg"
+                onClick={handleClaimDiscount}
               >
-                دفع الفاتورة الآن
-              </IceButtonV2>
+                احصل على خصم ٤٨ ريال مقابل ١٨٠ نقطة
+              </Button>
             </div>
           )}
           

@@ -88,9 +88,33 @@ const Profile = () => {
     });
   }
 
-  const bucket = {
+  const [bucket, setBucket] = React.useState({
     balance: 235.45,
-    points: 810
+    points: user?.bucketPoints ?? 0,
+    claimedDiscount: false,
+  });
+
+  const handleCompleteOrder = () => {
+    setBucket((prev) => {
+      const newPoints = prev.points + 25;
+      return { ...prev, points: newPoints };
+    });
+  };
+
+  const handleClaimDiscount = () => {
+    if (bucket.points >= 180 && !bucket.claimedDiscount) {
+      setBucket((prev) => ({
+        ...prev,
+        points: prev.points - 180,
+        claimedDiscount: true,
+        balance: prev.balance + 48,
+      }));
+      window.alert(
+        language === 'en'
+          ? "You have claimed your 48 SAR discount!"
+          : "لقد طالبت بخصمك بقيمة 48 ريال!"
+      );
+    }
   };
 
   return (
@@ -129,12 +153,38 @@ const Profile = () => {
               <div className="flex justify-center gap-4 mt-6">
                 <div className="flex items-center bg-blue-50 dark:bg-slate-900 px-4 py-2 rounded-lg shadow">
                   <Wallet className="h-6 w-6 text-moprd-teal mr-2" />
-                  <span className="text-lg font-semibold">{bucket.balance.toLocaleString()} <span className="text-xs font-normal text-gray-400">SAR</span></span>
+                  <span className="text-lg font-semibold">
+                    {bucket.balance.toLocaleString()} <span className="text-xs font-normal text-gray-400">SAR</span>
+                  </span>
                 </div>
                 <div className="flex items-center bg-yellow-50 dark:bg-slate-900 px-4 py-2 rounded-lg shadow">
                   <Award className="h-6 w-6 text-yellow-500 mr-2" />
-                  <span className="text-lg font-semibold">{bucket.points} <span className="text-xs font-normal text-gray-400">{language === "en" ? "Points" : "نقاط"}</span></span>
+                  <span className="text-lg font-semibold">
+                    {bucket.points} <span className="text-xs font-normal text-gray-400">{language === "en" ? "Points" : "نقاط"}</span>
+                  </span>
+                  {bucket.points >= 180 && !bucket.claimedDiscount && (
+                    <Button
+                      className="ml-2"
+                      size="sm"
+                      variant="secondary"
+                      onClick={handleClaimDiscount}
+                    >
+                      {language === "en" ? "Claim 48 SAR" : "احصل على 48 ريال"}
+                    </Button>
+                  )}
+                  {bucket.claimedDiscount && (
+                    <span className="ml-2 text-green-600 text-xs">
+                      {language === "en" ? "Discount claimed" : "تم استخدام الخصم"}
+                    </span>
+                  )}
                 </div>
+              </div>
+            )}
+            {user.role === "customer" && (
+              <div className="text-center mt-5">
+                <Button variant="outline" size="sm" onClick={handleCompleteOrder}>
+                  {language === "en" ? "Simulate Order (earn 25 points)" : "محاكاة طلب (اكسب 25 نقطة)"}
+                </Button>
               </div>
             )}
           </CardContent>
