@@ -1,4 +1,3 @@
-
 import React from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import { useTheme } from "next-themes";
@@ -9,6 +8,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { UserCircle, Settings, LogOut, FileEdit, Bell, Globe, HelpCircle, Shield } from "lucide-react";
 import LanguageSelector from "@/components/LanguageSelector";
 import Layout from "@/components/Layout";
+import { Wallet, Coins, Award } from "lucide-react";
 
 const Profile = () => {
   const { user, logout } = useAuth();
@@ -59,7 +59,7 @@ const Profile = () => {
     {
       icon: <Bell className="h-5 w-5 mr-3" />,
       title: language === "en" ? "Notifications" : "الإشعارات",
-      action: () => navigate("/notifications") // This path didn't exist in routes
+      action: () => navigate("/notifications")
     },
     {
       icon: <Globe className="h-5 w-5 mr-3" />,
@@ -69,7 +69,7 @@ const Profile = () => {
     {
       icon: <HelpCircle className="h-5 w-5 mr-3" />,
       title: language === "en" ? "Help & Support" : "المساعدة والدعم",
-      action: () => navigate("/help") // Was pointing to /support which didn't exist
+      action: () => navigate("/help")
     },
     {
       icon: <LogOut className="h-5 w-5 mr-3 text-red-500" />,
@@ -79,7 +79,6 @@ const Profile = () => {
     }
   ];
 
-  // Add admin panel link if user is admin
   if (user.role === "admin") {
     menuItems.unshift({
       icon: <Shield className="h-5 w-5 mr-3 text-purple-500" />,
@@ -88,6 +87,11 @@ const Profile = () => {
       className: "text-purple-500"
     });
   }
+
+  const bucket = {
+    balance: 235.45,
+    points: 810
+  };
 
   return (
     <Layout>
@@ -121,6 +125,18 @@ const Profile = () => {
                     : (language === "en" ? "Driver" : "سائق")}
               </div>
             </div>
+            {user.role === "customer" && (
+              <div className="flex justify-center gap-4 mt-6">
+                <div className="flex items-center bg-blue-50 dark:bg-slate-900 px-4 py-2 rounded-lg shadow">
+                  <Wallet className="h-6 w-6 text-moprd-teal mr-2" />
+                  <span className="text-lg font-semibold">{bucket.balance.toLocaleString()} <span className="text-xs font-normal text-gray-400">SAR</span></span>
+                </div>
+                <div className="flex items-center bg-yellow-50 dark:bg-slate-900 px-4 py-2 rounded-lg shadow">
+                  <Award className="h-6 w-6 text-yellow-500 mr-2" />
+                  <span className="text-lg font-semibold">{bucket.points} <span className="text-xs font-normal text-gray-400">{language === "en" ? "Points" : "نقاط"}</span></span>
+                </div>
+              </div>
+            )}
           </CardContent>
         </Card>
 
