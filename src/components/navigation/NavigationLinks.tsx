@@ -4,7 +4,7 @@ import { Link, useLocation } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { NavigationLinksProps, NavigationLink } from "@/types/navigation";
-import { Map, Truck, Home, MessageSquare } from "lucide-react";
+import { Map, Truck, Home, MessageSquare, LayoutDashboard } from "lucide-react";
 
 const NavigationLinks: React.FC<NavigationLinksProps> = ({ className }) => {
   const { user } = useAuth();
@@ -45,12 +45,14 @@ const NavigationLinks: React.FC<NavigationLinksProps> = ({ className }) => {
       if (user.role === "driver") {
         commonLinks.push({ 
           name: language === 'en' ? "Dashboard" : "لوحة التحكم", 
-          href: "/dashboard" 
+          href: "/dashboard",
+          icon: LayoutDashboard
         });
       } else if (user.role === "admin") {
         commonLinks.push({ 
           name: language === 'en' ? "Admin" : "المشرف", 
-          href: "/admin-dashboard" 
+          href: "/admin-dashboard",
+          icon: LayoutDashboard
         });
       }
     }

@@ -1,7 +1,7 @@
 
 import React, { useState } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
-import { MapPin, Snowflake, Truck, Package, Construction, Weight, Droplets } from 'lucide-react';
+import { Snowflake, Truck, Package, Construction, Weight, Droplets, MapPin } from 'lucide-react';
 
 interface TruckTypeItemProps {
   id: string;
@@ -53,17 +53,17 @@ const TruckTypeItem: React.FC<TruckTypeItemProps> = ({
   const renderFeatureIcon = (feature: string) => {
     switch (feature.toLowerCase()) {
       case 'refrigerated':
-        return <Snowflake size={16} className="text-blue-500" title="Refrigerated" />;
+        return <Snowflake size={16} className="text-blue-500" aria-label="Refrigerated" />;
       case 'heavy':
-        return <Weight size={16} className="text-red-600" title="Heavy Load" />;
+        return <Weight size={16} className="text-red-600" aria-label="Heavy Load" />;
       case 'construction':
-        return <Construction size={16} className="text-yellow-600" title="Construction Equipment" />;
+        return <Construction size={16} className="text-yellow-600" aria-label="Construction Equipment" />;
       case 'water':
-        return <Droplets size={16} className="text-cyan-500" title="Water Transport" />;
+        return <Droplets size={16} className="text-cyan-500" aria-label="Water Transport" />;
       case 'delivery':
-        return <Package size={16} className="text-green-500" title="Delivery Options" />;
+        return <Package size={16} className="text-green-500" aria-label="Delivery Options" />;
       default:
-        return <Truck size={16} className="text-gray-500" title="Standard Truck" />;
+        return <Truck size={16} className="text-gray-500" aria-label="Standard Truck" />;
     }
   };
   
@@ -112,7 +112,7 @@ const TruckTypeItem: React.FC<TruckTypeItemProps> = ({
           {/* Feature Icons Row */}
           {(refrigeration || features.length > 0) && (
             <div className="flex flex-wrap gap-2 mt-2">
-              {refrigeration && <Snowflake size={16} className="text-blue-500" title="Refrigerated" />}
+              {refrigeration && <Snowflake size={16} className="text-blue-500" aria-label="Refrigerated" />}
               {features.map((feature, index) => (
                 <span key={`${id}-feature-${index}`} className="inline-flex items-center">
                   {renderFeatureIcon(feature)}

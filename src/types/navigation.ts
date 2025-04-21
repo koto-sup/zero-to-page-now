@@ -2,6 +2,7 @@
 export interface NavigationLink {
   name: string;
   href: string;
+  icon?: React.FC<{ className?: string }>;
 }
 
 export interface MobileMenuProps {
