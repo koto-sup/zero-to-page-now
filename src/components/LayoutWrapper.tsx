@@ -1,6 +1,5 @@
-
 import React, { useEffect } from "react";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { useLanguage } from "@/contexts/LanguageContext";
 import BottomNavbar from "@/components/BottomNavbar";
@@ -11,8 +10,22 @@ interface LayoutWrapperProps {
 
 const LayoutWrapper: React.FC<LayoutWrapperProps> = ({ children }) => {
   const { user } = useAuth();
-  const { language, changeLanguage } = useLanguage();
+  const { language } = useLanguage();
   const location = useLocation();
+  const navigate = useNavigate();
+  
+  // Store current path to localStorage for "back" functionality
+  useEffect(() => {
+    const currentPath = location.pathname;
+    const previousPaths = JSON.parse(localStorage.getItem('navigationHistory') || '[]');
+    
+    // Only store path if it's different from the last one
+    if (previousPaths.length === 0 || previousPaths[previousPaths.length - 1] !== currentPath) {
+      // Keep only last 10 paths
+      const updatedPaths = [...previousPaths, currentPath].slice(-10);
+      localStorage.setItem('navigationHistory', JSON.stringify(updatedPaths));
+    }
+  }, [location.pathname]);
   
   // Track user activity
   useEffect(() => {

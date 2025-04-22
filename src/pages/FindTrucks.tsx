@@ -30,6 +30,7 @@ const FindTrucks = () => {
   const [acceptedOfferId, setAcceptedOfferId] = useState<string | undefined>();
   const [mapSelectionMode, setMapSelectionMode] = useState(false);
   const [currentStep, setCurrentStep] = useState(1);
+  const [selectedLocation, setSelectedLocation] = useState<{lat: number, lng: number} | null>(null);
 
   const handleAcceptOffer = (offerId: string, rentalDuration: string = "day") => {
     // In a real app, we would send the offer acceptance to the server
@@ -79,6 +80,38 @@ const FindTrucks = () => {
     setCurrentStep(1);
   };
 
+  // Handle location selection from map
+  const handleLocationSelect = (lat: number, lng: number) => {
+    setSelectedLocation({lat, lng});
+    
+    // Continue to next step
+    if (currentStep === 2) {
+      setCurrentStep(3);
+    }
+  };
+
+  // Handle the "Find Trucks" action
+  const handleFindTrucks = () => {
+    if (selectedLocation) {
+      // Create request details
+      const locationDetails: RequestDetails = {
+        startLocation: `Location (${selectedLocation.lat.toFixed(4)}, ${selectedLocation.lng.toFixed(4)})`,
+        destination: `Destination (${selectedLocation.lat.toFixed(4)}, ${selectedLocation.lng.toFixed(4)})`,
+        distance: 5,  // Mock distance
+        estimatedPrice: 100, // Will be calculated in handler
+        truckType: "refrigerated", // Default
+        selectedMapLocation: selectedLocation
+      };
+      
+      // Submit the request
+      handleRequestSubmitted(locationDetails);
+    } else {
+      toast.error(
+        language === 'en' ? "Please select a location" : "الرجاء اختيار موقع"
+      );
+    }
+  };
+
   // Hide language selector in this page
   const hideLanguageButton = requestSubmitted;
 
@@ -91,6 +124,8 @@ const FindTrucks = () => {
     back: language === 'en' ? "Back" : "رجوع",
     vehicleSelection: language === 'en' ? "Vehicle Selection" : "اختيار المركبة",
     locationSelection: language === 'en' ? "Location Selection" : "تحديد الموقع",
+    findTrucks: language === 'en' ? "Find Trucks" : "البحث عن شاحنات",
+    searchForDestination: language === 'en' ? "Search for a destination" : "البحث عن وجهة",
   };
 
   return (
@@ -134,22 +169,17 @@ const FindTrucks = () => {
               <div className="h-full w-full">
                 <TruckMap 
                   interactive={true} 
-                  onLocationSelect={(lat, lng) => {
-                    // Here we would handle location selection
-                    toast.success(
-                      language === 'en' ? "Location selected!" : "تم اختيار الموقع!"
-                    );
-                    setCurrentStep(3); // Move to next step after selection
-                  }}
+                  onLocationSelect={handleLocationSelect}
                 />
               </div>
               {/* Semi-transparent overlay at bottom with action button */}
               <div className="fixed bottom-0 left-0 right-0 bg-gradient-to-t from-white dark:from-gray-900 to-transparent pt-32 pb-6 px-4">
                 <Button 
                   className="w-full bg-moprd-teal hover:bg-moprd-teal/90 text-white"
-                  onClick={() => setCurrentStep(3)}
+                  onClick={handleFindTrucks}
+                  disabled={!selectedLocation}
                 >
-                  {language === 'en' ? "Continue" : "متابعة"}
+                  {translations.findTrucks}
                 </Button>
               </div>
             </div>

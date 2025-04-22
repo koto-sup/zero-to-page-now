@@ -135,6 +135,66 @@ const TruckRequestForm: React.FC<TruckRequestFormProps> = ({
     );
   }
 
+  if (currentStep === 2) {
+    // For step 2, we now show location inputs and map toggle
+    return (
+      <div className="space-y-6">
+        <LocationInputs
+          startLocation={formState.startLocation}
+          destination={formState.destination}
+          onStartLocationChange={handleStartLocationChange}
+          onDestinationChange={handleDestinationChange}
+        />
+        
+        {showLocationMap ? (
+          <div className="relative h-[300px] rounded-lg overflow-hidden shadow-md">
+            <Button 
+              variant="outline" 
+              size="sm"
+              className="absolute top-2 right-2 z-10"
+              onClick={() => setShowLocationMap(false)}
+            >
+              <ArrowLeft className="mr-1 h-4 w-4" />
+              {t("Back", "رجوع")}
+            </Button>
+            <TruckMap 
+              interactive={true} 
+              onLocationSelect={onMapLocationSelect} 
+            />
+          </div>
+        ) : (
+          <Button 
+            variant="outline" 
+            className="w-full"
+            onClick={() => setShowLocationMap(true)}
+          >
+            <MapPin className="mr-2 h-4 w-4" />
+            {t("Select on Map", "اختر على الخريطة")}
+          </Button>
+        )}
+        
+        <div className="flex space-x-4">
+          <Button 
+            variant="outline" 
+            className="flex-1"
+            onClick={goToPrevStep}
+          >
+            <ArrowLeft className="mr-2 h-4 w-4" />
+            {t("Back", "رجوع")}
+          </Button>
+          <Button 
+            className="flex-1 bg-moprd-teal hover:bg-moprd-teal/90"
+            onClick={goToNextStep}
+            disabled={!isLocationComplete}
+          >
+            {t("Continue", "متابعة")}
+            <Check className="ml-2 h-4 w-4" />
+          </Button>
+        </div>
+      </div>
+    );
+  }
+
   if (currentStep === 3) {
     return (
       <form onSubmit={handleSubmit}>
@@ -169,7 +229,15 @@ const TruckRequestForm: React.FC<TruckRequestFormProps> = ({
     );
   }
 
-  return null; // Step 2 is handled by the parent component with full map view
+  // Fallback (shouldn't happen)
+  return (
+    <div className="text-center p-4">
+      <p>{t("Loading...", "جاري التحميل...")}</p>
+      <Button onClick={() => setCurrentStep(1)} className="mt-4">
+        {t("Start Over", "البدء من جديد")}
+      </Button>
+    </div>
+  );
 };
 
 export default TruckRequestForm;

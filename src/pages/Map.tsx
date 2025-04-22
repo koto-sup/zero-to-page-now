@@ -11,6 +11,10 @@ const Map = () => {
   const navigate = useNavigate();
   const { language } = useLanguage();
   
+  const handleBack = () => {
+    navigate(-1);
+  };
+  
   return (
     <Layout>
       <div className="container mx-auto px-4 py-8">
@@ -18,7 +22,7 @@ const Map = () => {
           <Button 
             variant="ghost" 
             className="mr-2" 
-            onClick={() => navigate(-1)}
+            onClick={handleBack}
           >
             <ArrowLeft className="mr-2 h-4 w-4" />
             {language === "en" ? "Back" : "رجوع"}

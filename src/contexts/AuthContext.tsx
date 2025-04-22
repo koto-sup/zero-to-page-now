@@ -1,3 +1,4 @@
+
 import React, { createContext, useContext, useState, ReactNode } from "react";
 
 // Define UserRole type
@@ -20,6 +21,7 @@ interface ProfileUpdateData {
   email?: string;
   phoneNumber?: string;
   profileImage?: string;
+  bucketPoints?: number;
 }
 
 interface AuthContextType {
@@ -127,7 +129,8 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
             email: data.email,
             role: data.role,
             provider: "email",
-            isAdmin: data.role === "admin"
+            isAdmin: data.role === "admin",
+            bucketPoints: 0 // Start with zero points for new users
           };
           
           setUser(newUser);
