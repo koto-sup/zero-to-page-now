@@ -1,8 +1,9 @@
 
 import React, { useEffect, useState } from "react";
-import { Truck, MapPin } from "lucide-react";
+import { Truck, MapPin, Crosshair } from "lucide-react";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { toast } from "sonner";
+import { Button } from "@/components/ui/button";
 
 // Mock truck positions
 const mockTrucks = [
@@ -14,6 +15,7 @@ const mockTrucks = [
 interface TruckMapProps {
   onLocationSelect?: (lat: number, lng: number) => void;
   interactive?: boolean;
+  fullScreen?: boolean;
 }
 
 // Component for showing a truck on the map with its icon
@@ -73,10 +75,16 @@ const LocationMarker = ({
   );
 };
 
-const TruckMap: React.FC<TruckMapProps> = ({ onLocationSelect, interactive = false }) => {
+const TruckMap: React.FC<TruckMapProps> = ({ 
+  onLocationSelect, 
+  interactive = false,
+  fullScreen = false 
+}) => {
   const { language } = useLanguage();
   const [mapLoaded, setMapLoaded] = useState(false);
   const [userLocation, setUserLocation] = useState<{top: string, left: string} | null>(null);
+  const [searchText, setSearchText] = useState("");
+  const [searchFocused, setSearchFocused] = useState(false);
   
   // Handle map click for location selection
   const handleMapClick = (e: React.MouseEvent<HTMLDivElement>) => {
@@ -127,70 +135,145 @@ const TruckMap: React.FC<TruckMapProps> = ({ onLocationSelect, interactive = fal
   const getMapMessage = () => {
     switch(language) {
       case 'en': return interactive 
-                ? "Click on the map to select your location" 
+                ? "Tap anywhere on the map to select your location" 
                 : "To display a real map, connect a map service";
       case 'ar': 
       default: return interactive
-              ? "انقر على الخريطة لاختيار موقعك"
+              ? "انقر في أي مكان على الخريطة لاختيار موقعك"
               : "لعرض خريطة حقيقية، يتوجب ربط خدمة خرائط";
     }
   };
 
+  // Mock address suggestions
+  const suggestions = [
+    "الرياض، حي النرجس",
+    "الرياض، حي الملقا",
+    "الرياض، حي اليرموك",
+    "الرياض، طريق الملك فهد"
+  ];
+
   return (
-    <div 
-      className={`w-full h-full bg-blue-50 relative flex items-center justify-center ${interactive ? 'cursor-crosshair' : ''}`}
-      onClick={interactive ? handleMapClick : undefined}
-    >
-      <div className="absolute inset-0" style={{ 
-        backgroundImage: "url('https://api.mapbox.com/styles/v1/mapbox/light-v10/static/46.7,24.7,12/1280x400?access_token=placeholder')", 
-        backgroundSize: "cover",
-        backgroundPosition: "center",
-        opacity: mapLoaded ? 0.7 : 0.3,
-        transition: "opacity 0.5s ease-in-out"
-      }}>
-      </div>
-      
-      {/* Current location marker */}
-      {!userLocation && (
-        <div className="absolute top-1/2 right-1/2 z-10">
-          <div className="w-4 h-4 bg-red-500 rounded-full border-2 border-white shadow-lg"></div>
-          <div className="absolute top-0 right-0 w-12 h-12 bg-red-500 rounded-full -z-10 animate-ping opacity-10"></div>
-          <div className="absolute -bottom-8 -right-16 bg-white px-2 py-1 rounded-md shadow-sm text-xs whitespace-nowrap">
-            <MapPin className="h-3 w-3 inline mr-1" />
-            {language === 'en' ? 'Your Location' : 'موقعك الحالي'}
+    <div className={`relative w-full h-full ${fullScreen ? 'absolute inset-0' : ''}`}>
+      {/* Map Search Bar (Uber/Careem style) */}
+      {interactive && (
+        <div className="absolute top-4 left-4 right-4 z-10">
+          <div className={`bg-white dark:bg-gray-800 rounded-lg shadow-lg transition-all ${searchFocused ? 'border-moprd-teal' : 'border border-gray-200'}`}>
+            <div className="flex items-center p-3">
+              <MapPin className="h-5 w-5 text-moprd-teal mr-2" />
+              <input
+                type="text"
+                value={searchText}
+                onChange={e => setSearchText(e.target.value)}
+                onFocus={() => setSearchFocused(true)}
+                onBlur={() => setTimeout(() => setSearchFocused(false), 200)}
+                className="flex-1 bg-transparent border-none focus:outline-none text-sm"
+                placeholder={language === 'en' ? "Search for a destination" : "البحث عن وجهة"}
+              />
+            </div>
+            
+            {/* Search suggestions */}
+            {searchFocused && (
+              <div className="bg-white dark:bg-gray-800 rounded-b-lg shadow-lg overflow-hidden">
+                {suggestions.map((suggestion, index) => (
+                  <div 
+                    key={index} 
+                    className="p-3 border-t border-gray-100 dark:border-gray-700 flex items-center hover:bg-gray-50 dark:hover:bg-gray-700 cursor-pointer"
+                    onClick={() => {
+                      setSearchText(suggestion);
+                      setSearchFocused(false);
+                      // Simulate location selection
+                      if (onLocationSelect) {
+                        // Random coordinates around Riyadh
+                        const randomLat = 24.7 + (Math.random() - 0.5) / 10;
+                        const randomLng = 46.7 + (Math.random() - 0.5) / 10;
+                        onLocationSelect(randomLat, randomLng);
+                      }
+                    }}
+                  >
+                    <MapPin className="h-4 w-4 text-gray-500 mr-2" />
+                    <span className="text-sm">{suggestion}</span>
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
         </div>
       )}
       
-      {/* User selected location */}
-      {userLocation && <LocationMarker top={userLocation.top} left={userLocation.left} />}
-      
-      {/* Simulated truck positions */}
-      {mockTrucks.map((truck, index) => {
-        // Position trucks around the center with some randomness
-        const posTop = `${40 + (index * 12)}%`;
-        const posLeft = `${40 + (index * 10)}%`;
+      {/* Map area */}
+      <div 
+        className={`w-full h-full bg-blue-50 relative ${interactive ? 'cursor-crosshair' : ''}`}
+        onClick={interactive ? handleMapClick : undefined}
+      >
+        <div className="absolute inset-0" style={{ 
+          backgroundImage: "url('https://api.mapbox.com/styles/v1/mapbox/light-v10/static/46.7,24.7,12/1280x400?access_token=placeholder')", 
+          backgroundSize: "cover",
+          backgroundPosition: "center",
+          opacity: mapLoaded ? 0.7 : 0.3,
+          transition: "opacity 0.5s ease-in-out"
+        }}>
+        </div>
         
-        return (
-          <TruckMarker 
-            key={truck.id}
-            top={posTop}
-            left={posLeft}
-            distance={truck.distance}
-            type={truck.type}
-          />
-        );
-      })}
-      
-      {!mapLoaded ? (
-        <div className="relative bg-white px-4 py-2 rounded-lg shadow-md animate-pulse">
-          {language === 'en' ? 'Loading map...' : 'جاري تحميل الخريطة...'}
-        </div>
-      ) : (
-        <div className="relative bg-white px-4 py-2 rounded-lg shadow-md">
-          {getMapMessage()}
-        </div>
-      )}
+        {/* Current location marker */}
+        {!userLocation && interactive && (
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-10">
+            <div className="w-16 h-16 flex items-center justify-center">
+              <Crosshair className="h-8 w-8 text-moprd-teal animate-pulse" />
+            </div>
+          </div>
+        )}
+        
+        {/* User selected location */}
+        {userLocation && <LocationMarker top={userLocation.top} left={userLocation.left} />}
+        
+        {/* Simulated truck positions */}
+        {mockTrucks.map((truck, index) => {
+          // Position trucks around the center with some randomness
+          const posTop = `${40 + (index * 12)}%`;
+          const posLeft = `${40 + (index * 10)}%`;
+          
+          return (
+            <TruckMarker 
+              key={truck.id}
+              top={posTop}
+              left={posLeft}
+              distance={truck.distance}
+              type={truck.type}
+            />
+          );
+        })}
+        
+        {/* Map loading/info message */}
+        {!mapLoaded ? (
+          <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-white px-4 py-2 rounded-lg shadow-md animate-pulse">
+            {language === 'en' ? 'Loading map...' : 'جاري تحميل الخريطة...'}
+          </div>
+        ) : interactive && (
+          <div className="absolute bottom-24 left-1/2 transform -translate-x-1/2 bg-white/90 dark:bg-gray-800/90 px-6 py-3 rounded-full shadow-lg backdrop-blur-sm">
+            {getMapMessage()}
+          </div>
+        )}
+        
+        {/* Locate me button */}
+        {interactive && (
+          <Button
+            className="absolute bottom-12 right-4 bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-200 shadow-lg rounded-full p-3 w-12 h-12"
+            size="icon"
+            variant="outline"
+            onClick={() => {
+              toast.success(
+                language === 'en' ? "Using your current location" : "استخدام موقعك الحالي"
+              );
+              // Simulate using current location
+              if (onLocationSelect) {
+                onLocationSelect(24.7136, 46.6753); // Riyadh coordinates
+              }
+            }}
+          >
+            <Crosshair className="h-6 w-6 text-moprd-teal" />
+          </Button>
+        )}
+      </div>
     </div>
   );
 };

@@ -1,5 +1,5 @@
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import TruckRequestForm from "@/components/TruckRequestForm";
@@ -10,7 +10,7 @@ import { useTruckFinderState, RequestDetails, TruckOffer } from "@/hooks/useTruc
 import { useLanguageContent } from "@/hooks/useLanguageContent";
 import { useLanguage } from "@/contexts/LanguageContext";
 import TruckMap from "@/components/TruckMap";
-import { MapPin } from "lucide-react";
+import { MapPin, ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 const FindTrucks = () => {
@@ -28,8 +28,8 @@ const FindTrucks = () => {
   
   const { getPageTitle, getTruckTypesDescription } = useLanguageContent();
   const [acceptedOfferId, setAcceptedOfferId] = useState<string | undefined>();
-  const [showFullMap, setShowFullMap] = useState(false);
   const [mapSelectionMode, setMapSelectionMode] = useState(false);
+  const [currentStep, setCurrentStep] = useState(1);
 
   const handleAcceptOffer = (offerId: string, rentalDuration: string = "day") => {
     // In a real app, we would send the offer acceptance to the server
@@ -74,17 +74,9 @@ const FindTrucks = () => {
     }
   };
 
-  const toggleFullMap = () => {
-    setShowFullMap(!showFullMap);
-  };
-
-  const handleMapSelection = () => {
-    setMapSelectionMode(true);
-    setShowFullMap(true);
-    toast.info(
-      language === 'en' ? "Map Selection Mode" : "وضع اختيار الموقع من الخريطة",
-      { description: language === 'en' ? "Click on the map to set your location" : "انقر على الخريطة لتحديد موقعك" }
-    );
+  // Going back to the vehicle selection
+  const handleBackToVehicle = () => {
+    setCurrentStep(1);
   };
 
   // Hide language selector in this page
@@ -96,81 +88,101 @@ const FindTrucks = () => {
       ? "Find refrigerated trucks, flatbeds, and other specialized vehicles." 
       : getTruckTypesDescription(),
     selectOnMap: language === 'en' ? "Select Location on Map" : "اختر الموقع من الخريطة",
-    fullMap: language === 'en' ? "Full Map View" : "عرض الخريطة كاملة",
-    closeMap: language === 'en' ? "Close Map View" : "إغلاق عرض الخريطة",
+    back: language === 'en' ? "Back" : "رجوع",
+    vehicleSelection: language === 'en' ? "Vehicle Selection" : "اختيار المركبة",
+    locationSelection: language === 'en' ? "Location Selection" : "تحديد الموقع",
   };
 
   return (
     <div className="container mx-auto px-4 py-8 pb-24">
-      <TruckFinderHeader 
-        pageTitle={translations.pageTitle}
-        description={translations.description}
-        hasDiscount={hasDiscount}
-        couponApplied={couponApplied}
-        applyCoupon={applyCoupon}
-        requestSubmitted={requestSubmitted}
-        hideLanguageButton={hideLanguageButton}
-      />
-
-      {/* Map toggle button */}
-      <div className="flex justify-center mb-4">
-        <Button
-          variant="outline"
-          className="flex items-center gap-2 border-moprd-teal text-moprd-teal hover:bg-moprd-teal/10"
-          onClick={toggleFullMap}
-        >
-          <MapPin size={16} />
-          {showFullMap ? translations.closeMap : translations.fullMap}
-        </Button>
-      </div>
-      
-      {/* Full map view */}
-      {showFullMap && (
-        <div className="mb-6">
-          <div className="bg-blue-50 rounded-lg overflow-hidden" style={{ height: '500px' }}>
-            <TruckMap />
-          </div>
-          {mapSelectionMode && (
-            <div className="mt-2 text-center text-sm text-moprd-teal">
-              <p>{language === 'en' ? 'Click on the map to set your location' : 'انقر على الخريطة لتحديد موقعك'}</p>
+      {/* Fixed header with step indicator */}
+      <div className="fixed top-0 left-0 right-0 bg-white dark:bg-gray-900 z-30 shadow-md">
+        <div className="container mx-auto px-4 py-3">
+          {currentStep === 2 ? (
+            <div className="flex items-center">
+              <Button
+                variant="ghost"
+                className="mr-2 p-2"
+                onClick={handleBackToVehicle}
+              >
+                <ArrowLeft className="h-5 w-5" />
+              </Button>
+              <h1 className="text-lg font-medium">
+                {translations.locationSelection}
+              </h1>
             </div>
+          ) : (
+            <TruckFinderHeader 
+              pageTitle={translations.pageTitle}
+              description={translations.description}
+              hasDiscount={hasDiscount}
+              couponApplied={couponApplied}
+              applyCoupon={applyCoupon}
+              requestSubmitted={requestSubmitted}
+              hideLanguageButton={hideLanguageButton}
+            />
           )}
         </div>
-      )}
+      </div>
 
-      {!requestSubmitted ? (
-        <>
-          <div className="flex justify-center mb-4">
-            <Button
-              variant="outline"
-              className="flex items-center gap-2 border-moprd-teal text-moprd-teal hover:bg-moprd-teal/10"
-              onClick={handleMapSelection}
-            >
-              <MapPin size={16} />
-              {translations.selectOnMap}
-            </Button>
-          </div>
-          <TruckRequestForm 
-            onRequestSubmitted={handleRequestSubmitted} 
-            discountApplied={couponApplied} 
+      {/* Main content with margin top to accommodate fixed header */}
+      <div className="mt-24">
+        {!requestSubmitted ? (
+          currentStep === 2 ? (
+            /* Full map view in step 2 (Location selection) */
+            <div className="fixed inset-0 z-20 pt-16 pb-16">
+              <div className="h-full w-full">
+                <TruckMap 
+                  interactive={true} 
+                  onLocationSelect={(lat, lng) => {
+                    // Here we would handle location selection
+                    toast.success(
+                      language === 'en' ? "Location selected!" : "تم اختيار الموقع!"
+                    );
+                    setCurrentStep(3); // Move to next step after selection
+                  }}
+                />
+              </div>
+              {/* Semi-transparent overlay at bottom with action button */}
+              <div className="fixed bottom-0 left-0 right-0 bg-gradient-to-t from-white dark:from-gray-900 to-transparent pt-32 pb-6 px-4">
+                <Button 
+                  className="w-full bg-moprd-teal hover:bg-moprd-teal/90 text-white"
+                  onClick={() => setCurrentStep(3)}
+                >
+                  {language === 'en' ? "Continue" : "متابعة"}
+                </Button>
+              </div>
+            </div>
+          ) : (
+            /* Step 1 or 3: TruckRequestForm */
+            <TruckRequestForm 
+              onRequestSubmitted={handleRequestSubmitted}
+              discountApplied={couponApplied}
+              initialStep={currentStep}
+              onStepChange={setCurrentStep}
+            />
+          )
+        ) : (
+          /* Show offers after request is submitted */
+          <TruckOffersList 
+            offers={offers} 
+            requestDetails={requestDetails!} 
+            onAcceptOffer={handleAcceptOffer} 
+            discountApplied={couponApplied}
+            acceptedOfferId={acceptedOfferId}
           />
-        </>
-      ) : (
-        <TruckOffersList 
-          offers={offers} 
-          requestDetails={requestDetails!} 
-          onAcceptOffer={handleAcceptOffer} 
-          discountApplied={couponApplied}
-          acceptedOfferId={acceptedOfferId}
+        )}
+      </div>
+      
+      {/* Only show discount info when not in the map view */}
+      {currentStep !== 2 && (
+        <TruckDiscountInfo
+          hasDiscount={hasDiscount}
+          couponApplied={couponApplied}
+          applyCoupon={applyCoupon}
+          requestSubmitted={requestSubmitted}
         />
       )}
-      
-      <TruckDiscountInfo
-        hasDiscount={hasDiscount}
-        couponApplied={couponApplied}
-        applyCoupon={applyCoupon}
-        requestSubmitted={requestSubmitted}
-      />
     </div>
   );
 };

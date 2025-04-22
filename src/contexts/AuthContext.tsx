@@ -1,4 +1,3 @@
-
 import React, { createContext, useContext, useState, ReactNode } from "react";
 
 // Define UserRole type
@@ -13,6 +12,7 @@ export interface User {
   phoneNumber?: string;
   provider?: "email" | "oauth";
   isAdmin?: boolean;
+  bucketPoints?: number;
 }
 
 interface ProfileUpdateData {
@@ -82,7 +82,8 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
             email,
             role,
             provider: "email",
-            isAdmin: role === "admin"
+            isAdmin: role === "admin",
+            bucketPoints: 25 // Initialize with some points
           };
           
           setUser(newUser);
