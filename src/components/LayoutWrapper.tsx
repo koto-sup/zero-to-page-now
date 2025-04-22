@@ -19,8 +19,8 @@ const LayoutWrapper: React.FC<LayoutWrapperProps> = ({ children }) => {
     const currentPath = location.pathname;
     const previousPaths = JSON.parse(localStorage.getItem('navigationHistory') || '[]');
     
-    // Only store path if it's different from the last one
-    if (previousPaths.length === 0 || previousPaths[previousPaths.length - 1] !== currentPath) {
+    // Only store path if it's different from the last one and not empty
+    if (currentPath && (previousPaths.length === 0 || previousPaths[previousPaths.length - 1] !== currentPath)) {
       // Keep only last 10 paths
       const updatedPaths = [...previousPaths, currentPath].slice(-10);
       localStorage.setItem('navigationHistory', JSON.stringify(updatedPaths));
@@ -49,8 +49,28 @@ const LayoutWrapper: React.FC<LayoutWrapperProps> = ({ children }) => {
   // Add padding bottom to content if user is authenticated (for bottom navbar)
   const contentStyle = user ? { paddingBottom: "80px" } : undefined;
 
+  // Setup hardware back button handler for mobile
+  useEffect(() => {
+    const handleBackButton = (e: PopStateEvent) => {
+      // Check if we have history to go back to
+      const paths = JSON.parse(localStorage.getItem('navigationHistory') || '[]');
+      if (paths.length > 1) {
+        // We don't need to do anything here because the browser will handle navigation
+      } else {
+        // If we're at the root of our history, prevent default behavior
+        // and navigate to dashboard if logged in
+        if (user) {
+          navigate('/dashboard');
+        }
+      }
+    };
+
+    window.addEventListener('popstate', handleBackButton);
+    return () => window.removeEventListener('popstate', handleBackButton);
+  }, [navigate, user]);
+
   return (
-    <div style={contentStyle}>
+    <div style={contentStyle} className="min-h-screen">
       {children}
       
       {user && (

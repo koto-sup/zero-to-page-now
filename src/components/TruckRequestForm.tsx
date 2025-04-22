@@ -16,13 +16,15 @@ interface TruckRequestFormProps {
   discountApplied?: boolean;
   initialStep?: number;
   onStepChange?: (step: number) => void;
+  onBackButtonClick?: () => void;
 }
 
 const TruckRequestForm: React.FC<TruckRequestFormProps> = ({
   onRequestSubmitted,
   discountApplied = false,
   initialStep = 1,
-  onStepChange
+  onStepChange,
+  onBackButtonClick
 }) => {
   const {
     formState,
@@ -82,10 +84,13 @@ const TruckRequestForm: React.FC<TruckRequestFormProps> = ({
     }
   };
 
-  // Go back to previous step
+  // Go back to previous step or exit
   const goToPrevStep = () => {
     if (currentStep > 1) {
       setCurrentStep(currentStep - 1);
+    } else if (onBackButtonClick) {
+      // If we're at the first step, use the provided back handler
+      onBackButtonClick();
     }
   };
 
@@ -123,6 +128,16 @@ const TruckRequestForm: React.FC<TruckRequestFormProps> = ({
       <form onSubmit={(e) => { e.preventDefault(); goToNextStep(); }}>
         {/* Step 1: Vehicle Type Selection */}
         <div className="space-y-6">
+          <Button
+            type="button"
+            variant="outline"
+            className="mb-4"
+            onClick={onBackButtonClick}
+          >
+            <ArrowLeft className="mr-2 h-4 w-4" />
+            {t("Back", "رجوع")}
+          </Button>
+          
           <TruckTypeSelector 
             selectedTruckType={formState.truckType}
             onTruckTypeChange={(value) => {

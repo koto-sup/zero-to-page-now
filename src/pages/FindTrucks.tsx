@@ -23,7 +23,8 @@ const FindTrucks = () => {
     hasDiscount, 
     couponApplied, 
     handleRequestSubmitted, 
-    applyCoupon 
+    applyCoupon,
+    setRequestSubmitted 
   } = useTruckFinderState();
   
   const { getPageTitle, getTruckTypesDescription } = useLanguageContent();
@@ -75,19 +76,28 @@ const FindTrucks = () => {
     }
   };
 
-  // Going back to the vehicle selection
+  // Going back to the vehicle selection or previous screen
   const handleBackToVehicle = () => {
-    setCurrentStep(1);
+    if (currentStep === 2) {
+      setCurrentStep(1);
+    } else if (requestSubmitted) {
+      // If offers are showing, go back to location selection
+      setRequestSubmitted(false);
+      setCurrentStep(2);
+    } else {
+      // If no state to go back to, navigate to dashboard
+      navigate('/dashboard');
+    }
   };
 
   // Handle location selection from map
   const handleLocationSelect = (lat: number, lng: number) => {
     setSelectedLocation({lat, lng});
     
-    // Continue to next step
-    if (currentStep === 2) {
-      setCurrentStep(3);
-    }
+    // Toast notification for feedback
+    toast.success(
+      language === 'en' ? "Location selected!" : "تم تحديد الموقع!"
+    );
   };
 
   // Handle the "Find Trucks" action
@@ -105,6 +115,8 @@ const FindTrucks = () => {
       
       // Submit the request
       handleRequestSubmitted(locationDetails);
+      // Move to next step (showing offers)
+      setCurrentStep(3);
     } else {
       toast.error(
         language === 'en' ? "Please select a location" : "الرجاء اختيار موقع"
@@ -144,6 +156,19 @@ const FindTrucks = () => {
               </Button>
               <h1 className="text-lg font-medium">
                 {translations.locationSelection}
+              </h1>
+            </div>
+          ) : requestSubmitted ? (
+            <div className="flex items-center">
+              <Button
+                variant="ghost"
+                className="mr-2 p-2"
+                onClick={handleBackToVehicle}
+              >
+                <ArrowLeft className="h-5 w-5" />
+              </Button>
+              <h1 className="text-lg font-medium">
+                {language === 'en' ? "Available Trucks" : "الشاحنات المتاحة"}
               </h1>
             </div>
           ) : (
@@ -190,6 +215,7 @@ const FindTrucks = () => {
               discountApplied={couponApplied}
               initialStep={currentStep}
               onStepChange={setCurrentStep}
+              onBackButtonClick={handleBackToVehicle}
             />
           )
         ) : (

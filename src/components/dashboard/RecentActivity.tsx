@@ -10,19 +10,23 @@ const RecentActivity: React.FC = () => {
   const navigate = useNavigate();
   const { language } = useLanguage();
   
+  const handleBack = () => {
+    navigate(-1);
+  };
+  
   return (
     <Card>
       <CardHeader className="pb-2">
         <div className="flex items-center justify-between">
           <CardTitle className="flex items-center text-xl">
-            <Clock className="ml-2 h-5 w-5 text-moprd-teal" />
+            <Clock className="mr-2 h-5 w-5 text-moprd-teal" />
             {language === 'en' ? "Recent Activities" : "آخر النشاطات"}
           </CardTitle>
           <Button 
             variant="ghost" 
             size="sm" 
             className="h-8 px-2"
-            onClick={() => navigate(-1)}
+            onClick={handleBack}
           >
             <ArrowLeft className="h-4 w-4 mr-1" />
             {language === 'en' ? "Back" : "رجوع"}

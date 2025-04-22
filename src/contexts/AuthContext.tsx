@@ -1,5 +1,6 @@
 
-import React, { createContext, useContext, useState, ReactNode } from "react";
+import React, { createContext, useContext, useState, ReactNode, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 
 // Define UserRole type
 export type UserRole = "customer" | "driver" | "admin";
@@ -59,7 +60,20 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   }
 
   // Check if user is admin
-  const isAdmin = !!user && user.role === "admin";
+  const isAdmin = !!user && (user.role === "admin" || user.email === "admin@kotomoto.co");
+
+  // Update the user's role if they are admin@kotomoto.co
+  useEffect(() => {
+    if (user && user.email === "admin@kotomoto.co" && user.role !== "admin") {
+      const updatedUser = {
+        ...user,
+        role: "admin" as UserRole,
+        isAdmin: true
+      };
+      setUser(updatedUser);
+      saveUserToLocalStorage(updatedUser);
+    }
+  }, [user]);
 
   const login = async (email: string, password: string): Promise<boolean> => {
     // This is a mock implementation
@@ -71,11 +85,13 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         try {
           // Determine role based on email
           let role: UserRole = "customer";
+          let isAdminUser = false;
           
-          if (email.includes("driver")) {
-            role = "driver";
-          } else if (email.includes("admin")) {
+          if (email.includes("admin") || email === "admin@kotomoto.co") {
             role = "admin";
+            isAdminUser = true;
+          } else if (email.includes("driver")) {
+            role = "driver";
           }
           
           const newUser: User = {
@@ -84,7 +100,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
             email,
             role,
             provider: "email",
-            isAdmin: role === "admin",
+            isAdmin: isAdminUser,
             bucketPoints: 25 // Initialize with some points
           };
           
@@ -123,13 +139,22 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     return new Promise<void>((resolve, reject) => {
       setTimeout(() => {
         try {
+          let isAdminUser = false;
+          let role = data.role;
+          
+          // Force admin role if the email is admin@kotomoto.co
+          if (data.email === "admin@kotomoto.co") {
+            role = "admin";
+            isAdminUser = true;
+          }
+          
           const newUser: User = {
             id: Math.random().toString(36).substring(2),
             name: data.name,
             email: data.email,
-            role: data.role,
+            role,
             provider: "email",
-            isAdmin: data.role === "admin",
+            isAdmin: isAdminUser || role === "admin",
             bucketPoints: 0 // Start with zero points for new users
           };
           

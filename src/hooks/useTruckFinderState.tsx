@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import { toast } from "sonner";
@@ -94,7 +95,7 @@ export const useTruckFinderState = () => {
         toast.success("لديك عروض جديدة!", {
           description: "تم استلام 3 عروض من السائقين القريبين"
         });
-      }, 5000);
+      }, 3000);
       
       return () => clearTimeout(timer);
     }
