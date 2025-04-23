@@ -39,7 +39,7 @@ const UserTypeSelection: React.FC<UserTypeSelectionProps> = ({
     },
     // Only show admin role if explicitly enabled
     ...(showAdmin ? [{
-      value: "admin",
+      value: "admin" as UserRole,
       label: language === 'en' ? "Admin" : "مدير",
       icon: <UserIcon className="h-8 w-8 text-red-500" />,
       description: language === 'en' 

@@ -2,10 +2,18 @@
 import React from 'react';
 import ChatBox from '@/components/ChatBox';
 import { useAuth } from '@/contexts/AuthContext';
-import { ChatDetailProps } from '@/types/chat';
+import { ChatDetailProps, ChatMessage } from '@/types/chat';
 import { getMockMessages } from '@/utils/mockMessages';
 
-const ChatDetail: React.FC<ChatDetailProps> = ({ chatId, recipientId }) => {
+const ChatDetail: React.FC<ChatDetailProps & {
+  onSaveMessages?: (conversation: any) => void;
+  savedMessages?: ChatMessage[];
+}> = ({ 
+  chatId, 
+  recipientId, 
+  onSaveMessages,
+  savedMessages = [] 
+}) => {
   const { user } = useAuth();
   
   const getRecipientName = (id: string) => {
@@ -17,7 +25,11 @@ const ChatDetail: React.FC<ChatDetailProps> = ({ chatId, recipientId }) => {
   };
 
   const recipientName = getRecipientName(recipientId);
-  const initialMessages = getMockMessages(user?.id || "unknown", recipientId);
+  
+  // Use saved messages if available, otherwise use mock messages
+  const initialMessages = savedMessages.length > 0 
+    ? savedMessages 
+    : getMockMessages(user?.id || "unknown", recipientId);
 
   return (
     <div className="h-full flex flex-col">
@@ -27,6 +39,7 @@ const ChatDetail: React.FC<ChatDetailProps> = ({ chatId, recipientId }) => {
         recipientName={recipientName}
         recipientAvatar="/placeholder.svg"
         initialMessages={initialMessages}
+        onSaveMessages={onSaveMessages}
       />
     </div>
   );

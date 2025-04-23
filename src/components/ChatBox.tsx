@@ -7,6 +7,7 @@ import MessageList from "./chat/MessageList";
 import MessageInput from "./chat/MessageInput";
 import QuoteForm from "./chat/QuoteForm";
 import { toast } from "sonner";
+import { TrackedConversation } from "@/types/chat";
 
 interface Message {
   id: string;
@@ -28,6 +29,7 @@ interface ChatBoxProps {
   initialMessages?: Message[];
   onSendQuote?: (amount: number) => void;
   onAcceptQuote?: (messageId: string) => void;
+  onSaveMessages?: (conversation: TrackedConversation) => void;
 }
 
 // Mock initial messages for demo purposes
@@ -72,6 +74,7 @@ const ChatBox: React.FC<ChatBoxProps> = ({
   initialMessages = [],
   onSendQuote,
   onAcceptQuote,
+  onSaveMessages,
 }) => {
   const { user } = useAuth();
   const { language } = useLanguage();
@@ -82,13 +85,36 @@ const ChatBox: React.FC<ChatBoxProps> = ({
   // Load messages (mock or real)
   useEffect(() => {
     if (initialMessages.length > 0) {
-      setMessages(initialMessages);
+      // Convert any string dates to Date objects
+      const processedMessages = initialMessages.map(msg => ({
+        ...msg,
+        timestamp: msg.timestamp instanceof Date ? msg.timestamp : new Date(msg.timestamp)
+      }));
+      setMessages(processedMessages);
     } else if (user) {
       // If no messages were provided, use mock data for demo
       const mockMessages = getMockInitialMessages(recipientId, user.id || "unknown");
       setMessages(mockMessages);
     }
   }, [initialMessages, recipientId, user]);
+
+  // Save messages whenever they change
+  useEffect(() => {
+    if (messages.length > 0 && onSaveMessages && user) {
+      const conversation: TrackedConversation = {
+        id: chatId,
+        recipientId: recipientId,
+        recipientName: recipientName,
+        recipientAvatar: recipientAvatar || "/placeholder.svg",
+        lastMessage: messages[messages.length - 1].content,
+        timestamp: messages[messages.length - 1].timestamp,
+        unread: false,
+        messages: messages
+      };
+      
+      onSaveMessages(conversation);
+    }
+  }, [messages, chatId, recipientId, recipientName, recipientAvatar, onSaveMessages, user]);
 
   const handleSendMessage = (content: string) => {
     const message: Message = {

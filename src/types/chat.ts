@@ -15,9 +15,16 @@ export interface TrackedConversation extends ChatPreview {
 
 export interface ChatMessage {
   id: string;
-  text: string;
+  text?: string;
+  content?: string;
   timestamp: Date;
-  sender: string;
+  sender?: string;
+  senderId: string;
+  senderName?: string;
+  senderAvatar?: string;
+  isQuote?: boolean;
+  quoteAmount?: number;
+  isAccepted?: boolean;
 }
 
 export interface ChatDetailProps {
@@ -34,6 +41,7 @@ export interface ChatBoxProps {
     id: string;
     senderId: string;
     senderName: string;
+    senderAvatar?: string;
     content: string;
     timestamp: Date;
   }[];
