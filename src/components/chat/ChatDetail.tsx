@@ -12,6 +12,7 @@ const ChatDetail: React.FC<ChatDetailProps> = ({ chatId, recipientId }) => {
     if (id === "customer-1") return "Customer User";
     if (id === "customer-2") return "Jane Doe";
     if (id === "driver-1") return "John Driver";
+    if (id === "driver-2") return "Ahmed Driver";
     return "Sarah Smith";
   };
 
@@ -19,7 +20,7 @@ const ChatDetail: React.FC<ChatDetailProps> = ({ chatId, recipientId }) => {
   const initialMessages = getMockMessages(user?.id || "unknown", recipientId);
 
   return (
-    <div className="h-full">
+    <div className="h-full flex flex-col">
       <ChatBox
         chatId={chatId}
         recipientId={recipientId}

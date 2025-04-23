@@ -57,12 +57,13 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
         <BottomNavbar />
       )}
       
+      {/* Footer only shows on non-auth pages and non-chat pages */}
       {!isAuthPage && !isChatPage && (
         <footer className={`${
           theme === 'dark' 
             ? 'bg-gray-900 border-gray-800' 
             : 'bg-background border-gray-200'
-        } border-t py-6`}>
+        } border-t py-6 mt-auto`}> {/* Added mt-auto to push it to the bottom */}
           <div className="container mx-auto px-4">
             <div className={`text-center text-sm ${
               theme === 'dark' 

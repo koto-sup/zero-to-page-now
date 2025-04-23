@@ -1,10 +1,11 @@
 
 import React, { useState } from "react";
-import { Send, PaperclipIcon } from "lucide-react";
+import { Send, PaperclipIcon, Mic } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { useLanguageContent } from "@/hooks/useLanguageContent";
+import { toast } from "sonner";
 
 interface MessageInputProps {
   onSendMessage: (content: string) => void;
@@ -18,6 +19,7 @@ const MessageInput: React.FC<MessageInputProps> = ({
   showQuoteOption 
 }) => {
   const [newMessage, setNewMessage] = useState("");
+  const [isRecording, setIsRecording] = useState(false);
   const { language } = useLanguage();
   const { getChatContent } = useLanguageContent();
   const chatContent = getChatContent();
@@ -26,6 +28,31 @@ const MessageInput: React.FC<MessageInputProps> = ({
     if (!newMessage.trim()) return;
     onSendMessage(newMessage.trim());
     setNewMessage("");
+  };
+
+  const handleVoiceMessage = () => {
+    if (isRecording) {
+      setIsRecording(false);
+      // Here we would normally process the recording
+      toast.success(language === 'en' ? "Voice message sent!" : "تم إرسال الرسالة الصوتية!", {
+        position: "top-right"
+      });
+    } else {
+      setIsRecording(true);
+      toast.info(language === 'en' ? "Recording started..." : "بدأ التسجيل...", {
+        position: "top-right"
+      });
+      // Here we would normally start recording
+      // Simulate ending the recording after 3 seconds
+      setTimeout(() => {
+        if (isRecording) {
+          setIsRecording(false);
+          toast.success(language === 'en' ? "Voice message sent!" : "تم إرسال الرسالة الصوتية!", {
+            position: "top-right"
+          });
+        }
+      }, 3000);
+    }
   };
 
   return (
@@ -58,9 +85,17 @@ const MessageInput: React.FC<MessageInputProps> = ({
             <PaperclipIcon className="h-5 w-5" />
           </Button>
           <Button
+            variant="outline"
+            size="icon"
+            className={`ml-2 ${isRecording ? 'bg-red-100 text-red-600 border-red-400' : ''}`}
+            onClick={handleVoiceMessage}
+          >
+            <Mic className="h-5 w-5" />
+          </Button>
+          <Button
             onClick={handleSendMessage}
             disabled={!newMessage.trim()}
-            className="bg-moprd-teal hover:bg-moprd-blue"
+            className="ml-2 bg-moprd-teal hover:bg-moprd-blue"
           >
             <Send className="h-5 w-5" />
           </Button>

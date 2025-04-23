@@ -22,18 +22,29 @@ const NavigationLinks: React.FC<NavigationLinksProps> = ({ className }) => {
         name: language === 'en' ? "Find Trucks" : "البحث عن شاحنات", 
         href: "/find-trucks",
         icon: Truck
-      },
-      { 
-        name: language === 'en' ? "Track" : "تتبع", 
-        href: user ? "/truck-tracking/driver-1" : "/login",
-        icon: Truck
-      },
-      {
-        name: language === 'en' ? "Map" : "خريطة",
-        href: "/map",
-        icon: Map
       }
     ];
+    
+    // Change "Track" to "Cont" only for admin users
+    if (user && user.email === "admin@kotomoto.co") {
+      commonLinks.push({
+        name: language === 'en' ? "Cont" : "متابعة",
+        href: user ? "/truck-tracking/driver-1" : "/login",
+        icon: Truck
+      });
+    } else {
+      commonLinks.push({
+        name: language === 'en' ? "Track" : "تتبع",
+        href: user ? "/truck-tracking/driver-1" : "/login",
+        icon: Truck
+      });
+    }
+    
+    commonLinks.push({
+      name: language === 'en' ? "Map" : "خريطة",
+      href: "/map",
+      icon: Map
+    });
     
     if (user) {
       commonLinks.push({ 

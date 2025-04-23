@@ -12,6 +12,7 @@ import { useLanguage } from "@/contexts/LanguageContext";
 import TruckMap from "@/components/TruckMap";
 import { MapPin, ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import Layout from "@/components/Layout";
 
 const FindTrucks = () => {
   const navigate = useNavigate();
@@ -29,7 +30,6 @@ const FindTrucks = () => {
   
   const { getPageTitle, getTruckTypesDescription } = useLanguageContent();
   const [acceptedOfferId, setAcceptedOfferId] = useState<string | undefined>();
-  const [mapSelectionMode, setMapSelectionMode] = useState(false);
   const [currentStep, setCurrentStep] = useState(1);
   const [selectedLocation, setSelectedLocation] = useState<{lat: number, lng: number} | null>(null);
 
@@ -50,7 +50,8 @@ const FindTrucks = () => {
             description: language === 'en'
               ? "Thank you for using Zakart"
               : "شكراً لاستخدامك زكرت",
-            dismissible: true
+            dismissible: true,
+            position: "top-right"
           }
         );
       }
@@ -61,7 +62,8 @@ const FindTrucks = () => {
           description: language === 'en'
             ? `The driver will arrive in approximately ${selectedOffer.estimatedArrival}`
             : `سيصلك السائق خلال ${selectedOffer.estimatedArrival} تقريباً`,
-          dismissible: true
+          dismissible: true,
+          position: "top-right"
         }
       );
       
@@ -96,7 +98,8 @@ const FindTrucks = () => {
     
     // Toast notification for feedback
     toast.success(
-      language === 'en' ? "Location selected!" : "تم تحديد الموقع!"
+      language === 'en' ? "Location selected!" : "تم تحديد الموقع!",
+      { position: "top-right" }
     );
   };
 
@@ -119,7 +122,8 @@ const FindTrucks = () => {
       setCurrentStep(3);
     } else {
       toast.error(
-        language === 'en' ? "Please select a location" : "الرجاء اختيار موقع"
+        language === 'en' ? "Please select a location" : "الرجاء اختيار موقع",
+        { position: "top-right" }
       );
     }
   };
@@ -141,105 +145,107 @@ const FindTrucks = () => {
   };
 
   return (
-    <div className="container mx-auto px-4 py-8 pb-24">
-      {/* Fixed header with step indicator */}
-      <div className="fixed top-0 left-0 right-0 bg-white dark:bg-gray-900 z-30 shadow-md">
-        <div className="container mx-auto px-4 py-3">
-          {currentStep === 2 ? (
-            <div className="flex items-center">
-              <Button
-                variant="ghost"
-                className="mr-2 p-2"
-                onClick={handleBackToVehicle}
-              >
-                <ArrowLeft className="h-5 w-5" />
-              </Button>
-              <h1 className="text-lg font-medium">
-                {translations.locationSelection}
-              </h1>
-            </div>
-          ) : requestSubmitted ? (
-            <div className="flex items-center">
-              <Button
-                variant="ghost"
-                className="mr-2 p-2"
-                onClick={handleBackToVehicle}
-              >
-                <ArrowLeft className="h-5 w-5" />
-              </Button>
-              <h1 className="text-lg font-medium">
-                {language === 'en' ? "Available Trucks" : "الشاحنات المتاحة"}
-              </h1>
-            </div>
+    <Layout>
+      <div className="container mx-auto px-4 py-8 pb-24">
+        {/* Fixed header with step indicator */}
+        <div className="fixed top-16 left-0 right-0 bg-white dark:bg-gray-900 z-30 shadow-md">
+          <div className="container mx-auto px-4 py-3">
+            {currentStep === 2 ? (
+              <div className="flex items-center">
+                <Button
+                  variant="ghost"
+                  className="mr-2 p-2"
+                  onClick={handleBackToVehicle}
+                >
+                  <ArrowLeft className="h-5 w-5" />
+                </Button>
+                <h1 className="text-lg font-medium">
+                  {translations.locationSelection}
+                </h1>
+              </div>
+            ) : requestSubmitted ? (
+              <div className="flex items-center">
+                <Button
+                  variant="ghost"
+                  className="mr-2 p-2"
+                  onClick={handleBackToVehicle}
+                >
+                  <ArrowLeft className="h-5 w-5" />
+                </Button>
+                <h1 className="text-lg font-medium">
+                  {language === 'en' ? "Available Trucks" : "الشاحنات المتاحة"}
+                </h1>
+              </div>
+            ) : (
+              <TruckFinderHeader 
+                pageTitle={translations.pageTitle}
+                description={translations.description}
+                hasDiscount={hasDiscount}
+                couponApplied={couponApplied}
+                applyCoupon={applyCoupon}
+                requestSubmitted={requestSubmitted}
+                hideLanguageButton={hideLanguageButton}
+              />
+            )}
+          </div>
+        </div>
+
+        {/* Main content with margin top to accommodate fixed header */}
+        <div className="mt-24">
+          {!requestSubmitted ? (
+            currentStep === 2 ? (
+              /* Full map view in step 2 (Location selection) */
+              <div className="relative h-[70vh] z-10">
+                <div className="h-full w-full">
+                  <TruckMap 
+                    interactive={true} 
+                    onLocationSelect={handleLocationSelect}
+                  />
+                </div>
+                {/* Semi-transparent overlay at bottom with action button */}
+                <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-white dark:from-gray-900 to-transparent pt-32 pb-6 px-4">
+                  <Button 
+                    className="w-full bg-moprd-teal hover:bg-moprd-teal/90 text-white"
+                    onClick={handleFindTrucks}
+                    disabled={!selectedLocation}
+                  >
+                    {translations.findTrucks}
+                  </Button>
+                </div>
+              </div>
+            ) : (
+              /* Step 1 or 3: TruckRequestForm */
+              <TruckRequestForm 
+                onRequestSubmitted={handleRequestSubmitted}
+                discountApplied={couponApplied}
+                initialStep={currentStep}
+                onStepChange={setCurrentStep}
+                onBackButtonClick={handleBackToVehicle}
+              />
+            )
           ) : (
-            <TruckFinderHeader 
-              pageTitle={translations.pageTitle}
-              description={translations.description}
-              hasDiscount={hasDiscount}
-              couponApplied={couponApplied}
-              applyCoupon={applyCoupon}
-              requestSubmitted={requestSubmitted}
-              hideLanguageButton={hideLanguageButton}
+            /* Show offers after request is submitted */
+            <TruckOffersList 
+              offers={offers} 
+              requestDetails={requestDetails!} 
+              onAcceptOffer={handleAcceptOffer} 
+              discountApplied={couponApplied}
+              acceptedOfferId={acceptedOfferId}
             />
           )}
         </div>
-      </div>
-
-      {/* Main content with margin top to accommodate fixed header */}
-      <div className="mt-24">
-        {!requestSubmitted ? (
-          currentStep === 2 ? (
-            /* Full map view in step 2 (Location selection) */
-            <div className="fixed inset-0 z-20 pt-16 pb-16">
-              <div className="h-full w-full">
-                <TruckMap 
-                  interactive={true} 
-                  onLocationSelect={handleLocationSelect}
-                />
-              </div>
-              {/* Semi-transparent overlay at bottom with action button */}
-              <div className="fixed bottom-0 left-0 right-0 bg-gradient-to-t from-white dark:from-gray-900 to-transparent pt-32 pb-6 px-4">
-                <Button 
-                  className="w-full bg-moprd-teal hover:bg-moprd-teal/90 text-white"
-                  onClick={handleFindTrucks}
-                  disabled={!selectedLocation}
-                >
-                  {translations.findTrucks}
-                </Button>
-              </div>
-            </div>
-          ) : (
-            /* Step 1 or 3: TruckRequestForm */
-            <TruckRequestForm 
-              onRequestSubmitted={handleRequestSubmitted}
-              discountApplied={couponApplied}
-              initialStep={currentStep}
-              onStepChange={setCurrentStep}
-              onBackButtonClick={handleBackToVehicle}
-            />
-          )
-        ) : (
-          /* Show offers after request is submitted */
-          <TruckOffersList 
-            offers={offers} 
-            requestDetails={requestDetails!} 
-            onAcceptOffer={handleAcceptOffer} 
-            discountApplied={couponApplied}
-            acceptedOfferId={acceptedOfferId}
+        
+        {/* Only show discount info when not in the map view */}
+        {currentStep !== 2 && (
+          <TruckDiscountInfo
+            hasDiscount={hasDiscount}
+            couponApplied={couponApplied}
+            applyCoupon={applyCoupon}
+            requestSubmitted={requestSubmitted}
           />
         )}
       </div>
-      
-      {/* Only show discount info when not in the map view */}
-      {currentStep !== 2 && (
-        <TruckDiscountInfo
-          hasDiscount={hasDiscount}
-          couponApplied={couponApplied}
-          applyCoupon={applyCoupon}
-          requestSubmitted={requestSubmitted}
-        />
-      )}
-    </div>
+    </Layout>
   );
 };
 
