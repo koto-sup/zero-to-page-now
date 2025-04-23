@@ -93,7 +93,10 @@ export const useTruckFinderState = () => {
         setOffers(mockOffers);
         
         toast.success("لديك عروض جديدة!", {
-          description: "تم استلام 3 عروض من السائقين القريبين"
+          description: "تم استلام 3 عروض من السائقين القريبين",
+          position: "top-right",
+          dismissible: true,
+          closeButton: true
         });
       }, 3000);
       
@@ -110,16 +113,26 @@ export const useTruckFinderState = () => {
     if (hasDiscount && !couponApplied) {
       setCouponApplied(true);
       toast.success("تم تطبيق الكوبون بنجاح!", {
-        description: "ستحصل على خصم 18% عند إتمام الطلب"
+        description: "ستحصل على خصم 18% عند إتمام الطلب",
+        position: "top-right",
+        dismissible: true,
+        closeButton: true
       });
     } else if (!hasDiscount) {
       toast.error("ليس لديك خصم متاح", {
         description: completedOrders >= 7 
           ? "حدث خطأ في تطبيق الخصم، حاول مرة أخرى"
-          : `يمكنك الحصول على خصم 18% بعد إتمام 7 طلبات (${completedOrders}/7)`
+          : `يمكنك الحصول على خصم 18% بعد إتمام 7 طلبات (${completedOrders}/7)`,
+        position: "top-right",
+        dismissible: true,
+        closeButton: true
       });
     } else {
-      toast.info("تم تطبيق الكوبون بالفعل");
+      toast.info("تم تطبيق الكوبون بالفعل", {
+        position: "top-right",
+        dismissible: true,
+        closeButton: true
+      });
     }
   };
 

@@ -30,8 +30,14 @@ const FindTrucks = () => {
   
   const { getPageTitle, getTruckTypesDescription } = useLanguageContent();
   const [acceptedOfferId, setAcceptedOfferId] = useState<string | undefined>();
-  const [currentStep, setCurrentStep] = useState(1);
+  const [currentStep, setCurrentStep] = useState(1); // Always start from step 1
   const [selectedLocation, setSelectedLocation] = useState<{lat: number, lng: number} | null>(null);
+
+  // Reset to step 1 when component mounts
+  useEffect(() => {
+    setCurrentStep(1);
+    setRequestSubmitted(false);
+  }, []);
 
   const handleAcceptOffer = (offerId: string, rentalDuration: string = "day") => {
     // In a real app, we would send the offer acceptance to the server
@@ -96,10 +102,13 @@ const FindTrucks = () => {
   const handleLocationSelect = (lat: number, lng: number) => {
     setSelectedLocation({lat, lng});
     
-    // Toast notification for feedback
+    // Toast notification for feedback - positioned in top-right by default
     toast.success(
       language === 'en' ? "Location selected!" : "تم تحديد الموقع!",
-      { position: "top-right" }
+      { 
+        position: "top-right",
+        dismissible: true 
+      }
     );
   };
 
@@ -123,7 +132,10 @@ const FindTrucks = () => {
     } else {
       toast.error(
         language === 'en' ? "Please select a location" : "الرجاء اختيار موقع",
-        { position: "top-right" }
+        { 
+          position: "top-right",
+          dismissible: true 
+        }
       );
     }
   };
