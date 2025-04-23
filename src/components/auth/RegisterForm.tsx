@@ -211,7 +211,11 @@ export const RegisterForm: React.FC<RegisterFormProps> = ({ initialRole = "custo
           )}
         </div>
         
-        <UserTypeSelection role={role} onRoleChange={setRole} showAdmin={showAdminOption} />
+        <UserTypeSelection 
+          selectedRole={role} 
+          onRoleChange={setRole} 
+          showAdmin={showAdminOption} 
+        />
       </CardContent>
       <CardFooter className="flex flex-col">
         <IceButtonV2 

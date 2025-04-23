@@ -13,7 +13,6 @@ const Toaster = ({ ...props }: ToasterProps) => {
       className="toaster group"
       position="top-right"
       closeButton={true}
-      swipeDirection="right"
       toastOptions={{
         classNames: {
           toast:

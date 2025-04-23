@@ -10,11 +10,13 @@ import { useLanguage } from "@/contexts/LanguageContext";
 interface UserTypeSelectionProps {
   selectedRole: UserRole;
   onRoleChange: (role: UserRole) => void;
+  showAdmin?: boolean;
 }
 
 const UserTypeSelection: React.FC<UserTypeSelectionProps> = ({
   selectedRole,
   onRoleChange,
+  showAdmin = false,
 }) => {
   const { language } = useLanguage();
 
@@ -35,7 +37,15 @@ const UserTypeSelection: React.FC<UserTypeSelectionProps> = ({
         ? "I have a refrigerated truck and want to offer services"
         : "لدي شاحنة مبردة وأرغب في تقديم الخدمات"
     },
-    // Admin role is removed from selection
+    // Only show admin role if explicitly enabled
+    ...(showAdmin ? [{
+      value: "admin",
+      label: language === 'en' ? "Admin" : "مدير",
+      icon: <UserIcon className="h-8 w-8 text-red-500" />,
+      description: language === 'en' 
+        ? "I want to manage the platform" 
+        : "أرغب في إدارة المنصة"
+    }] : [])
   ];
 
   return (
