@@ -19,6 +19,9 @@ export const UserTypeSelection: React.FC<UserTypeSelectionProps> = ({
 }) => {
   const { language } = useLanguage();
   
+  // Only show admin option if specifically allowed and user is admin@kotomoto.co
+  const isAllowedAdmin = showAdmin && localStorage.getItem('adminEmail') === 'admin@kotomoto.co';
+  
   return (
     <div className="space-y-3">
       <Label className="block dark:text-foreground">
@@ -67,7 +70,7 @@ export const UserTypeSelection: React.FC<UserTypeSelectionProps> = ({
           </div>
         </div>
 
-        {showAdmin && (
+        {isAllowedAdmin && (
           <div 
             className={`p-3 border rounded-lg cursor-pointer flex items-center transition-colors ${
               role === "admin" ? "bg-purple-100 border-purple-500 dark:bg-purple-900/30 dark:border-purple-500" : "bg-gray-50 hover:bg-gray-100 dark:bg-gray-800 dark:hover:bg-gray-700 dark:border-gray-700"

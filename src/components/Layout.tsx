@@ -22,6 +22,9 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
     location.pathname === "/login" || 
     location.pathname === "/register" ||
     location.pathname === "/forgot-password";
+    
+  // Check if we're on a chat page
+  const isChatPage = location.pathname.includes('/chat/');
   
   // Get translations based on current language
   const translations = {
@@ -54,7 +57,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
         <BottomNavbar />
       )}
       
-      {!isAuthPage && (
+      {!isAuthPage && !isChatPage && (
         <footer className={`${
           theme === 'dark' 
             ? 'bg-gray-900 border-gray-800' 

@@ -1,8 +1,10 @@
+
 import React, { useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { useLanguage } from "@/contexts/LanguageContext";
 import BottomNavbar from "@/components/BottomNavbar";
+import AppNavbar from "@/components/AppNavbar";
 
 interface LayoutWrapperProps {
   children: React.ReactNode;
@@ -45,9 +47,15 @@ const LayoutWrapper: React.FC<LayoutWrapperProps> = ({ children }) => {
       localStorage.setItem('lastActivity', JSON.stringify(pageVisit));
     }
   }, [location.pathname, user]);
+
+  // Check if the current route is a chat page
+  const isChatPage = location.pathname.includes('/chat/');
   
   // Add padding bottom to content if user is authenticated (for bottom navbar)
-  const contentStyle = user ? { paddingBottom: "80px" } : undefined;
+  // Add extra padding for chat pages to ensure message input is visible
+  const contentStyle = {
+    paddingBottom: isChatPage ? "130px" : (user ? "80px" : "")
+  };
 
   // Setup hardware back button handler for mobile
   useEffect(() => {
@@ -69,13 +77,21 @@ const LayoutWrapper: React.FC<LayoutWrapperProps> = ({ children }) => {
     return () => window.removeEventListener('popstate', handleBackButton);
   }, [navigate, user]);
 
+  // Check if the current page is login or register
+  const isAuthPage = 
+    location.pathname === "/login" || 
+    location.pathname === "/register" ||
+    location.pathname === "/forgot-password";
+
   return (
-    <div style={contentStyle} className="min-h-screen">
-      {children}
+    <div className="min-h-screen flex flex-col">
+      {!isAuthPage && <AppNavbar />}
       
-      {user && (
-        <BottomNavbar />
-      )}
+      <div style={contentStyle} className="flex-grow">
+        {children}
+      </div>
+      
+      {user && <BottomNavbar />}
     </div>
   );
 };

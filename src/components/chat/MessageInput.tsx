@@ -29,13 +29,13 @@ const MessageInput: React.FC<MessageInputProps> = ({
   };
 
   return (
-    <div className="border-t p-3">
+    <div className="border-t p-3 bg-white dark:bg-gray-900 z-10">
       <div className="flex items-center">
         <Textarea
           value={newMessage}
           onChange={(e) => setNewMessage(e.target.value)}
           placeholder={chatContent.messageInput}
-          className="flex-1 resize-none bg-white border border-gray-300 text-black"
+          className="flex-1 resize-none bg-white border border-gray-300 text-black dark:bg-gray-800 dark:text-white"
           rows={1}
         />
         <div className="mr-3 flex">

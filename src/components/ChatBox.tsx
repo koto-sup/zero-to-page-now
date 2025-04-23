@@ -170,7 +170,7 @@ const ChatBox: React.FC<ChatBoxProps> = ({
   };
 
   return (
-    <div className="flex flex-col h-full">
+    <div className="flex flex-col h-full pb-16 md:pb-0"> {/* Added pb-16 to prevent overlap with bottom nav */}
       <ChatHeader 
         recipientName={recipientName}
         recipientAvatar={recipientAvatar}

@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { IceButtonV2 } from "@/components/ui/ice-button-v2";
@@ -33,6 +34,18 @@ export const RegisterForm: React.FC<RegisterFormProps> = ({ initialRole = "custo
     password: "", 
     confirmPassword: "" 
   });
+
+  // Check if the user is the admin
+  useEffect(() => {
+    if (email === "admin@kotomoto.co") {
+      localStorage.setItem('adminEmail', email);
+    } else {
+      localStorage.removeItem('adminEmail');
+    }
+  }, [email]);
+  
+  // If admin email is detected, offer admin role option
+  const showAdminOption = email === "admin@kotomoto.co";
   
   const validateForm = () => {
     const newErrors = { 
@@ -81,16 +94,19 @@ export const RegisterForm: React.FC<RegisterFormProps> = ({ initialRole = "custo
     if (!validateForm()) return;
     
     try {
+      // Automatically set role to admin for admin@kotomoto.co
+      const finalRole = email === "admin@kotomoto.co" ? "admin" : role;
+      
       await register({
         name,
         email,
         password,
-        role
+        role: finalRole
       });
       
-      if (role === "driver") {
+      if (finalRole === "driver") {
         navigate("/truck-details");
-      } else if (role === "admin") {
+      } else if (finalRole === "admin") {
         navigate("/admin-dashboard");
       } else {
         navigate("/customer-dashboard");
@@ -196,7 +212,7 @@ export const RegisterForm: React.FC<RegisterFormProps> = ({ initialRole = "custo
           )}
         </div>
         
-        <UserTypeSelection role={role} onRoleChange={setRole} showAdmin={true} />
+        <UserTypeSelection role={role} onRoleChange={setRole} showAdmin={showAdminOption} />
       </CardContent>
       <CardFooter className="flex flex-col">
         <IceButtonV2 
