@@ -1,22 +1,77 @@
 
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Send, Bot } from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
 
 const Help = () => {
-  const [question, setQuestion] = React.useState("");
-  const [isLoading, setIsLoading] = React.useState(false);
+  const [question, setQuestion] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+  const [aiResponses, setAiResponses] = useState<{question: string, answer: string}[]>([]);
+  const { toast } = useToast();
 
   const handleAskQuestion = async () => {
+    if (!question.trim()) return;
+    
     setIsLoading(true);
-    // Here you would integrate with an AI service
+    
+    // Store the current question
+    const currentQuestion = question;
+    
+    // Add to responses with a placeholder
+    setAiResponses(prev => [...prev, {
+      question: currentQuestion,
+      answer: "Thinking..."
+    }]);
+    
+    // Clear input
+    setQuestion("");
+    
+    // Mock AI response - in a real app, this would be an API call
     setTimeout(() => {
       setIsLoading(false);
-      setQuestion("");
-    }, 1000);
+      
+      // Update the response
+      setAiResponses(prev => 
+        prev.map((item, index) => 
+          index === prev.length - 1 
+            ? {
+                question: item.question,
+                answer: getAIResponse(item.question)
+              } 
+            : item
+        )
+      );
+      
+      toast({
+        title: "Assistant responded",
+        description: "The AI assistant has answered your question",
+      });
+    }, 1500);
+  };
+
+  // Helper function to generate responses
+  const getAIResponse = (q: string) => {
+    const questionLower = q.toLowerCase();
+    
+    if (questionLower.includes("truck") || questionLower.includes("شاحنة")) {
+      return "You can request a truck from the main page by selecting the type of truck and specifying your location and destination. Our app offers various types of trucks including refrigerated trucks, flatbed trucks, and specialized equipment.";
+    }
+    else if (questionLower.includes("price") || questionLower.includes("cost") || questionLower.includes("سعر")) {
+      return "Prices are calculated based on truck type, distance, and rental duration. You can get an exact quote after entering your trip details.";
+    }
+    else if (questionLower.includes("payment") || questionLower.includes("دفع")) {
+      return "We accept credit cards, bank transfers, and cash on delivery. You can select your preferred payment method during checkout.";
+    }
+    else if (questionLower.includes("cancel") || questionLower.includes("إلغاء")) {
+      return "You can cancel your order within 14 minutes of placing it without any charges. After that period, cancellation fees may apply.";
+    }
+    else {
+      return "Thanks for your question. Our customer support team will get back to you shortly. If you need immediate assistance, you can call our support line at +966 50 123 4567.";
+    }
   };
 
   return (
@@ -36,6 +91,7 @@ const Help = () => {
                 placeholder="اسأل المساعد الذكي..."
                 value={question}
                 onChange={(e) => setQuestion(e.target.value)}
+                onKeyPress={(e) => e.key === 'Enter' && handleAskQuestion()}
                 className="flex-1"
               />
               <Button 
@@ -47,6 +103,18 @@ const Help = () => {
                 إرسال
               </Button>
             </div>
+            
+            {/* AI Responses */}
+            {aiResponses.length > 0 && (
+              <div className="mt-6 space-y-4">
+                {aiResponses.map((item, index) => (
+                  <div key={index} className="bg-white border rounded-lg p-4 shadow-sm">
+                    <p className="font-medium text-primary mb-2">سؤالك: {item.question}</p>
+                    <p className="text-gray-700">{item.answer}</p>
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
 
           <Accordion type="single" collapsible className="text-right">

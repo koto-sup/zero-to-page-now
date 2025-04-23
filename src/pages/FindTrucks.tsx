@@ -30,14 +30,15 @@ const FindTrucks = () => {
   
   const { getPageTitle, getTruckTypesDescription } = useLanguageContent();
   const [acceptedOfferId, setAcceptedOfferId] = useState<string | undefined>();
-  const [currentStep, setCurrentStep] = useState(1); // Always start from step 1
+  // Always start at step 1 (vehicle selection)
+  const [currentStep, setCurrentStep] = useState(1);
   const [selectedLocation, setSelectedLocation] = useState<{lat: number, lng: number} | null>(null);
 
   // Reset to step 1 when component mounts
   useEffect(() => {
     setCurrentStep(1);
     setRequestSubmitted(false);
-  }, []);
+  }, [setRequestSubmitted]);
 
   const handleAcceptOffer = (offerId: string, rentalDuration: string = "day") => {
     // In a real app, we would send the offer acceptance to the server
@@ -212,6 +213,7 @@ const FindTrucks = () => {
                   <TruckMap 
                     interactive={true} 
                     onLocationSelect={handleLocationSelect}
+                    fullScreen={true}
                   />
                 </div>
                 {/* Semi-transparent overlay at bottom with action button */}

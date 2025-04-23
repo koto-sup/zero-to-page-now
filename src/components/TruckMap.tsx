@@ -204,6 +204,7 @@ const TruckMap: React.FC<TruckMapProps> = ({
       <div 
         className={`w-full h-full bg-blue-50 relative ${interactive ? 'cursor-crosshair' : ''}`}
         onClick={interactive ? handleMapClick : undefined}
+        style={{ height: fullScreen ? '100vh' : '100%' }}
       >
         <div className="absolute inset-0" style={{ 
           backgroundImage: "url('https://api.mapbox.com/styles/v1/mapbox/light-v10/static/46.7,24.7,12/1280x400?access_token=placeholder')", 
