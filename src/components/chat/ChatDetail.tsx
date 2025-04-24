@@ -5,7 +5,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { ChatDetailProps, ChatMessage } from '@/types/chat';
 import { getMockMessages } from '@/utils/mockMessages';
 
-// Make sure our initialMessages are compatible with what ChatBox expects
+// Define Message interface matching exactly what ChatBox expects
 interface Message {
   id: string;
   senderId: string;
@@ -36,11 +36,15 @@ const ChatDetail: React.FC<ChatDetailProps & {
 
   const recipientName = getRecipientName(recipientId);
   
-  // Ensure all messages have the required senderName property
+  // Transform saved messages to ensure they match the Message interface requirements
   const initialMessages: Message[] = savedMessages.length > 0 
     ? savedMessages.map(msg => ({
-        ...msg,
-        senderName: msg.senderName || (msg.senderId === user?.id ? "Me" : getRecipientName(msg.senderId))
+        id: msg.id,
+        senderId: msg.senderId,
+        senderName: msg.senderName || (msg.senderId === user?.id ? "Me" : getRecipientName(msg.senderId)),
+        senderAvatar: msg.senderAvatar,
+        content: msg.content || msg.text || "", // Ensure content is never undefined
+        timestamp: msg.timestamp
       }))
     : getMockMessages(user?.id || "unknown", recipientId);
 

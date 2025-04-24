@@ -17,7 +17,8 @@ import {
   ChevronUp, 
   X,
   MessageCircle,
-  ArrowLeft
+  ArrowLeft,
+  MoreVertical
 } from "lucide-react";
 import SaveTrackingMessages from '@/components/chat/SaveTrackingMessages';
 import { motion, AnimatePresence } from "framer-motion";
@@ -91,13 +92,14 @@ const TruckTracking = () => {
         if (newTime <= 0) {
           clearInterval(timer);
           setCanCancel(false);
-          toast.info(
+          toast(
             language === 'en' ? "Cancellation window ended" : "انتهى وقت الإلغاء", 
             {
               description: language === 'en' 
                 ? "You can no longer cancel this order" 
                 : "لم يعد بإمكانك إلغاء الطلب بعد الآن",
-              dismissible: true
+              dismissible: true,
+              position: "top-right"
             }
           );
           return 0;
@@ -114,13 +116,14 @@ const TruckTracking = () => {
         
         setTimeout(() => {
           setCurrentStatus(language === 'en' ? "Arrived at your location" : "وصل إلى موقعك");
-          toast.success(
+          toast(
             language === 'en' ? "Driver arrived at your location!" : "وصل السائق إلى موقعك!", 
             {
               description: language === 'en' 
                 ? "The driver is waiting for you now" 
                 : "السائق في انتظارك الآن",
-              dismissible: true
+              dismissible: true,
+              position: "top-right"
             }
           );
         }, 30000); // 30 seconds later
@@ -142,25 +145,27 @@ const TruckTracking = () => {
   
   const handleCancelOrder = () => {
     if (!canCancel) {
-      toast.error(
+      toast(
         language === 'en' ? "Cannot cancel order" : "لا يمكن إلغاء الطلب", 
         {
           description: language === 'en'
             ? "You've exceeded the cancellation period (14 minutes)"
             : "لقد تجاوزت فترة السماح للإلغاء (14 دقيقة)",
-          dismissible: true
+          dismissible: true,
+          position: "top-right"
         }
       );
       return;
     }
     
-    toast.success(
+    toast(
       language === 'en' ? "Order cancelled" : "تم إلغاء الطلب", 
       {
         description: language === 'en'
           ? "The driver will be notified of your cancellation"
           : "سيتم إشعار السائق بإلغاء طلبك",
-        dismissible: true
+        dismissible: true,
+        position: "top-right"
       }
     );
     
@@ -170,11 +175,12 @@ const TruckTracking = () => {
   };
   
   const handleCall = () => {
-    toast.info(
+    toast(
       language === 'en' ? "Calling driver" : "جاري الاتصال بالسائق", 
       {
         description: orderDetails.driverPhone,
-        dismissible: true
+        dismissible: true,
+        position: "top-right"
       }
     );
   };
@@ -204,15 +210,30 @@ const TruckTracking = () => {
         <EnhancedTruckMap tracking={true} distance={2.3} />
       </div>
       
-      {/* Back button - always visible */}
-      <div className="absolute top-6 left-6 z-10">
+      {/* Top navigation bar - always visible */}
+      <div className="absolute top-0 left-0 right-0 z-10 p-4 flex justify-between items-center">
         <Button 
           variant="outline" 
-          className="bg-white/80 backdrop-blur-sm"
+          size="icon"
+          className="bg-white/80 backdrop-blur-sm shadow-md h-10 w-10 rounded-full"
           onClick={handleBackButton}
         >
-          <ArrowLeft className="mr-1 h-4 w-4" />
-          {language === "en" ? "Back" : "رجوع"}
+          <X className="h-5 w-5" />
+        </Button>
+        
+        <div className="flex items-center justify-center bg-white/80 backdrop-blur-sm py-1 px-3 rounded-full shadow-md">
+          <div className="flex items-center">
+            <div className="w-2 h-2 bg-green-500 rounded-full mr-2 animate-pulse"></div>
+            <p className="text-sm font-medium">{currentStatus}</p>
+          </div>
+        </div>
+        
+        <Button 
+          variant="outline" 
+          size="icon"
+          className="bg-white/80 backdrop-blur-sm shadow-md h-10 w-10 rounded-full"
+        >
+          <MoreVertical className="h-5 w-5" />
         </Button>
       </div>
       
@@ -224,11 +245,15 @@ const TruckTracking = () => {
             initial={{ y: 100 }}
             animate={{ y: 0 }}
             exit={{ y: 100 }}
+            transition={{ type: "spring", damping: 20 }}
           >
             <div className="p-4">
               <div className="w-12 h-1 bg-gray-300 rounded-full mx-auto mb-3"></div>
               
-              <div className="flex justify-between items-center" onClick={() => setShowDetails(true)}>
+              <div 
+                className="flex justify-between items-center" 
+                onClick={() => setShowDetails(true)}
+              >
                 <div className="flex items-center">
                   <img 
                     src="/placeholder.svg" 
@@ -269,6 +294,7 @@ const TruckTracking = () => {
             initial={{ height: 80 }}
             animate={{ height: "75%" }}
             exit={{ height: 80 }}
+            transition={{ type: "spring", damping: 15 }}
           >
             <div className="h-full overflow-auto">
               <div className="p-4 border-b sticky top-0 bg-white z-10">
