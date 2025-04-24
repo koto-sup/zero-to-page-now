@@ -9,77 +9,95 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
-      chats: {
+      bookings: {
         Row: {
           created_at: string | null
+          customer_id: string | null
+          dropoff_location: Json
           id: string
-          message: string
-          read: boolean | null
-          receiver_id: string
-          sender_id: string
+          pickup_location: Json
+          pickup_time: string | null
+          price: number | null
+          status: string | null
+          truck_id: string | null
+          updated_at: string | null
         }
         Insert: {
           created_at?: string | null
+          customer_id?: string | null
+          dropoff_location: Json
           id?: string
-          message: string
-          read?: boolean | null
-          receiver_id: string
-          sender_id: string
+          pickup_location: Json
+          pickup_time?: string | null
+          price?: number | null
+          status?: string | null
+          truck_id?: string | null
+          updated_at?: string | null
         }
         Update: {
           created_at?: string | null
+          customer_id?: string | null
+          dropoff_location?: Json
           id?: string
-          message?: string
-          read?: boolean | null
-          receiver_id?: string
-          sender_id?: string
-        }
-        Relationships: []
-      }
-      invoices: {
-        Row: {
-          created_at: string | null
-          due_date: string
-          id: string
-          number: string
-          payment_id: string
-          status: string
-          total: number
-          user_id: string
-        }
-        Insert: {
-          created_at?: string | null
-          due_date: string
-          id?: string
-          number: string
-          payment_id: string
-          status?: string
-          total: number
-          user_id: string
-        }
-        Update: {
-          created_at?: string | null
-          due_date?: string
-          id?: string
-          number?: string
-          payment_id?: string
-          status?: string
-          total?: number
-          user_id?: string
+          pickup_location?: Json
+          pickup_time?: string | null
+          price?: number | null
+          status?: string | null
+          truck_id?: string | null
+          updated_at?: string | null
         }
         Relationships: [
           {
-            foreignKeyName: "invoices_payment_fkey"
-            columns: ["payment_id"]
+            foreignKeyName: "bookings_customer_id_fkey"
+            columns: ["customer_id"]
             isOneToOne: false
-            referencedRelation: "payments"
+            referencedRelation: "profiles"
             referencedColumns: ["id"]
           },
           {
-            foreignKeyName: "invoices_payment_id_fkey"
-            columns: ["payment_id"]
+            foreignKeyName: "bookings_truck_id_fkey"
+            columns: ["truck_id"]
             isOneToOne: false
-            referencedRelation: "payments"
+            referencedRelation: "trucks"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      messages: {
+        Row: {
+          booking_id: string | null
+          content: string
+          created_at: string | null
+          id: string
+          sender_id: string | null
+        }
+        Insert: {
+          booking_id?: string | null
+          content: string
+          created_at?: string | null
+          id?: string
+          sender_id?: string | null
+        }
+        Update: {
+          booking_id?: string | null
+          content?: string
+          created_at?: string | null
+          id?: string
+          sender_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "messages_booking_id_fkey"
+            columns: ["booking_id"]
+            isOneToOne: false
+            referencedRelation: "bookings"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "messages_sender_id_fkey"
+            columns: ["sender_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
             referencedColumns: ["id"]
           },
         ]
@@ -87,32 +105,126 @@ export type Database = {
       payments: {
         Row: {
           amount: number
+          booking_id: string | null
           created_at: string | null
-          description: string | null
           id: string
-          status: string
+          status: string | null
           stripe_payment_id: string | null
-          user_id: string
+          updated_at: string | null
         }
         Insert: {
           amount: number
+          booking_id?: string | null
           created_at?: string | null
-          description?: string | null
           id?: string
-          status?: string
+          status?: string | null
           stripe_payment_id?: string | null
-          user_id: string
+          updated_at?: string | null
         }
         Update: {
           amount?: number
+          booking_id?: string | null
           created_at?: string | null
-          description?: string | null
           id?: string
-          status?: string
+          status?: string | null
           stripe_payment_id?: string | null
-          user_id?: string
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "payments_booking_id_fkey"
+            columns: ["booking_id"]
+            isOneToOne: false
+            referencedRelation: "bookings"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      profiles: {
+        Row: {
+          created_at: string | null
+          email: string
+          full_name: string | null
+          id: string
+          phone_number: string | null
+          updated_at: string | null
+          user_type: string
+        }
+        Insert: {
+          created_at?: string | null
+          email: string
+          full_name?: string | null
+          id: string
+          phone_number?: string | null
+          updated_at?: string | null
+          user_type: string
+        }
+        Update: {
+          created_at?: string | null
+          email?: string
+          full_name?: string | null
+          id?: string
+          phone_number?: string | null
+          updated_at?: string | null
+          user_type?: string
         }
         Relationships: []
+      }
+      trucks: {
+        Row: {
+          created_at: string | null
+          current_latitude: number | null
+          current_longitude: number | null
+          driver_id: string | null
+          id: string
+          is_available: boolean | null
+          license_plate: string
+          make: string
+          model: string
+          photos: string[] | null
+          refrigeration_capacity: string
+          updated_at: string | null
+          year: number
+        }
+        Insert: {
+          created_at?: string | null
+          current_latitude?: number | null
+          current_longitude?: number | null
+          driver_id?: string | null
+          id?: string
+          is_available?: boolean | null
+          license_plate: string
+          make: string
+          model: string
+          photos?: string[] | null
+          refrigeration_capacity: string
+          updated_at?: string | null
+          year: number
+        }
+        Update: {
+          created_at?: string | null
+          current_latitude?: number | null
+          current_longitude?: number | null
+          driver_id?: string | null
+          id?: string
+          is_available?: boolean | null
+          license_plate?: string
+          make?: string
+          model?: string
+          photos?: string[] | null
+          refrigeration_capacity?: string
+          updated_at?: string | null
+          year?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "trucks_driver_id_fkey"
+            columns: ["driver_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
       }
     }
     Views: {
