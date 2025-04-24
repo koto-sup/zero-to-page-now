@@ -1,4 +1,3 @@
-
 import React from "react";
 import { Link, useLocation } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
@@ -25,7 +24,6 @@ const NavigationLinks: React.FC<NavigationLinksProps> = ({ className }) => {
       }
     ];
     
-    // Change "Track" to "Cont" only for admin users
     if (user && user.email === "admin@kotomoto.co") {
       commonLinks.push({
         name: language === 'en' ? "Cont" : "متابعة",
@@ -39,12 +37,6 @@ const NavigationLinks: React.FC<NavigationLinksProps> = ({ className }) => {
         icon: Truck
       });
     }
-    
-    commonLinks.push({
-      name: language === 'en' ? "Map" : "خريطة",
-      href: "/map",
-      icon: Map
-    });
     
     if (user) {
       commonLinks.push({ 

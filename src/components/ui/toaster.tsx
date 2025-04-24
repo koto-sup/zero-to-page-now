@@ -16,7 +16,7 @@ export function Toaster() {
     <ToastProvider swipeDirection="right">
       {toasts.map(function ({ id, title, description, action, ...props }) {
         return (
-          <Toast key={id} {...props} className="group">
+          <Toast key={id} {...props} className="group relative">
             <div className="grid gap-1">
               {title && <ToastTitle>{title}</ToastTitle>}
               {description && (
@@ -24,11 +24,11 @@ export function Toaster() {
               )}
             </div>
             {action}
-            <ToastClose className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity" />
+            <ToastClose className="absolute top-2 right-2 transition-opacity opacity-100" />
           </Toast>
         )
       })}
-      <ToastViewport className="top-0 right-0 flex flex-col p-4 gap-2 w-full md:max-w-[420px]" />
+      <ToastViewport className="fixed top-0 right-0 flex flex-col p-4 gap-2 w-full md:max-w-[420px] z-[100]" />
     </ToastProvider>
   )
 }
