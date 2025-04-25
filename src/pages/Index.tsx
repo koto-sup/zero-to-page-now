@@ -3,34 +3,15 @@ import Layout from "@/components/Layout";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/contexts/AuthContext";
-import { 
-  Truck, 
-  Snowflake, 
-  MessageSquare, 
-  Clock,
-  ShieldCheck,
-  ArrowRight,
-  Calendar,
-  TruckIcon,
-  Package,
-  CheckCircle
-} from "lucide-react";
-
+import { Truck, Snowflake, MessageSquare, Clock, ShieldCheck, ArrowRight, Calendar, TruckIcon, Package, CheckCircle } from "lucide-react";
 const Index = () => {
-  const { user } = useAuth();
-
-  return (
-    <Layout>
+  const {
+    user
+  } = useAuth();
+  return <Layout>
       <section className="relative bg-gradient-to-br from-moprd-blue to-moprd-teal text-white overflow-hidden">
         <div className="absolute inset-0 z-0">
-          <video
-            className="w-full h-full object-cover opacity-20"
-            autoPlay
-            muted
-            loop
-            playsInline
-            src="https://player.vimeo.com/external/373839498.sd.mp4?s=a93f4587a90551d713bc04abe5bca7af5f251082&profile_id=164&oauth2_token_id=57447761"
-          >
+          <video className="w-full h-full object-cover opacity-20" autoPlay muted loop playsInline src="https://player.vimeo.com/external/373839498.sd.mp4?s=a93f4587a90551d713bc04abe5bca7af5f251082&profile_id=164&oauth2_token_id=57447761">
             <source src="https://player.vimeo.com/external/373839498.sd.mp4?s=a93f4587a90551d713bc04abe5bca7af5f251082&profile_id=164&oauth2_token_id=57447761" type="video/mp4" />
           </video>
         </div>
@@ -44,8 +25,7 @@ const Index = () => {
                 زكرت يربطك مع سائقي الشاحنات القريبين لجميع احتياجات النقل الخاصة بك، سواء كانت شاحنات مبردة أو نقل عام أو متخصصة.
               </p>
               <div className="flex flex-wrap gap-4">
-                {!user && (
-                  <>
+                {!user && <>
                     <Link to="/register">
                       <Button size="lg" className="bg-white text-moprd-blue hover:bg-gray-100">
                         ابدأ الآن
@@ -57,35 +37,26 @@ const Index = () => {
                         تسجيل الدخول
                       </Button>
                     </Link>
-                  </>
-                )}
-                {user?.role === "customer" && (
-                  <Link to="/find-trucks">
+                  </>}
+                {user?.role === "customer" && <Link to="/find-trucks">
                     <Button size="lg" className="bg-white text-moprd-blue hover:bg-gray-100">
                       ابحث عن الشاحنات المتاحة
                       <ArrowRight className="mr-2 h-5 w-5" />
                     </Button>
-                  </Link>
-                )}
-                {user?.role === "driver" && (
-                  <Link to="/dashboard">
+                  </Link>}
+                {user?.role === "driver" && <Link to="/dashboard">
                     <Button size="lg" className="bg-white text-moprd-blue hover:bg-gray-100">
                       الذهاب إلى لوحة التحكم
                       <ArrowRight className="mr-2 h-5 w-5" />
                     </Button>
-                  </Link>
-                )}
+                  </Link>}
               </div>
             </div>
             <div className="hidden md:block relative">
               <div className="absolute -top-6 -left-6 w-24 h-24 bg-moprd-cyan rounded-full opacity-20"></div>
               <div className="absolute -bottom-10 -right-10 w-32 h-32 bg-moprd-light rounded-full opacity-20"></div>
               <div className="relative bg-white p-4 rounded-lg shadow-xl transform rotate-2">
-                <img 
-                  src="/placeholder.svg" 
-                  alt="شاحنة متخصصة" 
-                  className="rounded w-full h-64 object-cover"
-                />
+                <img alt="شاحنة متخصصة" src="/lovable-uploads/1c672dde-8ee1-4f66-ab43-fe4c86b582e8.jpg" className="rounded w-full h-64 object-fill" />
                 <div className="absolute -bottom-3 -right-3 bg-moprd-cyan text-moprd-blue p-2 rounded-lg shadow-lg">
                   <TruckIcon className="h-10 w-10" />
                 </div>
@@ -206,9 +177,9 @@ const Index = () => {
             </div>
           </div>
           <div className="mt-12 text-center">
-            <Link to={user ? (user.role === "customer" ? "/find-trucks" : "/dashboard") : "/register"}>
+            <Link to={user ? user.role === "customer" ? "/find-trucks" : "/dashboard" : "/register"}>
               <Button size="lg" className="bg-moprd-teal hover:bg-moprd-blue">
-                {user ? (user.role === "customer" ? "ابحث عن شاحنة الآن" : "الوصول إلى لوحة تحكم السائق") : "انضم إلى زكرت اليوم"}
+                {user ? user.role === "customer" ? "ابحث عن شاحنة الآن" : "الوصول إلى لوحة تحكم السائق" : "انضم إلى زكرت اليوم"}
               </Button>
             </Link>
           </div>
@@ -229,8 +200,7 @@ const Index = () => {
               {user?.role === "driver" && "أكمل ملفك الشخصي، وحدد توفرك وخدماتك، وابدأ في تلقي طلبات الحجز المربحة من العملاء في منطقتك."}
             </p>
             <div className="flex flex-wrap justify-center gap-4">
-              {!user && (
-                <>
+              {!user && <>
                   <Link to="/register?role=customer">
                     <Button size="lg" className="bg-white text-moprd-blue hover:bg-gray-100">
                       التسجيل كعميل
@@ -241,28 +211,21 @@ const Index = () => {
                       التسجيل كسائق
                     </Button>
                   </Link>
-                </>
-              )}
-              {user?.role === "customer" && (
-                <Link to="/find-trucks">
+                </>}
+              {user?.role === "customer" && <Link to="/find-trucks">
                   <Button size="lg" className="bg-white text-moprd-blue hover:bg-gray-100">
                     البحث عن الشاحنات المتاحة
                   </Button>
-                </Link>
-              )}
-              {user?.role === "driver" && (
-                <Link to="/truck-details">
+                </Link>}
+              {user?.role === "driver" && <Link to="/truck-details">
                   <Button size="lg" className="bg-white text-moprd-blue hover:bg-gray-100">
                     أكمل ملفك الشخصي
                   </Button>
-                </Link>
-              )}
+                </Link>}
             </div>
           </div>
         </div>
       </section>
-    </Layout>
-  );
+    </Layout>;
 };
-
 export default Index;
