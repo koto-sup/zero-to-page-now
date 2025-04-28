@@ -1,3 +1,4 @@
+
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
@@ -10,6 +11,14 @@ import { useLanguageContent } from "@/hooks/useLanguageContent";
 import { useLanguage } from "@/contexts/LanguageContext";
 import TruckMap from "@/components/TruckMap";
 import Layout from "@/components/Layout";
+import { ArrowLeft, MoreVertical } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { 
+  DropdownMenu, 
+  DropdownMenuTrigger, 
+  DropdownMenuContent, 
+  DropdownMenuItem
+} from "@/components/ui/dropdown-menu";
 
 const FindTrucks = () => {
   const navigate = useNavigate();
@@ -95,11 +104,27 @@ const FindTrucks = () => {
   };
 
   const t = (en: string, ar: string) => language === 'en' ? en : ar;
+  
+  // More menu options
+  const handleMoreOptions = () => {
+    // Can be extended with more functionality
+  };
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background dark:bg-gray-900">
       {currentStep === 2 ? (
         <div className="fixed inset-0 z-50">
+          <div className="absolute top-0 left-0 z-50 p-4">
+            <Button
+              variant="outline" 
+              size="icon"
+              className="bg-background/80 backdrop-blur-sm dark:bg-gray-800/80 dark:text-white"
+              onClick={() => setCurrentStep(1)}
+            >
+              <ArrowLeft className="h-4 w-4" />
+            </Button>
+          </div>
+          
           <TruckMap 
             interactive={true} 
             onLocationSelect={(lat, lng) => {
@@ -120,18 +145,42 @@ const FindTrucks = () => {
       ) : (
         <Layout>
           <div className="container mx-auto px-4 py-8 pb-24">
+            <div className="flex items-center justify-between mb-6">
+              <Button
+                variant="ghost"
+                className="p-2"
+                onClick={handleBackToVehicle}
+              >
+                <ArrowLeft className="h-5 w-5" />
+              </Button>
+              
+              <h1 className="text-xl font-semibold">
+                {getPageTitle()}
+              </h1>
+              
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="ghost" className="p-2">
+                    <MoreVertical className="h-5 w-5" />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" className="dark:bg-gray-800 dark:text-white">
+                  <DropdownMenuItem className="dark:hover:bg-gray-700">
+                    {t("Apply Discount", "تطبيق خصم")}
+                  </DropdownMenuItem>
+                  <DropdownMenuItem className="dark:hover:bg-gray-700">
+                    {t("Contact Support", "اتصل بالدعم")}
+                  </DropdownMenuItem>
+                  <DropdownMenuItem className="dark:hover:bg-gray-700">
+                    {t("Settings", "الإعدادات")}
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            </div>
+            
             {!requestSubmitted ? (
               <>
-                <TruckFinderHeader 
-                  pageTitle={getPageTitle()}
-                  description={getTruckTypesDescription()}
-                  hasDiscount={hasDiscount}
-                  couponApplied={couponApplied}
-                  applyCoupon={applyCoupon}
-                  requestSubmitted={requestSubmitted}
-                  hideLanguageButton={false}
-                />
-                <div className="mt-6">
+                <div className="mt-2">
                   <TruckRequestForm 
                     onRequestSubmitted={handleRequestSubmitted}
                     discountApplied={couponApplied}
@@ -142,7 +191,7 @@ const FindTrucks = () => {
                 </div>
               </>
             ) : (
-              <div className="pt-16">
+              <div className="pt-6">
                 <TruckOffersList 
                   offers={offers} 
                   requestDetails={requestDetails!} 

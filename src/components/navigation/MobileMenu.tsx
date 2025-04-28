@@ -3,7 +3,7 @@ import React from "react";
 import { Link, useLocation } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { useLanguage } from "@/contexts/LanguageContext";
-import { Menu, X, Map, Truck, Home, MessageSquare, LayoutDashboard } from "lucide-react";
+import { Menu, X, Truck, Home, MessageSquare, LayoutDashboard } from "lucide-react";
 
 interface MobileMenuProps {
   isOpen: boolean;
@@ -30,26 +30,11 @@ const MobileMenu: React.FC<MobileMenuProps> = ({ isOpen, onToggle, theme }) => {
       }
     ];
     
-    // Change "Track" to "Cont" only for admin users
-    if (user && user.email === "admin@kotomoto.co") {
-      commonLinks.push({
-        name: language === 'en' ? "Cont" : "متابعة",
-        href: user ? "/truck-tracking/driver-1" : "/login",
-        icon: Truck
-      });
-    } else {
-      commonLinks.push({
-        name: language === 'en' ? "Track" : "تتبع",
-        href: user ? "/truck-tracking/driver-1" : "/login",
-        icon: Truck
-      });
-    }
-    
     commonLinks.push({
-      name: language === 'en' ? "Map" : "خريطة",
-      href: "/map",
-      icon: Map
-      });
+      name: language === 'en' ? "Track" : "تتبع",
+      href: user ? "/truck-tracking/driver-1" : "/login",
+      icon: Truck
+    });
     
     if (user) {
       commonLinks.push({ 
@@ -81,7 +66,7 @@ const MobileMenu: React.FC<MobileMenuProps> = ({ isOpen, onToggle, theme }) => {
       <div className="flex md:hidden">
         <button
           type="button"
-          className="inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-800"
+          className="inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-800 dark:hover:text-gray-300"
           onClick={onToggle}
         >
           <span className="sr-only">Open main menu</span>
@@ -108,8 +93,8 @@ const MobileMenu: React.FC<MobileMenuProps> = ({ isOpen, onToggle, theme }) => {
                   to={link.href}
                   className={`block px-3 py-2 rounded-md text-base font-medium ${
                     isActive
-                      ? "text-moprd-teal relative shadow-glow-sm"
-                      : "text-gray-600 hover:text-moprd-teal dark:text-gray-300 dark:hover:text-moprd-teal"
+                      ? "text-moprd-teal relative shadow-glow-sm dark:text-accent"
+                      : "text-gray-600 hover:text-moprd-teal dark:text-gray-300 dark:hover:text-accent"
                   }`}
                   onClick={onToggle}
                 >
@@ -121,7 +106,7 @@ const MobileMenu: React.FC<MobileMenuProps> = ({ isOpen, onToggle, theme }) => {
             {!user && (
               <Link
                 to="/login"
-                className="block px-3 py-2 rounded-md text-base font-medium text-gray-600 hover:text-moprd-teal dark:text-gray-300 dark:hover:text-moprd-teal"
+                className="block px-3 py-2 rounded-md text-base font-medium text-gray-600 hover:text-moprd-teal dark:text-gray-300 dark:hover:text-accent"
                 onClick={onToggle}
               >
                 {language === 'en' ? "Login" : "تسجيل الدخول"}

@@ -49,7 +49,6 @@ const TruckRequestForm: React.FC<TruckRequestFormProps> = ({
   const selectedTruckType = getTruckTypes().find(truck => truck.id === formState.truckType);
   const hasKmPricing = selectedTruckType?.hasKmPricing || false;
   const [currentStep, setCurrentStep] = useState(initialStep);
-  const [showLocationMap, setShowLocationMap] = useState(false);
 
   // Pass step changes to parent if callback provided
   useEffect(() => {
@@ -69,145 +68,32 @@ const TruckRequestForm: React.FC<TruckRequestFormProps> = ({
   useEffect(() => {
     // Update the map selection mode when truck type changes
     setMapSelectionMode(isMapOnlySelectionType(formState.truckType));
-  }, [formState.truckType, setMapSelectionMode]);
-
-  // Determine if current section is complete
-  const isTruckTypeSelected = formState.truckType !== "";
-  const isLocationComplete = formState.mapSelectionMode 
-    ? formState.selectedMapLocation !== undefined 
-    : (formState.startLocation && formState.destination);
-
-  // Progress to next step
-  const goToNextStep = () => {
-    if (currentStep < 3) {
-      setCurrentStep(currentStep + 1);
-    }
-  };
-
-  // Go back to previous step or exit
-  const goToPrevStep = () => {
-    if (currentStep > 1) {
-      setCurrentStep(currentStep - 1);
-    } else if (onBackButtonClick) {
-      // If we're at the first step, use the provided back handler
-      onBackButtonClick();
-    }
-  };
-
-  // For auto-progress when vehicle type is selected
-  useEffect(() => {
-    if (currentStep === 1 && isTruckTypeSelected) {
-      // Small delay for better UX if they tap a radio directly
+    
+    // Auto-advance to map selection when truck type is selected
+    if (formState.truckType !== "" && currentStep === 1) {
+      // Small delay for better UX
       setTimeout(() => setCurrentStep(2), 300);
     }
-    // eslint-disable-next-line
-  }, [formState.truckType]);
-
-  // Handle map location selection
-  const onMapLocationSelect = (lat: number, lng: number) => {
-    handleMapLocationSelect(lat, lng);
-    setShowLocationMap(false);
-  };
-
-  // Improved: allow both manual entry and map selection for destination
-  const [destinationByMap, setDestinationByMap] = useState<{ lat: number; lng: number } | null>(null);
-  const [showDestinationMap, setShowDestinationMap] = useState(false);
-
-  // Handle destination map pick
-  const handleDestinationMapSelect = (lat: number, lng: number) => {
-    setDestinationByMap({ lat, lng });
-    handleDestinationChange(`Location (${lat.toFixed(4)}, ${lng.toFixed(4)})`);
-    setShowDestinationMap(false);
-  };
+  }, [formState.truckType, setMapSelectionMode, currentStep]);
 
   // Translation helper
   const t = (en: string, ar: string) => language === 'en' ? en : ar;
 
   if (currentStep === 1) {
     return (
-      <form onSubmit={(e) => { e.preventDefault(); goToNextStep(); }}>
+      <form className="space-y-6">
         {/* Step 1: Vehicle Type Selection */}
-        <div className="space-y-6">
-          <Button
-            type="button"
-            variant="outline"
-            className="mb-4"
-            onClick={onBackButtonClick}
-          >
-            <ArrowLeft className="mr-2 h-4 w-4" />
-            {t("Back", "رجوع")}
-          </Button>
-          
-          <TruckTypeSelector 
-            selectedTruckType={formState.truckType}
-            onTruckTypeChange={(value) => {
-              handleTruckTypeChange(value);
-              // Auto-advance to next step managed by useEffect
-            }}
-          />
-        </div>
+        <TruckTypeSelector 
+          selectedTruckType={formState.truckType}
+          onTruckTypeChange={handleTruckTypeChange}
+        />
       </form>
     );
   }
 
   if (currentStep === 2) {
-    // For step 2, we now show location inputs and map toggle
-    return (
-      <div className="space-y-6">
-        <LocationInputs
-          startLocation={formState.startLocation}
-          destination={formState.destination}
-          onStartLocationChange={handleStartLocationChange}
-          onDestinationChange={handleDestinationChange}
-        />
-        
-        {showLocationMap ? (
-          <div className="relative h-[300px] rounded-lg overflow-hidden shadow-md">
-            <Button 
-              variant="outline" 
-              size="sm"
-              className="absolute top-2 right-2 z-10"
-              onClick={() => setShowLocationMap(false)}
-            >
-              <ArrowLeft className="mr-1 h-4 w-4" />
-              {t("Back", "رجوع")}
-            </Button>
-            <TruckMap 
-              interactive={true} 
-              onLocationSelect={onMapLocationSelect} 
-            />
-          </div>
-        ) : (
-          <Button 
-            variant="outline" 
-            className="w-full"
-            onClick={() => setShowLocationMap(true)}
-          >
-            <MapPin className="mr-2 h-4 w-4" />
-            {t("Select on Map", "اختر على الخريطة")}
-          </Button>
-        )}
-        
-        <div className="flex space-x-4">
-          <Button 
-            variant="outline" 
-            className="flex-1"
-            onClick={goToPrevStep}
-          >
-            <ArrowLeft className="mr-2 h-4 w-4" />
-            {t("Back", "رجوع")}
-          </Button>
-          <Button 
-            className="flex-1 bg-moprd-teal hover:bg-moprd-teal/90"
-            onClick={goToNextStep}
-            disabled={!isLocationComplete}
-          >
-            {t("Continue", "متابعة")}
-            <Check className="ml-2 h-4 w-4" />
-          </Button>
-        </div>
-      </div>
-    );
+    // Map selection step - moved directly to main component
+    return null;
   }
 
   if (currentStep === 3) {
@@ -229,16 +115,6 @@ const TruckRequestForm: React.FC<TruckRequestFormProps> = ({
             onFlatbedDeliveryOptionChange={handleFlatbedDeliveryOptionChange}
             onRefrigeratedOptionChange={handleRefrigeratedOptionChange}
           />
-          
-          <div className="flex justify-start">
-            <Button 
-              type="button" 
-              onClick={goToPrevStep}
-              variant="outline"
-            >
-              <ArrowLeft className="mr-2 h-4 w-4" /> {t("Back", "رجوع")}
-            </Button>
-          </div>
         </div>
       </form>
     );
@@ -246,7 +122,7 @@ const TruckRequestForm: React.FC<TruckRequestFormProps> = ({
 
   // Fallback (shouldn't happen)
   return (
-    <div className="text-center p-4">
+    <div className="text-center p-4 dark:text-white">
       <p>{t("Loading...", "جاري التحميل...")}</p>
       <Button onClick={() => setCurrentStep(1)} className="mt-4">
         {t("Start Over", "البدء من جديد")}
