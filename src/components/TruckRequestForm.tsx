@@ -65,16 +65,12 @@ const TruckRequestForm: React.FC<TruckRequestFormProps> = ({
             "basket-winch"].includes(truckTypeId);
   };
 
+  // Update the map selection mode when truck type changes
   useEffect(() => {
-    // Update the map selection mode when truck type changes
-    setMapSelectionMode(isMapOnlySelectionType(formState.truckType));
-    
-    // Auto-advance to map selection when truck type is selected
-    if (formState.truckType !== "" && currentStep === 1) {
-      // Small delay for better UX
-      setTimeout(() => setCurrentStep(2), 300);
+    if (formState.truckType !== "") {
+      setMapSelectionMode(isMapOnlySelectionType(formState.truckType));
     }
-  }, [formState.truckType, setMapSelectionMode, currentStep]);
+  }, [formState.truckType, setMapSelectionMode]);
 
   // Translation helper
   const t = (en: string, ar: string) => language === 'en' ? en : ar;
@@ -85,20 +81,65 @@ const TruckRequestForm: React.FC<TruckRequestFormProps> = ({
         {/* Step 1: Vehicle Type Selection */}
         <TruckTypeSelector 
           selectedTruckType={formState.truckType}
-          onTruckTypeChange={handleTruckTypeChange}
+          onTruckTypeChange={(value) => {
+            handleTruckTypeChange(value);
+            setCurrentStep(2);  // Automatically move to step 2 after selection
+          }}
         />
       </form>
     );
   }
 
   if (currentStep === 2) {
-    // Map selection step - moved directly to main component
-    return null;
+    return (
+      <div className="space-y-6">
+        <Button 
+          variant="outline" 
+          className="mb-4" 
+          onClick={() => setCurrentStep(1)}
+        >
+          <ArrowLeft className="mr-2 h-4 w-4" />
+          {t("Back to truck selection", "العودة إلى اختيار الشاحنة")}
+        </Button>
+        
+        <LocationInputs 
+          startLocation={formState.startLocation}
+          destination={formState.destination}
+          onStartLocationChange={handleStartLocationChange}
+          onDestinationChange={handleDestinationChange}
+        />
+
+        <div className="flex justify-center mt-6">
+          <Button 
+            onClick={() => setCurrentStep(3)} 
+            className="px-8"
+            disabled={!formState.startLocation || !formState.destination}
+          >
+            {t("Continue", "متابعة")}
+          </Button>
+        </div>
+
+        {/* Map visualization (smaller size, not interactive) */}
+        <div className="mt-6 h-48 rounded-lg overflow-hidden">
+          <TruckMap interactive={false} />
+        </div>
+      </div>
+    );
   }
 
   if (currentStep === 3) {
     return (
       <form onSubmit={handleSubmit}>
+        <Button 
+          type="button"
+          variant="outline" 
+          className="mb-4" 
+          onClick={() => setCurrentStep(2)}
+        >
+          <ArrowLeft className="mr-2 h-4 w-4" />
+          {t("Back to location selection", "العودة إلى اختيار الموقع")}
+        </Button>
+
         {/* Step 3: Trip Details */}
         <div className="space-y-6">
           <TripDetails

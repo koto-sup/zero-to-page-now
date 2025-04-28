@@ -37,7 +37,6 @@ const FindTrucks = () => {
   const { getPageTitle, getTruckTypesDescription } = useLanguageContent();
   const [acceptedOfferId, setAcceptedOfferId] = useState<string | undefined>();
   const [currentStep, setCurrentStep] = useState(1);
-  const [selectedLocation, setSelectedLocation] = useState<{lat: number, lng: number} | null>(null);
   const [showSideMenu, setShowSideMenu] = useState(false);
 
   // Reset to step 1 when component mounts
@@ -89,11 +88,11 @@ const FindTrucks = () => {
 
   // Going back to the vehicle selection or previous screen
   const handleBackToVehicle = () => {
-    if (currentStep === 2) {
-      setCurrentStep(1);
+    if (currentStep > 1 && !requestSubmitted) {
+      setCurrentStep(currentStep - 1);
     } else if (requestSubmitted) {
       setRequestSubmitted(false);
-      setCurrentStep(2);
+      setCurrentStep(1);
     } else {
       navigate('/dashboard');
     }
@@ -126,116 +125,84 @@ const FindTrucks = () => {
 
   return (
     <div className="min-h-screen bg-background dark:bg-gray-900">
-      {currentStep === 2 ? (
-        <div className="fixed inset-0 z-50">
-          <div className="absolute top-0 left-0 z-50 p-4">
+      <Layout>
+        <div className="container mx-auto px-4 py-8 pb-24">
+          <div className="flex items-center justify-between mb-6">
             <Button
-              variant="outline" 
-              size="icon"
-              className="bg-background/80 backdrop-blur-sm dark:bg-gray-800/80 dark:text-white"
-              onClick={() => setCurrentStep(1)}
+              variant="ghost"
+              className="p-2"
+              onClick={handleBackToVehicle}
             >
-              <ArrowLeft className="h-4 w-4" />
+              <ArrowLeft className="h-5 w-5" />
             </Button>
+            
+            <h1 className="text-xl font-semibold dark:text-white">
+              {getPageTitle()}
+            </h1>
+            
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="ghost" className="p-2">
+                  <MoreVertical className="h-5 w-5" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="dark:bg-gray-800 dark:text-white">
+                <DropdownMenuItem 
+                  onClick={() => handleMoreOptions('discount')} 
+                  className="dark:hover:bg-gray-700 cursor-pointer"
+                >
+                  {t("Apply Discount", "تطبيق خصم")}
+                </DropdownMenuItem>
+                <DropdownMenuItem 
+                  onClick={() => handleMoreOptions('support')} 
+                  className="dark:hover:bg-gray-700 cursor-pointer"
+                >
+                  {t("Contact Support", "اتصل بالدعم")}
+                </DropdownMenuItem>
+                <DropdownMenuItem 
+                  onClick={() => handleMoreOptions('settings')} 
+                  className="dark:hover:bg-gray-700 cursor-pointer"
+                >
+                  {t("Settings", "الإعدادات")}
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
           </div>
           
-          <TruckMap 
-            interactive={true} 
-            onLocationSelect={(lat, lng) => {
-              setSelectedLocation({ lat, lng });
-              handleRequestSubmitted({
-                startLocation: `Location (${lat.toFixed(4)}, ${lng.toFixed(4)})`,
-                destination: `Destination (${lat.toFixed(4)}, ${lng.toFixed(4)})`,
-                distance: 5,
-                estimatedPrice: 100,
-                truckType: "refrigerated",
-                selectedMapLocation: { lat, lng }
-              });
-              setCurrentStep(3);
-            }}
-            fullScreen={true}
-          />
-        </div>
-      ) : (
-        <Layout>
-          <div className="container mx-auto px-4 py-8 pb-24">
-            <div className="flex items-center justify-between mb-6">
-              <Button
-                variant="ghost"
-                className="p-2"
-                onClick={handleBackToVehicle}
-              >
-                <ArrowLeft className="h-5 w-5" />
-              </Button>
-              
-              <h1 className="text-xl font-semibold">
-                {getPageTitle()}
-              </h1>
-              
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button variant="ghost" className="p-2">
-                    <MoreVertical className="h-5 w-5" />
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="end" className="dark:bg-gray-800 dark:text-white">
-                  <DropdownMenuItem 
-                    onClick={() => handleMoreOptions('discount')} 
-                    className="dark:hover:bg-gray-700 cursor-pointer"
-                  >
-                    {t("Apply Discount", "تطبيق خصم")}
-                  </DropdownMenuItem>
-                  <DropdownMenuItem 
-                    onClick={() => handleMoreOptions('support')} 
-                    className="dark:hover:bg-gray-700 cursor-pointer"
-                  >
-                    {t("Contact Support", "اتصل بالدعم")}
-                  </DropdownMenuItem>
-                  <DropdownMenuItem 
-                    onClick={() => handleMoreOptions('settings')} 
-                    className="dark:hover:bg-gray-700 cursor-pointer"
-                  >
-                    {t("Settings", "الإعدادات")}
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
-            </div>
-            
-            {!requestSubmitted ? (
-              <>
-                <div className="mt-2">
-                  <TruckRequestForm 
-                    onRequestSubmitted={handleRequestSubmitted}
-                    discountApplied={couponApplied}
-                    initialStep={currentStep}
-                    onStepChange={setCurrentStep}
-                    onBackButtonClick={handleBackToVehicle}
-                  />
-                </div>
-              </>
-            ) : (
-              <div className="pt-6">
-                <TruckOffersList 
-                  offers={offers} 
-                  requestDetails={requestDetails!} 
-                  onAcceptOffer={handleAcceptOffer} 
+          {!requestSubmitted ? (
+            <>
+              <div className="mt-2">
+                <TruckRequestForm 
+                  onRequestSubmitted={handleRequestSubmitted}
                   discountApplied={couponApplied}
-                  acceptedOfferId={acceptedOfferId}
+                  initialStep={currentStep}
+                  onStepChange={setCurrentStep}
+                  onBackButtonClick={handleBackToVehicle}
                 />
               </div>
-            )}
-            
-            {!requestSubmitted && !showSideMenu && (
-              <TruckDiscountInfo
-                hasDiscount={hasDiscount}
-                couponApplied={couponApplied}
-                applyCoupon={applyCoupon}
-                requestSubmitted={requestSubmitted}
+            </>
+          ) : (
+            <div className="pt-6">
+              <TruckOffersList 
+                offers={offers} 
+                requestDetails={requestDetails!} 
+                onAcceptOffer={handleAcceptOffer} 
+                discountApplied={couponApplied}
+                acceptedOfferId={acceptedOfferId}
               />
-            )}
-          </div>
-        </Layout>
-      )}
+            </div>
+          )}
+          
+          {!requestSubmitted && !showSideMenu && (
+            <TruckDiscountInfo
+              hasDiscount={hasDiscount}
+              couponApplied={couponApplied}
+              applyCoupon={applyCoupon}
+              requestSubmitted={requestSubmitted}
+            />
+          )}
+        </div>
+      </Layout>
     </div>
   );
 };

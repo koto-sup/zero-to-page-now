@@ -30,10 +30,25 @@ const MessageList: React.FC<MessageListProps> = ({
   onPaymentMethodSelect,
 }) => {
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const messagesContainerRef = useRef<HTMLDivElement>(null);
+  const [initialScrollDone, setInitialScrollDone] = React.useState(false);
 
+  // Scroll to bottom on initial load and when new messages are added
   useEffect(() => {
-    scrollToBottom();
-  }, [messages]);
+    if (!initialScrollDone && messages.length > 0) {
+      scrollToBottom();
+      setInitialScrollDone(true);
+    } else if (initialScrollDone) {
+      // Only auto-scroll for new messages if we're already near the bottom
+      const container = messagesContainerRef.current;
+      if (container) {
+        const isNearBottom = container.scrollHeight - container.scrollTop - container.clientHeight < 100;
+        if (isNearBottom) {
+          scrollToBottom();
+        }
+      }
+    }
+  }, [messages, initialScrollDone]);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -41,7 +56,7 @@ const MessageList: React.FC<MessageListProps> = ({
 
   if (messages.length === 0) {
     return (
-      <div className="flex flex-col items-center justify-center h-full bg-gray-50 p-4">
+      <div className="flex flex-col items-center justify-center h-full bg-gray-50 p-4 dark:bg-gray-800">
         <div className="text-center">
           <p className="text-muted-foreground mb-2">لا توجد رسائل بعد</p>
           <p className="text-sm text-muted-foreground">ابدأ محادثة جديدة الآن</p>
@@ -51,7 +66,10 @@ const MessageList: React.FC<MessageListProps> = ({
   }
 
   return (
-    <div className="flex-1 overflow-y-auto p-4 space-y-4 bg-gray-50">
+    <div 
+      ref={messagesContainerRef}
+      className="flex-1 overflow-y-auto p-4 space-y-4 bg-gray-50 dark:bg-gray-800"
+    >
       {messages.map((message) => (
         <Message
           key={message.id}
