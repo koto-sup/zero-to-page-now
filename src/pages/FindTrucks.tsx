@@ -62,9 +62,7 @@ const FindTrucks = () => {
           {
             description: language === 'en'
               ? "Thank you for using Zakart"
-              : "شكراً لاستخدامك زكرت",
-            dismissible: true,
-            position: "top-right"
+              : "شكراً لاستخدامك زكرت"
           }
         );
       }
@@ -74,9 +72,7 @@ const FindTrucks = () => {
         {
           description: language === 'en'
             ? `The driver will arrive in approximately ${selectedOffer.estimatedArrival}`
-            : `سيصلك السائق خلال ${selectedOffer.estimatedArrival} تقريباً`,
-          dismissible: true,
-          position: "top-right"
+            : `سيصلك السائق خلال ${selectedOffer.estimatedArrival} تقريباً`
         }
       );
       
@@ -106,8 +102,26 @@ const FindTrucks = () => {
   const t = (en: string, ar: string) => language === 'en' ? en : ar;
   
   // More menu options
-  const handleMoreOptions = () => {
-    // Can be extended with more functionality
+  const handleMoreOptions = (option: string) => {
+    switch(option) {
+      case 'discount':
+        applyCoupon();
+        toast(
+          language === 'en' ? "Discount Applied" : "تم تطبيق الخصم",
+          {
+            description: language === 'en' 
+              ? "You will receive 18% off your next booking" 
+              : "ستحصل على خصم 18% على حجزك التالي"
+          }
+        );
+        break;
+      case 'support':
+        navigate('/customer-support');
+        break;
+      case 'settings':
+        navigate('/settings');
+        break;
+    }
   };
 
   return (
@@ -165,13 +179,22 @@ const FindTrucks = () => {
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end" className="dark:bg-gray-800 dark:text-white">
-                  <DropdownMenuItem className="dark:hover:bg-gray-700">
+                  <DropdownMenuItem 
+                    onClick={() => handleMoreOptions('discount')} 
+                    className="dark:hover:bg-gray-700 cursor-pointer"
+                  >
                     {t("Apply Discount", "تطبيق خصم")}
                   </DropdownMenuItem>
-                  <DropdownMenuItem className="dark:hover:bg-gray-700">
+                  <DropdownMenuItem 
+                    onClick={() => handleMoreOptions('support')} 
+                    className="dark:hover:bg-gray-700 cursor-pointer"
+                  >
                     {t("Contact Support", "اتصل بالدعم")}
                   </DropdownMenuItem>
-                  <DropdownMenuItem className="dark:hover:bg-gray-700">
+                  <DropdownMenuItem 
+                    onClick={() => handleMoreOptions('settings')} 
+                    className="dark:hover:bg-gray-700 cursor-pointer"
+                  >
                     {t("Settings", "الإعدادات")}
                   </DropdownMenuItem>
                 </DropdownMenuContent>

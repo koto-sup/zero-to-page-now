@@ -52,6 +52,17 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
     }
   }, [lastScrollY]);
   
+  // Determine if we should show navigation bar
+  const showBottomNavbar = () => {
+    // Always show on activity/notification page
+    if (location.pathname === "/activity" || location.pathname === "/notifications") {
+      return true;
+    }
+    
+    // Show for logged in users on non-auth pages
+    return !isAuthPage && !!user;
+  };
+  
   // Get translations based on current language
   const translations = {
     copyright: language === 'en' 
@@ -64,7 +75,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
   
   return (
     <div 
-      className={`flex flex-col min-h-screen ${
+      className={`flex flex-col min-h-screen w-full ${
         theme === 'dark' 
           ? 'bg-gray-950 text-gray-100' 
           : 'bg-white text-black'
@@ -77,11 +88,11 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
         </div>
       )}
       
-      <main className={`flex-grow ${!isAuthPage ? "pt-20 pb-20" : ""} w-full max-w-7xl mx-auto px-4 sm:px-6 overflow-x-hidden`}>
+      <main className={`flex-grow ${!isAuthPage ? "pt-20 pb-20" : ""} w-full max-w-7xl mx-auto px-4 sm:px-6 overflow-hidden`}>
         {children}
       </main>
       
-      {!isAuthPage && user && (
+      {showBottomNavbar() && (
         <BottomNavbar />
       )}
       

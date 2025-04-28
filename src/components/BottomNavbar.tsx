@@ -5,9 +5,10 @@ import { useAuth } from "@/contexts/AuthContext";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { 
   Home, 
-  Truck, 
+  Truck,
   MessageSquare, 
   LayoutDashboard,
+  MapPin
 } from "lucide-react";
 
 const BottomNavbar = () => {
@@ -79,7 +80,7 @@ const BottomNavbar = () => {
               : "text-gray-600 hover:text-moprd-teal dark:text-gray-300 dark:hover:text-accent"
           }`}
         >
-          <Truck size={20} className={location.pathname.includes("/truck-tracking") ? "filter drop-shadow-[0_0_2px_rgba(0,200,200,0.8)]" : ""} />
+          <MapPin size={20} className={location.pathname.includes("/truck-tracking") ? "filter drop-shadow-[0_0_2px_rgba(0,200,200,0.8)]" : ""} />
           <span className="text-xs mt-1">{translations.track}</span>
         </Link>
         
