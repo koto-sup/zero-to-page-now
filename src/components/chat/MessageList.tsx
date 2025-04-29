@@ -33,16 +33,23 @@ const MessageList: React.FC<MessageListProps> = ({
   const messagesContainerRef = useRef<HTMLDivElement>(null);
   const [initialScrollDone, setInitialScrollDone] = React.useState(false);
 
-  // Scroll to bottom on initial load and when new messages are added
+  // Initial scroll to bottom when component loads
   useEffect(() => {
-    if (!initialScrollDone && messages.length > 0) {
-      scrollToBottom();
-      setInitialScrollDone(true);
-    } else if (initialScrollDone) {
+    if (messagesEndRef.current && messagesContainerRef.current && messages.length > 0) {
+      setTimeout(() => {
+        scrollToBottom();
+        setInitialScrollDone(true);
+      }, 100);
+    }
+  }, []);
+
+  // Scroll to bottom when new messages are added
+  useEffect(() => {
+    if (initialScrollDone && messages.length > 0) {
       // Only auto-scroll for new messages if we're already near the bottom
       const container = messagesContainerRef.current;
       if (container) {
-        const isNearBottom = container.scrollHeight - container.scrollTop - container.clientHeight < 100;
+        const isNearBottom = container.scrollHeight - container.scrollTop - container.clientHeight < 150;
         if (isNearBottom) {
           scrollToBottom();
         }
@@ -51,7 +58,9 @@ const MessageList: React.FC<MessageListProps> = ({
   }, [messages, initialScrollDone]);
 
   const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+    if (messagesEndRef.current) {
+      messagesEndRef.current.scrollIntoView({ behavior: "smooth" });
+    }
   };
 
   if (messages.length === 0) {

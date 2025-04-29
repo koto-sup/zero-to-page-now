@@ -7,9 +7,10 @@ import { useTruckRequestForm } from "@/hooks/useTruckRequestForm";
 import { RequestDetails } from "@/hooks/useTruckFinderState";
 import { useTruckTypes } from "@/hooks/useTruckTypes";
 import { Button } from "@/components/ui/button";
-import { MapPin, Check, ArrowLeft } from "lucide-react";
+import { Check, ArrowLeft } from "lucide-react";
 import { useLanguage } from "@/contexts/LanguageContext";
 import TruckMap from "@/components/TruckMap";
+import { toast } from "sonner";
 
 interface TruckRequestFormProps {
   onRequestSubmitted: (details: RequestDetails) => void;
@@ -49,6 +50,7 @@ const TruckRequestForm: React.FC<TruckRequestFormProps> = ({
   const selectedTruckType = getTruckTypes().find(truck => truck.id === formState.truckType);
   const hasKmPricing = selectedTruckType?.hasKmPricing || false;
   const [currentStep, setCurrentStep] = useState(initialStep);
+  const [mapSelectingFor, setMapSelectingFor] = useState<'start' | 'destination' | null>(null);
 
   // Pass step changes to parent if callback provided
   useEffect(() => {
@@ -72,6 +74,18 @@ const TruckRequestForm: React.FC<TruckRequestFormProps> = ({
     }
   }, [formState.truckType, setMapSelectionMode]);
 
+  // Handle map location selection
+  const handleLocationFromMap = (lat: number, lng: number) => {
+    if (mapSelectingFor === 'start') {
+      handleStartLocationChange(`${language === 'en' ? 'Location' : 'موقع'} (${lat.toFixed(4)}, ${lng.toFixed(4)})`);
+      toast.success(language === 'en' ? 'Start location selected!' : 'تم تحديد موقع البداية!');
+    } else if (mapSelectingFor === 'destination') {
+      handleDestinationChange(`${language === 'en' ? 'Destination' : 'الوجهة'} (${lat.toFixed(4)}, ${lng.toFixed(4)})`);
+      toast.success(language === 'en' ? 'Destination selected!' : 'تم تحديد الوجهة!');
+    }
+    setMapSelectingFor(null);
+  };
+
   // Translation helper
   const t = (en: string, ar: string) => language === 'en' ? en : ar;
 
@@ -90,6 +104,39 @@ const TruckRequestForm: React.FC<TruckRequestFormProps> = ({
     );
   }
 
+  if (mapSelectingFor) {
+    return (
+      <div className="fixed inset-0 z-50 bg-white dark:bg-gray-900">
+        <div className="absolute top-0 left-0 right-0 z-10 bg-white/80 dark:bg-gray-900/80 backdrop-blur-sm p-4 flex items-center justify-between">
+          <Button 
+            variant="ghost" 
+            onClick={() => setMapSelectingFor(null)}
+            className="text-lg"
+          >
+            <ArrowLeft className="mr-2 h-5 w-5" />
+            {t("Back", "رجوع")}
+          </Button>
+          <div className="text-lg font-medium">
+            {mapSelectingFor === 'start' 
+              ? t("Select Start Location", "تحديد موقع البداية")
+              : t("Select Destination", "تحديد الوجهة")
+            }
+          </div>
+          <div className="w-10"></div> {/* Empty div for spacing */}
+        </div>
+        
+        {/* Full-screen map */}
+        <div className="absolute inset-0 pt-16">
+          <TruckMap 
+            interactive={true} 
+            fullScreen={true}
+            onLocationSelect={handleLocationFromMap}
+          />
+        </div>
+      </div>
+    );
+  }
+
   if (currentStep === 2) {
     return (
       <div className="space-y-6">
@@ -102,26 +149,63 @@ const TruckRequestForm: React.FC<TruckRequestFormProps> = ({
           {t("Back to truck selection", "العودة إلى اختيار الشاحنة")}
         </Button>
         
-        <LocationInputs 
-          startLocation={formState.startLocation}
-          destination={formState.destination}
-          onStartLocationChange={handleStartLocationChange}
-          onDestinationChange={handleDestinationChange}
-        />
+        <div className="bg-white dark:bg-gray-800 rounded-lg p-6 shadow-sm border">
+          <h3 className="text-xl font-semibold mb-4">{t("Set Your Locations", "تحديد مواقعك")}</h3>
+          
+          <div className="space-y-6">
+            {/* Start Location Button */}
+            <div>
+              <div className="text-sm font-medium mb-2">{t("Start Location", "موقع البداية")}</div>
+              <Button 
+                variant="outline" 
+                className="w-full justify-start h-auto py-3 text-left"
+                onClick={() => setMapSelectingFor('start')}
+              >
+                {formState.startLocation ? (
+                  <span>{formState.startLocation}</span>
+                ) : (
+                  <span className="text-gray-400">{t("Click to select start location on map", "انقر لتحديد موقع البداية على الخريطة")}</span>
+                )}
+              </Button>
+            </div>
+            
+            {/* Destination Button */}
+            <div>
+              <div className="text-sm font-medium mb-2">{t("Destination", "الوجهة")}</div>
+              <Button 
+                variant="outline" 
+                className="w-full justify-start h-auto py-3 text-left"
+                onClick={() => setMapSelectingFor('destination')}
+              >
+                {formState.destination ? (
+                  <span>{formState.destination}</span>
+                ) : (
+                  <span className="text-gray-400">{t("Click to select destination on map", "انقر لتحديد الوجهة على الخريطة")}</span>
+                )}
+              </Button>
+            </div>
+          </div>
 
-        <div className="flex justify-center mt-6">
-          <Button 
-            onClick={() => setCurrentStep(3)} 
-            className="px-8"
-            disabled={!formState.startLocation || !formState.destination}
-          >
-            {t("Continue", "متابعة")}
-          </Button>
-        </div>
-
-        {/* Map visualization (smaller size, not interactive) */}
-        <div className="mt-6 h-48 rounded-lg overflow-hidden">
-          <TruckMap interactive={false} />
+          {/* Trip Summary (if both locations are selected) */}
+          {formState.startLocation && formState.destination && (
+            <div className="mt-6 p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
+              <h4 className="font-medium mb-2">{t("Trip Summary", "ملخص الرحلة")}</h4>
+              <div className="flex justify-between">
+                <span>{t("Distance", "المسافة")}</span>
+                <span className="font-bold">{formState.distance} {t("km", "كم")}</span>
+              </div>
+            </div>
+          )}
+          
+          <div className="flex justify-center mt-6">
+            <Button 
+              onClick={() => setCurrentStep(3)} 
+              className="px-8"
+              disabled={!formState.startLocation || !formState.destination}
+            >
+              {t("Continue", "متابعة")}
+            </Button>
+          </div>
         </div>
       </div>
     );

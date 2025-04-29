@@ -11,7 +11,7 @@ import ChatSearchBar from "@/components/chat/ChatSearchBar";
 import ChatWelcome from "@/components/chat/ChatWelcome";
 import ChatDetail from "@/components/chat/ChatDetail";
 import { toast } from "sonner";
-import { Trash2, MessageSquare, ArrowLeft, Share2, MapPin, Phone, Image, Send } from "lucide-react";
+import { Trash2, MessageSquare, ArrowLeft, Share2, MapPin, Phone, Image, Send, Mic, File, Map, PaperclipIcon, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogDescription } from "@/components/ui/dialog";
 
@@ -31,6 +31,24 @@ const Chat = () => {
   const [chatToDelete, setChatToDelete] = useState<string | null>(null);
   const [showChatList, setShowChatList] = useState(true);
   const chatDetailRef = useRef<HTMLDivElement>(null);
+  const [showAttachmentOptions, setShowAttachmentOptions] = useState(false);
+  const [recording, setRecording] = useState(false);
+  const [recordingTime, setRecordingTime] = useState(0);
+  const [locationDialogOpen, setLocationDialogOpen] = useState(false);
+  
+  // Timer for recording
+  useEffect(() => {
+    let interval: NodeJS.Timeout;
+    if (recording) {
+      interval = setInterval(() => {
+        setRecordingTime(prev => prev + 1);
+      }, 1000);
+    } else {
+      setRecordingTime(0);
+    }
+    
+    return () => clearInterval(interval);
+  }, [recording]);
 
   // Load saved conversations from localStorage
   useEffect(() => {
@@ -180,6 +198,45 @@ const Chat = () => {
     setSelectedRecipientId(null);
   };
 
+  const handleStartRecording = () => {
+    setRecording(true);
+    toast.info(language === 'en' ? "Recording voice message..." : "جاري تسجيل الرسالة الصوتية...");
+  };
+
+  const handleStopRecording = () => {
+    setRecording(false);
+    toast.success(
+      language === 'en' ? "Voice message recorded" : "تم تسجيل الرسالة الصوتية",
+      { description: language === 'en' ? `Duration: ${recordingTime}s` : `المدة: ${recordingTime} ثانية` }
+    );
+  };
+
+  const handleSendLocation = () => {
+    setLocationDialogOpen(false);
+    toast.success(
+      language === 'en' ? "Location shared" : "تم مشاركة الموقع"
+    );
+  };
+
+  const handleAttachmentOption = (type: string) => {
+    setShowAttachmentOptions(false);
+    
+    switch (type) {
+      case 'image':
+        toast.info(language === 'en' ? "Select an image" : "اختر صورة");
+        break;
+      case 'file':
+        toast.info(language === 'en' ? "Select a file" : "اختر ملفًا");
+        break;
+      case 'location':
+        setLocationDialogOpen(true);
+        break;
+      case 'contact':
+        toast.info(language === 'en' ? "Select a contact" : "اختر جهة اتصال");
+        break;
+    }
+  };
+
   return (
     <Layout>
       <div className="container mx-auto px-4 py-8 pb-24 max-w-full overflow-x-hidden">
@@ -206,7 +263,7 @@ const Chat = () => {
 
           <div className={`${showChatList && window.innerWidth < 768 ? 'hidden' : 'block'} md:col-span-2`}>
             {selectedChatId && selectedRecipientId ? (
-              <div ref={chatDetailRef} className="relative h-full">
+              <div ref={chatDetailRef} className="relative h-full border rounded-lg shadow-sm bg-white dark:bg-gray-900 overflow-hidden">
                 <div className="sticky top-0 z-10 bg-white dark:bg-gray-900 p-4 flex items-center border-b">
                   <Button 
                     variant="ghost" 
@@ -217,8 +274,20 @@ const Chat = () => {
                     <ArrowLeft className="h-5 w-5" />
                   </Button>
                   
-                  <div className="flex-1">
-                    {chats.find(c => c.id === selectedChatId)?.recipientName || "Chat"}
+                  <div className="flex items-center flex-1">
+                    <div className="w-8 h-8 rounded-full bg-gray-200 mr-2 overflow-hidden">
+                      <img 
+                        src={chats.find(c => c.id === selectedChatId)?.recipientAvatar || "/placeholder.svg"} 
+                        alt="avatar"
+                        className="w-full h-full object-cover"
+                      />
+                    </div>
+                    <div>
+                      <div className="font-medium">{chats.find(c => c.id === selectedChatId)?.recipientName || "Chat"}</div>
+                      <div className="text-xs text-gray-500 dark:text-gray-400">
+                        {language === 'en' ? 'Online' : 'متصل'}
+                      </div>
+                    </div>
                   </div>
                   
                   <div className="flex space-x-1">
@@ -238,23 +307,97 @@ const Chat = () => {
                   savedMessages={storedMessages[selectedChatId]?.messages || []}
                 />
                 
-                <div className="sticky bottom-0 bg-white dark:bg-gray-900 p-3 border-t flex items-center space-x-2">
-                  <Button variant="ghost" size="icon" className="dark:text-white">
-                    <MapPin className="h-5 w-5" />
-                  </Button>
-                  <Button variant="ghost" size="icon" className="dark:text-white">
-                    <Image className="h-5 w-5" />
-                  </Button>
-                  <div className="flex-1 relative">
-                    <input 
-                      type="text" 
-                      placeholder={language === 'en' ? "Type a message..." : "اكتب رسالة..."}
-                      className="w-full border rounded-full px-4 py-2 dark:bg-gray-800 dark:text-white dark:border-gray-700"
-                    />
-                  </div>
-                  <Button size="icon" className="rounded-full bg-moprd-teal hover:bg-moprd-blue dark:bg-accent">
-                    <Send className="h-5 w-5" />
-                  </Button>
+                <div className="sticky bottom-0 bg-white dark:bg-gray-900 p-3 border-t">
+                  {/* Recording UI */}
+                  {recording ? (
+                    <div className="flex items-center justify-between bg-red-50 dark:bg-red-900/20 p-3 rounded-full">
+                      <div className="flex items-center">
+                        <div className="w-3 h-3 bg-red-500 rounded-full animate-pulse mr-3"></div>
+                        <span className="text-red-600 dark:text-red-400 font-medium">
+                          {language === 'en' ? `Recording: ${recordingTime}s` : `تسجيل: ${recordingTime} ثانية`}
+                        </span>
+                      </div>
+                      <div className="flex space-x-2">
+                        <Button variant="ghost" size="sm" onClick={() => setRecording(false)} className="text-red-600 dark:text-red-400">
+                          <X className="h-5 w-5" />
+                        </Button>
+                        <Button size="sm" onClick={handleStopRecording} className="bg-red-500 hover:bg-red-600 text-white">
+                          {language === 'en' ? 'Send' : 'إرسال'}
+                        </Button>
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="flex items-center space-x-2">
+                      {/* Attachment button with dropdown */}
+                      <div className="relative">
+                        <Button 
+                          variant="ghost" 
+                          size="icon" 
+                          className="dark:text-white relative"
+                          onClick={() => setShowAttachmentOptions(!showAttachmentOptions)}
+                        >
+                          <PaperclipIcon className="h-5 w-5" />
+                        </Button>
+                        
+                        {showAttachmentOptions && (
+                          <div className="absolute bottom-12 left-0 bg-white dark:bg-gray-800 rounded-lg shadow-lg border p-2 w-48 z-20">
+                            <div 
+                              className="flex items-center p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded cursor-pointer"
+                              onClick={() => handleAttachmentOption('image')}
+                            >
+                              <Image className="h-5 w-5 mr-3 text-blue-500" />
+                              <span>{language === 'en' ? 'Image' : 'صورة'}</span>
+                            </div>
+                            <div 
+                              className="flex items-center p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded cursor-pointer"
+                              onClick={() => handleAttachmentOption('file')}
+                            >
+                              <File className="h-5 w-5 mr-3 text-purple-500" />
+                              <span>{language === 'en' ? 'File' : 'ملف'}</span>
+                            </div>
+                            <div 
+                              className="flex items-center p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded cursor-pointer"
+                              onClick={() => handleAttachmentOption('location')}
+                            >
+                              <MapPin className="h-5 w-5 mr-3 text-green-500" />
+                              <span>{language === 'en' ? 'Location' : 'موقع'}</span>
+                            </div>
+                            <div 
+                              className="flex items-center p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded cursor-pointer"
+                              onClick={() => handleAttachmentOption('contact')}
+                            >
+                              <Phone className="h-5 w-5 mr-3 text-yellow-500" />
+                              <span>{language === 'en' ? 'Contact' : 'جهة اتصال'}</span>
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                      
+                      <div className="flex-1 relative">
+                        <input 
+                          type="text" 
+                          placeholder={language === 'en' ? "Type a message..." : "اكتب رسالة..."}
+                          className="w-full border rounded-full px-4 py-2 dark:bg-gray-800 dark:text-white dark:border-gray-700"
+                        />
+                      </div>
+                      
+                      <Button 
+                        variant="ghost" 
+                        size="icon" 
+                        className="dark:text-white"
+                        onMouseDown={handleStartRecording}
+                        onMouseUp={() => setRecording(false)}
+                        onTouchStart={handleStartRecording}
+                        onTouchEnd={() => setRecording(false)}
+                      >
+                        <Mic className="h-5 w-5" />
+                      </Button>
+                      
+                      <Button size="icon" className="rounded-full bg-moprd-teal hover:bg-moprd-blue dark:bg-accent">
+                        <Send className="h-5 w-5" />
+                      </Button>
+                    </div>
+                  )}
                 </div>
               </div>
             ) : (
@@ -290,6 +433,48 @@ const Chat = () => {
               >
                 <Trash2 className="mr-2 h-4 w-4" />
                 {language === 'en' ? "Delete" : "حذف"}
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+
+        {/* Location Sharing Dialog */}
+        <Dialog open={locationDialogOpen} onOpenChange={setLocationDialogOpen}>
+          <DialogContent className="dark:bg-gray-800 dark:text-white max-w-md">
+            <DialogHeader>
+              <DialogTitle>
+                {language === 'en' ? "Share Location" : "مشاركة الموقع"}
+              </DialogTitle>
+            </DialogHeader>
+            
+            <div className="h-64 bg-gray-100 dark:bg-gray-700 rounded-lg overflow-hidden relative">
+              <div 
+                className="w-full h-full"
+                style={{
+                  backgroundImage: "url('https://api.mapbox.com/styles/v1/mapbox/light-v10/static/46.7,24.7,12/1280x400?access_token=placeholder')",
+                  backgroundSize: "cover",
+                  backgroundPosition: "center"
+                }}
+              ></div>
+              <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
+                <MapPin className="h-8 w-8 text-red-500" />
+              </div>
+            </div>
+            
+            <DialogFooter>
+              <Button 
+                variant="outline" 
+                onClick={() => setLocationDialogOpen(false)}
+                className="dark:text-white dark:border-gray-600"
+              >
+                {language === 'en' ? "Cancel" : "إلغاء"}
+              </Button>
+              <Button 
+                onClick={handleSendLocation}
+                className="bg-moprd-teal hover:bg-moprd-blue"
+              >
+                <Map className="mr-2 h-4 w-4" />
+                {language === 'en' ? "Share" : "مشاركة"}
               </Button>
             </DialogFooter>
           </DialogContent>
